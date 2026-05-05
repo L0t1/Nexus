@@ -28,38 +28,62 @@
         <div class="flex justify-between mt-2 px-1"><span v-for="(pt, i) in chartData.filter((_, i) => i % labelInt === 0)" :key="i" class="text-[9px] text-nexus-700">{{ pt.date }}</span></div>
       </div>
 
-      <!-- Bottom grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 stagger-children">
-        <div class="glass rounded-2xl overflow-hidden">
-          <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Order Status</h3></div>
-          <div class="p-5 space-y-2.5">
-            <div v-for="(count, status) in statusBreakdown" :key="status" class="flex items-center justify-between"><div class="flex items-center gap-2"><StatusBadge :status="status" /></div><span class="text-sm font-medium text-nexus-300">{{ count }}</span></div>
-            <div v-if="!Object.keys(statusBreakdown).length" class="text-sm text-nexus-700 text-center py-4">No data</div>
-          </div>
+      <!-- Advanced Analytics -->
+      <div class="relative mt-8">
+        <!-- Upsell Overlay -->
+        <div v-if="!hasAdvanced" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 text-center border border-white/10 shadow-2xl">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-cyan to-accent-violet flex items-center justify-center text-white mb-5 shadow-lg shadow-accent-cyan/20"><svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg></div>
+          <h3 class="text-xl font-bold text-nexus-100 mb-2">Advanced Analytics Locked</h3>
+          <p class="text-sm text-nexus-400 max-w-md mb-6 leading-relaxed">Upgrade to the Pro or Ultimate plan to unlock deep insights into your top cities, sales channels, return rates, and most sold products.</p>
+          <button @click="$inertia.visit('/subscription')" class="btn-primary py-2.5 px-6">Upgrade to Unlock</button>
         </div>
-        <div class="glass rounded-2xl overflow-hidden">
-          <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Top Cities</h3></div>
-          <div class="p-5 space-y-2.5">
-            <div v-for="(city, i) in topCities" :key="city.city" class="flex items-center justify-between"><span class="text-sm text-nexus-300">{{ city.city }}</span><div class="text-right"><span class="text-sm font-medium text-nexus-200">{{ city.orders }}</span><span class="text-xs text-nexus-600 ml-1">orders</span></div></div>
-            <div v-if="!topCities?.length" class="text-sm text-nexus-700 text-center py-4">No data</div>
-          </div>
-        </div>
-        <div class="glass rounded-2xl overflow-hidden">
-          <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Channels</h3></div>
-          <div class="p-5 space-y-2.5">
-            <div v-for="(count, platform) in channelBreakdown" :key="platform" class="flex items-center justify-between"><div class="flex items-center gap-2"><PlatformIcon :platform="platform" class="w-4 h-4" /><span class="text-sm text-nexus-300 capitalize">{{ platform }}</span></div><span class="text-sm font-medium text-nexus-200">{{ count }}</span></div>
-            <div v-if="!Object.keys(channelBreakdown).length" class="text-sm text-nexus-700 text-center py-4">No data</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Return rate -->
-      <div class="glass gradient-border rounded-2xl p-6">
-        <div class="flex items-center justify-between">
-          <div><h3 class="text-sm font-semibold text-nexus-200">Return Rate</h3><p class="text-xs text-nexus-600 mt-0.5">{{ summary.returned_orders }} / {{ summary.total_orders }} orders</p></div>
-          <div :class="['text-3xl font-bold', summary.return_rate > 15 ? 'text-accent-rose' : summary.return_rate > 5 ? 'text-accent-amber' : 'text-accent-emerald']">{{ summary.return_rate }}%</div>
+        <!-- Locked Content -->
+        <div :class="['space-y-6 transition-all duration-500', !hasAdvanced ? 'opacity-20 pointer-events-none blur-[4px] select-none' : '']">
+          <!-- Bottom grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 stagger-children">
+            <div class="glass rounded-2xl overflow-hidden">
+              <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Order Status</h3></div>
+              <div class="p-5 space-y-2.5">
+                <div v-for="(count, status) in statusBreakdown" :key="status" class="flex items-center justify-between"><div class="flex items-center gap-2"><StatusBadge :status="status" /></div><span class="text-sm font-medium text-nexus-300">{{ count }}</span></div>
+                <div v-if="!Object.keys(statusBreakdown || {}).length" class="text-sm text-nexus-700 text-center py-4">No data</div>
+              </div>
+            </div>
+            <div class="glass rounded-2xl overflow-hidden">
+              <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Top Cities</h3></div>
+              <div class="p-5 space-y-2.5">
+                <div v-for="(city, i) in topCities" :key="city.city" class="flex items-center justify-between"><span class="text-sm text-nexus-300">{{ city.city }}</span><div class="text-right"><span class="text-sm font-medium text-nexus-200">{{ city.orders }}</span><span class="text-xs text-nexus-600 ml-1">orders</span></div></div>
+                <div v-if="!topCities?.length" class="text-sm text-nexus-700 text-center py-4">No data</div>
+              </div>
+            </div>
+            <div class="glass rounded-2xl overflow-hidden">
+              <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Channels</h3></div>
+              <div class="p-5 space-y-2.5">
+                <div v-for="(count, platform) in channelBreakdown" :key="platform" class="flex items-center justify-between"><div class="flex items-center gap-2"><PlatformIcon :platform="platform" class="w-4 h-4" /><span class="text-sm text-nexus-300 capitalize">{{ platform }}</span></div><span class="text-sm font-medium text-nexus-200">{{ count }}</span></div>
+                <div v-if="!Object.keys(channelBreakdown || {}).length" class="text-sm text-nexus-700 text-center py-4">No data</div>
+              </div>
+            </div>
+            <div class="glass rounded-2xl overflow-hidden">
+              <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Most Sold Products</h3></div>
+              <div class="p-5 space-y-2.5">
+                <div v-for="product in topProducts" :key="product.name" class="flex items-center justify-between">
+                  <span class="text-sm text-nexus-300 truncate pr-2">{{ product.name }}</span>
+                  <div class="text-right whitespace-nowrap"><span class="text-sm font-medium text-accent-emerald">{{ product.sold }}</span><span class="text-xs text-nexus-600 ml-1">sold</span></div>
+                </div>
+                <div v-if="!topProducts?.length" class="text-sm text-nexus-700 text-center py-4">No data</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Return rate -->
+          <div class="glass gradient-border rounded-2xl p-6">
+            <div class="flex items-center justify-between">
+              <div><h3 class="text-sm font-semibold text-nexus-200">Return Rate</h3><p class="text-xs text-nexus-600 mt-0.5">{{ summary.returned_orders }} / {{ summary.total_orders }} orders</p></div>
+              <div :class="['text-3xl font-bold', summary.return_rate > 15 ? 'text-accent-rose' : summary.return_rate > 5 ? 'text-accent-amber' : 'text-accent-emerald']">{{ summary.return_rate }}%</div>
+            </div>
+            <div class="mt-4 h-1.5 rounded-full bg-white/[0.04] overflow-hidden"><div class="h-full rounded-full transition-all duration-700" :class="summary.return_rate > 15 ? 'bg-gradient-to-r from-accent-rose to-accent-pink' : summary.return_rate > 5 ? 'bg-gradient-to-r from-accent-amber to-accent-rose' : 'bg-gradient-to-r from-accent-emerald to-accent-cyan'" :style="{ width: Math.min(summary.return_rate, 100) + '%' }"></div></div>
+          </div>
         </div>
-        <div class="mt-4 h-1.5 rounded-full bg-white/[0.04] overflow-hidden"><div class="h-full rounded-full transition-all duration-700" :class="summary.return_rate > 15 ? 'bg-gradient-to-r from-accent-rose to-accent-pink' : summary.return_rate > 5 ? 'bg-gradient-to-r from-accent-amber to-accent-rose' : 'bg-gradient-to-r from-accent-emerald to-accent-cyan'" :style="{ width: Math.min(summary.return_rate, 100) + '%' }"></div></div>
       </div>
     </div>
   </AuthenticatedLayout>
@@ -67,15 +91,17 @@
 
 <script setup>
 import { computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 
-const props = defineProps({ chartData: Array, summary: Object, statusBreakdown: Object, topCities: Array, channelBreakdown: Object, days: { type: Number, default: 30 } });
+const props = defineProps({ chartData: Array, summary: Object, statusBreakdown: Object, topCities: Array, channelBreakdown: Object, topProducts: Array, days: { type: Number, default: 30 } });
 const dayOpts = [{ label: '7d', value: 7 }, { label: '30d', value: 30 }, { label: '90d', value: 90 }];
 const maxRev = computed(() => Math.max(...(props.chartData || []).map(p => p.revenue), 1));
 const labelInt = computed(() => props.days <= 7 ? 1 : props.days <= 30 ? 7 : 15);
+const hasAdvanced = computed(() => usePage().props.auth.merchant?.features?.includes('advanced_analytics'));
+
 function barH(r) { return (r / maxRev.value) * 100; }
 function setDays(d) { router.get('/analytics', { days: d }, { preserveState: true }); }
 </script>

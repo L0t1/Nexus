@@ -51,8 +51,15 @@ class HandleInertiaRequests extends Middleware
                 'merchant' => $merchant ? [
                     'id' => $merchant->id,
                     'business_name' => $merchant->business_name,
+                    'phone' => $merchant->phone,
+                    'country' => $merchant->country,
+                    'city' => $merchant->city,
                     'subscription_tier' => $merchant->subscription_tier,
                     'logo_path' => $merchant->logo_path,
+                    'features' => $merchant->allowed_features,
+                    'meta_credentials' => $merchant->meta_credentials,
+                    'onboarding_completed' => $merchant->onboarding_completed,
+                    'subscription_expires_at' => $merchant->subscription_expires_at?->toISOString(),
                 ] : null,
             ],
 

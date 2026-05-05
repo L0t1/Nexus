@@ -62,4 +62,13 @@ class ContactController extends Controller
 
         return back()->with('success', 'Contact updated.');
     }
+
+    public function destroy(Request $request, Contact $contact): RedirectResponse
+    {
+        abort_unless($contact->merchant_id === $request->user()->merchant?->id, 403);
+
+        $contact->delete();
+
+        return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully.');
+    }
 }

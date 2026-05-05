@@ -112,7 +112,7 @@ class OrderController extends Controller
         $limit = $merchant->order_limit;
         if ($limit !== null && $merchant->orders()->count() >= $limit) {
             return back()->withErrors([
-                'limit' => "You have reached your plan limit of {$limit} orders. Please upgrade to the Growth plan.",
+                'limit' => "You have reached your plan limit of {$limit} orders. Please upgrade to the Pro plan.",
             ]);
         }
 
@@ -142,23 +142,33 @@ class OrderController extends Controller
 
         $validated = $request->validate([
             'fulfillment_status' => 'nullable|in:draft,confirmed,processing,dispatched,in_transit,out_for_delivery,delivered,returned,cancelled',
-            'payment_status'     => 'nullable|in:pending,paid,failed,refunded',
+            'payment_status'     => 'nullable|in:pending,collected,returned,refunded',
         ]);
 
         $updates = $validated;
+
+        $oldStatus = $order->fulfillment_status;
 
         if (isset($validated['fulfillment_status'])) {
             if ($validated['fulfillment_status'] === 'dispatched') {
                 $updates['dispatched_at'] = now();
             } elseif ($validated['fulfillment_status'] === 'delivered') {
                 $updates['delivered_at'] = now();
-                $updates['payment_status'] = 'paid';
+                $updates['payment_status'] = 'collected';
             } elseif (in_array($validated['fulfillment_status'], ['cancelled', 'returned'])) {
-                $updates['payment_status'] = 'failed';
+                $updates['payment_status'] = 'returned';
             }
         }
 
         $order->update($updates);
+        $newStatus = $order->fulfillment_status;
+
+        // Auto-Stock Deduction
+        if ($oldStatus !== 'delivered' && $newStatus === 'delivered') {
+            $this->adjustStock($order, -1);
+        } elseif ($oldStatus === 'delivered' && in_array($newStatus, ['returned', 'cancelled'])) {
+            $this->adjustStock($order, 1);
+        }
 
         // Send notification for key status changes
         $notifyStatuses = ['confirmed', 'dispatched', 'out_for_delivery', 'delivered'];
@@ -167,6 +177,24 @@ class OrderController extends Controller
         }
 
         return back()->with('success', 'Order status updated.');
+    }
+
+    private function adjustStock(Order $order, int $multiplier): void
+    {
+        $items = $order->items ?? [];
+        foreach ($items as $item) {
+            $product = null;
+            if (!empty($item['product_id'])) {
+                $product = $order->merchant->products()->find($item['product_id']);
+            } else {
+                $product = $order->merchant->products()->where('name', $item['name'])->first();
+            }
+
+            if ($product) {
+                // If multiplier is -1, we subtract stock. If 1, we add.
+                $product->increment('stock', $item['qty'] * $multiplier);
+            }
+        }
     }
 
     public function dispatch(Request $request, Order $order): RedirectResponse
@@ -180,5 +208,14 @@ class OrderController extends Controller
         $this->notifications->sendOrderNotification($order->fresh(), 'dispatched');
 
         return back()->with('success', "Order dispatched. Tracking: {$result['tracking_number']}");
+    }
+
+    public function destroy(Request $request, Order $order): RedirectResponse
+    {
+        abort_unless($order->merchant_id === $request->user()->merchant?->id, 403);
+
+        $order->delete();
+
+        return redirect()->route('orders.index')->with('success', 'Order deleted successfully.');
     }
 }

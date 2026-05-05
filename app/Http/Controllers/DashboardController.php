@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         $merchant = $request->user()->merchant;
 
-        if (!$merchant) {
+        if (!$merchant || !$merchant->onboarding_completed) {
             return Inertia::render('Onboarding');
         }
 

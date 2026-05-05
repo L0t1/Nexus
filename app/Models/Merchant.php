@@ -25,6 +25,7 @@ class Merchant extends Model
         'subscription_tier',
         'subscription_expires_at',
         'is_active',
+        'onboarding_completed',
         'settings',
         'meta_credentials',
     ];
@@ -34,6 +35,7 @@ class Merchant extends Model
         'meta_credentials' => 'encrypted:array',
         'subscription_expires_at' => 'datetime',
         'is_active' => 'boolean',
+        'onboarding_completed' => 'boolean',
     ];
 
     // ─── Relationships ────────────────────────────
@@ -58,7 +60,38 @@ class Merchant extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
     // ─── Helpers ──────────────────────────────────
+
+    public function hasFeature(string $feature): bool
+    {
+        $tier = $this->subscription_tier ?? 'starter';
+
+        $features = [
+            'starter' => ['basic_analytics', '1_channel'],
+            'pro' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders'],
+            'ultimate' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders', 'ai_extraction', 'priority_inbox', 'broadcasts'],
+        ];
+
+        return in_array($feature, $features[$tier] ?? []);
+    }
+
+    public function getAllowedFeaturesAttribute(): array
+    {
+        $tier = $this->subscription_tier ?? 'starter';
+
+        $features = [
+            'starter' => ['basic_analytics', '1_channel'],
+            'pro' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders'],
+            'ultimate' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders', 'ai_extraction', 'priority_inbox', 'broadcasts'],
+        ];
+
+        return $features[$tier] ?? [];
+    }
 
     public function isSubscriptionActive(): bool
     {
@@ -69,10 +102,10 @@ class Merchant extends Model
     public function getOrderLimitAttribute(): ?int
     {
         return match ($this->subscription_tier) {
-            'starter' => 250,
-            'growth' => null, // unlimited
-            'enterprise' => null,
-            default => 250,
+            'starter' => 500,
+            'pro' => null,
+            'ultimate' => null,
+            default => 500,
         };
     }
 }

@@ -64,6 +64,8 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'business_name' => $validated['business_name'],
             'business_slug' => Str::slug($validated['business_name']) . '-' . Str::random(4),
+            'subscription_tier' => 'pro',
+            'subscription_expires_at' => now()->addDays(30),
         ]);
 
         Auth::login($user);

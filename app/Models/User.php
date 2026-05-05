@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'merchant_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable // implements MustVerifyEmail — re-enable for production
 {
@@ -35,9 +35,14 @@ class User extends Authenticatable // implements MustVerifyEmail — re-enable f
 
     // ─── Relationships ────────────────────────────
 
-    public function merchant(): HasOne
+    public function ownedMerchant(): HasOne
     {
-        return $this->hasOne(Merchant::class);
+        return $this->hasOne(Merchant::class, 'user_id');
+    }
+
+    public function employer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Merchant::class, 'merchant_id');
     }
 
     public function assignedConversations(): HasMany
@@ -52,8 +57,8 @@ class User extends Authenticatable // implements MustVerifyEmail — re-enable f
 
     // ─── Helpers ──────────────────────────────────
 
-    public function getCurrentMerchant(): ?Merchant
+    public function getMerchantAttribute(): ?Merchant
     {
-        return $this->merchant;
+        return $this->ownedMerchant ?? $this->employer;
     }
 }

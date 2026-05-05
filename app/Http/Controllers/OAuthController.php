@@ -19,6 +19,16 @@ class OAuthController extends Controller
 
     public function redirectToMeta(Request $request): RedirectResponse
     {
+        // Enforce channel limit for Starter plan
+        $merchant = $request->user()->merchant;
+        if (!$merchant->hasFeature('all_channels')) {
+            $creds = $merchant->meta_credentials ?? [];
+            if (!empty($creds['whatsapp_phone_id'])) {
+                return redirect()->route('settings.index')
+                    ->with('error', 'Your Starter plan only allows 1 channel integration. Disconnect WhatsApp first or upgrade to Pro.');
+            }
+        }
+
         $state = Str::random(40);
         $request->session()->put('meta_oauth_state', $state);
 
@@ -136,6 +146,15 @@ class OAuthController extends Controller
      */
     public function whatsappEmbeddedSignup(Request $request): \Illuminate\Http\JsonResponse
     {
+        // Enforce channel limit for Starter plan
+        $merchant = $request->user()->merchant;
+        if (!$merchant->hasFeature('all_channels')) {
+            $creds = $merchant->meta_credentials ?? [];
+            if (!empty($creds['facebook_page_id'])) {
+                return response()->json(['error' => 'Your Starter plan only allows 1 channel integration. Disconnect Facebook first or upgrade to Pro.'], 422);
+            }
+        }
+
         $validated = $request->validate([
             'code'            => 'nullable|string',
             'phone_number_id' => 'nullable|string',

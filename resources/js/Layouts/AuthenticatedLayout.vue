@@ -18,11 +18,14 @@
       </div>
 
       <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
-        <a v-for="item in navItems" :key="item.href" :href="item.href" @click.prevent="navigate(item.href)"
-          :class="['sidebar-item group', isActive(item.href) ? 'active' : '']">
+        <a v-for="item in navItems" :key="item.href" :href="item.href" @click.prevent="navigate(item)"
+          :class="['sidebar-item group', isActive(item.href) ? 'active' : '', item.locked ? 'opacity-50' : '']">
           <div :class="['w-5 h-5 flex-shrink-0', isActive(item.href) ? 'text-nexus-300' : 'text-nexus-600 group-hover:text-nexus-400']" v-html="item.icon"></div>
-          <span v-if="!collapsed || mobileOpen" class="flex-1 truncate">{{ item.label }}</span>
-          <span v-if="(!collapsed || mobileOpen) && item.badge" class="min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center" :class="item.badgeColor">{{ item.badge }}</span>
+          <span v-if="!collapsed || mobileOpen" class="flex-1 truncate flex items-center gap-2">
+            {{ item.label }}
+            <svg v-if="item.locked" class="w-3.5 h-3.5 text-nexus-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+          </span>
+          <span v-if="(!collapsed || mobileOpen) && item.badge && !item.locked" class="min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center" :class="item.badgeColor">{{ item.badge }}</span>
         </a>
       </nav>
 
@@ -30,6 +33,7 @@
         <div v-if="!collapsed || mobileOpen" class="rounded-xl p-3 bg-gradient-to-br from-nexus-600/10 to-accent-cyan/5 border border-nexus-500/10">
           <div class="text-[10px] font-semibold uppercase tracking-wider text-nexus-500 mb-0.5">Plan</div>
           <div class="text-sm font-bold text-nexus-200 capitalize">{{ merchant?.subscription_tier || 'Starter' }}</div>
+          <div v-if="trialDaysLeft > 0" class="text-[10px] text-accent-cyan mt-1 font-medium">🎁 {{ trialDaysLeft }}d trial left</div>
         </div>
       </div>
 
@@ -91,19 +95,19 @@
             <button @click="showUserMenu = !showUserMenu" class="flex items-center gap-2.5 pl-2 lg:pl-3 border-l border-white/[0.06] cursor-pointer hover:opacity-80 transition-opacity">
               <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-nexus-500 to-accent-violet flex items-center justify-center text-xs font-bold text-white shadow-md">{{ userInitials }}</div>
               <div class="hidden lg:block text-left">
-                <div class="text-xs font-medium text-nexus-200">{{ auth?.name }}</div>
-                <div class="text-[10px] text-nexus-600">{{ auth?.email }}</div>
+                <div class="text-xs font-medium text-nexus-200">{{ auth?.user?.name }}</div>
+                <div class="text-[10px] text-nexus-600">{{ auth?.user?.email }}</div>
               </div>
               <svg class="w-3 h-3 text-nexus-600 hidden lg:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </button>
             <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 scale-95 -translate-y-1" enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0 scale-95">
               <div v-if="showUserMenu" class="absolute right-0 top-full mt-2 w-52 glass-strong rounded-xl overflow-hidden shadow-2xl z-50">
                 <div class="px-4 py-3 border-b border-white/[0.04]">
-                  <div class="text-sm font-medium text-nexus-200">{{ auth?.name }}</div>
-                  <div class="text-xs text-nexus-600">{{ auth?.email }}</div>
+                  <div class="text-sm font-medium text-nexus-200">{{ auth?.user?.name }}</div>
+                  <div class="text-xs text-nexus-600">{{ auth?.user?.email }}</div>
                 </div>
                 <div class="py-1">
-                  <Link href="/settings" @click="showUserMenu = false" class="block px-4 py-2.5 text-sm text-nexus-400 hover:text-nexus-200 hover:bg-surface-hover transition-all">⚙️ Settings</Link>
+                  <Link v-if="auth?.user?.roles?.includes('admin')" href="/settings" @click="showUserMenu = false" class="block px-4 py-2.5 text-sm text-nexus-400 hover:text-nexus-200 hover:bg-surface-hover transition-all">⚙️ Settings</Link>
                   <button @click="logout" class="w-full text-left px-4 py-2.5 text-sm text-accent-rose hover:bg-accent-rose/5 transition-all cursor-pointer">🚪 Sign out</button>
                 </div>
               </div>
@@ -155,12 +159,19 @@ const searchQuery = ref('');
 const searchResults = ref([]);
 
 const auth = computed(() => page.props.auth);
-const merchant = computed(() => page.props.merchant);
+const merchant = computed(() => page.props.auth?.merchant);
 const stats = computed(() => page.props.stats || {});
 const unreadCount = computed(() => stats.value.unread_conversations || 0);
 const userInitials = computed(() => {
-  const name = auth.value?.name || '';
+  const name = auth.value?.user?.name || '';
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+});
+
+const trialDaysLeft = computed(() => {
+  const exp = merchant.value?.subscription_expires_at;
+  if (!exp) return 0;
+  const diff = Math.ceil((new Date(exp) - new Date()) / (1000 * 60 * 60 * 24));
+  return Math.max(0, diff);
 });
 
 // Toast logic
@@ -230,7 +241,23 @@ function doSearch() {
 function goToResult(r) { router.visit(r.href); searchResults.value = []; searchQuery.value = ''; }
 function goToNotif(n) { router.visit(n.href); showNotifs.value = false; }
 function closeAll() { showNotifs.value = false; showUserMenu.value = false; searchResults.value = []; }
-function navigate(href) { mobileOpen.value = false; router.visit(href); }
+function navigate(item) { 
+  if (item.locked) {
+    if (item.adminOnly) {
+      addToast('Access Denied', `${item.label} is restricted to administrators.`, 'error');
+    } else {
+      if (auth.value?.user?.roles?.includes('admin')) {
+        addToast('Upgrade Required', `${item.label} is locked. Upgrade your plan to unlock this feature.`, 'error');
+        router.visit('/subscription');
+      } else {
+        addToast('Upgrade Required', `${item.label} is locked on this plan. Please ask your administrator to upgrade.`, 'error');
+      }
+    }
+    return;
+  }
+  mobileOpen.value = false; 
+  router.visit(item.href); 
+}
 function logout() { router.post('/logout'); }
 
 function isActive(href) {
@@ -242,12 +269,18 @@ function isActive(href) {
 // Close mobile sidebar on route change
 watch(() => page.url, () => { mobileOpen.value = false; });
 
-const navItems = computed(() => [
-  { href: '/', label: 'Dashboard', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>' },
-  { href: '/inbox', label: 'Inbox', badge: stats.value.unread_conversations || null, badgeColor: 'bg-accent-cyan/15 text-accent-cyan', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>' },
-  { href: '/orders', label: 'Orders', badge: stats.value.pending_orders || null, badgeColor: 'bg-accent-amber/15 text-accent-amber', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>' },
-  { href: '/contacts', label: 'Contacts', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>' },
-  { href: '/analytics', label: 'Analytics', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>' },
-  { href: '/settings', label: 'Settings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>' },
-]);
+const navItems = computed(() => {
+  const features = merchant.value?.features || [];
+  const isAdmin = auth.value?.user?.roles?.includes('admin') || false;
+  return [
+    { href: '/', label: 'Dashboard', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>' },
+    { href: '/inbox', label: 'Inbox', badge: stats.value.unread_conversations || null, badgeColor: 'bg-accent-cyan/15 text-accent-cyan', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>' },
+    { href: '/orders', label: 'Orders', badge: stats.value.pending_orders || null, badgeColor: 'bg-accent-amber/15 text-accent-amber', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>' },
+    { href: '/products', label: 'Products', locked: !features.includes('products'), icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>' },
+    { href: '/contacts', label: 'Contacts', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>' },
+    { href: '/broadcasts', label: 'Broadcasts', locked: !features.includes('broadcasts'), icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014-5.395c-.318.55-.117 1.26.461 1.527l.38.657c.301.522.96.709 1.511.463a20.845 20.845 0 00-4.282-1.44m0 0a18.03 18.03 0 014.59-.59c1.586 0 3.124.205 4.59.59" /></svg>' },
+    { href: '/analytics', label: 'Analytics', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>' },
+    { href: '/settings', label: 'Settings', adminOnly: true, locked: !isAdmin, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>' },
+  ];
+});
 </script>

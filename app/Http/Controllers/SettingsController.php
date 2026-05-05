@@ -18,9 +18,46 @@ class SettingsController extends Controller
                 'meta_credentials' => $merchant->meta_credentials ?? [],
             ]),
             'user'                  => $request->user()->only('id', 'name', 'email'),
+            'agents'                => \App\Models\User::role('agent')->where('merchant_id', $merchant->id)->get(['id', 'name', 'email', 'created_at']),
             'metaAppId'             => config('services.meta.app_id'),
             'metaWhatsappConfigId'  => config('services.meta.whatsapp_config_id'),
         ]);
+    }
+
+    public function storeAgent(Request $request): RedirectResponse
+    {
+        $merchant = $request->user()->merchant;
+        abort_unless($merchant->hasFeature('priority_inbox'), 403, 'Multi-agent routing requires the Ultimate plan.');
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'merchant_id' => $merchant->id,
+        ]);
+
+        $user->assignRole('agent');
+
+        return back()->with('success', 'Agent added successfully.');
+    }
+
+    public function destroyAgent(Request $request, \App\Models\User $agent): RedirectResponse
+    {
+        $merchant = $request->user()->merchant;
+
+        if ($agent->merchant_id !== $merchant->id) {
+            abort(403);
+        }
+
+        $agent->delete();
+
+        return back()->with('success', 'Agent removed successfully.');
     }
 
     public function subscription(Request $request): Response

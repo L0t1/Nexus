@@ -8,6 +8,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BroadcastController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +45,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Onboarding completion
+    Route::post('/onboarding/complete', function (\Illuminate\Http\Request $request) {
+        $merchant = $request->user()->merchant;
+
+        $validated = $request->validate([
+            'business_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'country' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+        ]);
+
+        $merchant->update([
+            ...$validated,
+            'onboarding_completed' => true,
+        ]);
+
+        return redirect()->route('subscription.index')->with('success', 'Welcome to Nexus! You have a 30-day free Pro trial. Explore your plan options below.');
+    })->name('onboarding.complete');
+
     // Inbox
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{conversation}', [InboxController::class, 'show'])->name('inbox.show');
@@ -62,17 +83,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
     Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
 
+    // Products
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+
+    // Broadcasts
+    Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
+    Route::post('/broadcasts', [BroadcastController::class, 'store'])->name('broadcasts.store');
+
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
     // Admin-only routes (requires the 'admin' role)
     Route::middleware('role:admin')->group(function () {
         Route::delete('/inbox/{conversation}', [InboxController::class, 'destroy'])->name('inbox.destroy');
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
         Route::put('/settings/account', [SettingsController::class, 'updateAccount'])->name('settings.account');
         Route::put('/settings/channels', [SettingsController::class, 'updateChannels'])->name('settings.channels');
+        Route::post('/settings/agents', [SettingsController::class, 'storeAgent'])->name('settings.agents.store');
+        Route::delete('/settings/agents/{agent}', [SettingsController::class, 'destroyAgent'])->name('settings.agents.destroy');
         Route::get('/subscription', [SettingsController::class, 'subscription'])->name('subscription.index');
 
         // Meta OAuth — connect Facebook Pages & Instagram automatically

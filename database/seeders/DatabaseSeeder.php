@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -37,9 +38,23 @@ class DatabaseSeeder extends Seeder
             'email' => 'shop@prishtina-style.com',
             'country' => 'XK',
             'city' => 'Prishtina',
-            'subscription_tier' => 'growth',
+            'subscription_tier' => 'ultimate',
             'is_active' => true,
+            'onboarding_completed' => true,
         ]);
+
+        // Create demo products
+        $dbProducts = [
+            ['name' => 'Black Hoodie', 'sku' => 'HOODIE-BLK', 'price' => 39.00, 'stock' => 50, 'is_active' => true],
+            ['name' => 'Classic T-Shirt', 'sku' => 'TSHIRT-CLS', 'price' => 19.00, 'stock' => 100, 'is_active' => true],
+            ['name' => 'Denim Jacket', 'sku' => 'JKT-DNM', 'price' => 69.00, 'stock' => 30, 'is_active' => true],
+            ['name' => 'Sneakers Pro', 'sku' => 'SNK-PRO', 'price' => 89.00, 'stock' => 20, 'is_active' => true],
+            ['name' => 'Baseball Cap', 'sku' => 'CAP-BSB', 'price' => 15.00, 'stock' => 75, 'is_active' => true],
+        ];
+        
+        foreach ($dbProducts as $p) {
+            Product::create(array_merge($p, ['merchant_id' => $merchant->id]));
+        }
 
         // Create demo contacts
         $contacts = [];

@@ -23,7 +23,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2.5">
-            <button @click="showDeleteModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-red-500 hover:text-red-400 hover:bg-red-500/10 border-red-500/20">
+            <button v-if="$page.props.auth?.user?.roles?.includes('admin')" @click="showDeleteModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-red-500 hover:text-red-400 hover:bg-red-500/10 border-red-500/20">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               Delete
             </button>
@@ -31,8 +31,11 @@
             <button @click="openManualOrder" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
               <span>✍️</span> Manual Order
             </button>
-            <button @click="openSmartOrder" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 bg-gradient-to-r from-accent-emerald to-accent-cyan border-none text-white shadow-lg shadow-accent-emerald/20 hover:shadow-accent-emerald/40">
+            <button v-if="$page.props.auth.merchant.features.includes('ai_extraction')" @click="openSmartOrder" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 bg-gradient-to-r from-accent-emerald to-accent-cyan border-none text-white shadow-lg shadow-accent-emerald/20 hover:shadow-accent-emerald/40">
               <span>✨</span> Smart Order
+            </button>
+            <button v-else @click="$inertia.visit('/subscription')" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 bg-gradient-to-r from-accent-emerald to-accent-cyan border-none text-white shadow-lg shadow-accent-emerald/20 opacity-50 hover:shadow-none" title="Upgrade to unlock Smart Order">
+              <span>🔒</span> Smart Order
             </button>
           </div>
         </div>
@@ -139,17 +142,13 @@
         </div>
       </Transition>
       <!-- Delete Confirm Modal -->
-      <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showDeleteModal = false"></div>
-        <div class="relative bg-nexus-900 border border-white/10 p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 glass-strong animate-fade-in">
-          <h3 class="text-lg font-bold text-nexus-100 mb-2 text-center">Delete Chat?</h3>
-          <p class="text-sm text-nexus-400 text-center mb-6">Are you sure you want to permanently delete this conversation and all its messages? This action cannot be undone.</p>
-          <div class="flex gap-3">
-            <button @click="showDeleteModal = false" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold transition-all">Cancel</button>
-            <button @click="confirmDelete" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-all shadow-lg shadow-red-500/20">Delete Forever</button>
-          </div>
-        </div>
-      </div>
+      <ConfirmModal 
+        :show="showDeleteModal" 
+        title="Delete Chat?" 
+        message="Are you sure you want to permanently delete this conversation and all its messages? This action cannot be undone." 
+        @close="showDeleteModal = false" 
+        @confirm="confirmDelete" 
+      />
     </div>
   </AuthenticatedLayout>
 </template>
@@ -160,6 +159,7 @@ import { router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 
 const props = defineProps({
   conversation: { type: Object, required: true },
@@ -176,7 +176,7 @@ onMounted(() => {
   // Auto-refresh chat every 3 seconds
   pollingInterval = setInterval(() => {
     router.reload({ 
-      only: ['messages', 'orders'], 
+      only: ['messages', 'orders', 'stats'], 
       preserveScroll: true, 
       preserveState: true,
       onSuccess: () => {

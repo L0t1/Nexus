@@ -4,18 +4,25 @@
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-2xl font-bold text-nexus-100">Inbox</h2>
-          <p class="text-nexus-500 text-sm mt-1">{{ conversations?.data?.length || 0 }} conversations</p>
+          <p class="text-nexus-500 text-sm mt-1">{{ conversations?.total || conversations?.data?.length || 0 }} conversations</p>
         </div>
       </div>
 
       <!-- Filters -->
-      <div class="flex flex-wrap gap-3 items-center">
-        <div class="relative flex-1 max-w-md group">
-          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-nexus-600 group-focus-within:text-nexus-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input v-model="search" type="text" placeholder="Search conversations..." class="input-premium pl-10" />
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div class="flex-1 flex flex-wrap gap-3 items-center">
+          <div class="relative flex-1 max-w-md group">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-nexus-600 group-focus-within:text-nexus-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <input v-model="search" type="text" placeholder="Search conversations..." class="input-premium pl-10" />
+          </div>
+          <div class="flex gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <button v-for="s in statusFilters" :key="s.value" @click="setStatus(s.value)" :class="['px-3 py-1.5 rounded-lg text-xs font-medium transition-all', activeStatus === s.value ? 'bg-nexus-500/15 text-nexus-300 shadow-sm' : 'text-nexus-600 hover:text-nexus-400']">{{ s.label }}</button>
+          </div>
         </div>
-        <div class="flex gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-          <button v-for="s in statusFilters" :key="s.value" @click="setStatus(s.value)" :class="['px-3 py-1.5 rounded-lg text-xs font-medium transition-all', activeStatus === s.value ? 'bg-nexus-500/15 text-nexus-300 shadow-sm' : 'text-nexus-600 hover:text-nexus-400']">{{ s.label }}</button>
+        <!-- Legend -->
+        <div class="text-[10px] text-nexus-500 bg-white/[0.02] px-3 py-2 rounded-lg border border-white/[0.04] flex gap-4 hidden sm:flex">
+          <div><span class="font-bold text-nexus-200">Active:</span> Awaiting your reply or action</div>
+          <div><span class="font-bold text-nexus-200">Closed:</span> Finished / Customer resolved</div>
         </div>
       </div>
 
@@ -81,7 +88,7 @@ let pollingInterval = null;
 onMounted(() => {
   // Auto-refresh the inbox list every 3 seconds
   pollingInterval = setInterval(() => {
-    router.reload({ only: ['conversations'], preserveState: true, preserveScroll: true });
+    router.reload({ only: ['conversations', 'stats'], preserveState: true, preserveScroll: true });
   }, 3000);
 });
 

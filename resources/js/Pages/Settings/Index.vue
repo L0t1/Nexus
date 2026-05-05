@@ -33,56 +33,121 @@
         </form>
       </div>
 
+      <!-- Team Management -->
+      <div class="glass rounded-2xl overflow-hidden relative">
+        <div v-if="!hasMultiAgent" class="absolute inset-0 z-10 glass-strong backdrop-blur-md flex flex-col items-center justify-center p-6 text-center border border-white/10 shadow-2xl">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-cyan to-accent-violet flex items-center justify-center text-white mb-3"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg></div>
+          <h3 class="text-lg font-bold text-nexus-100 mb-1">Team Management Locked</h3>
+          <p class="text-xs text-nexus-400 max-w-sm mb-4">Upgrade to the Ultimate plan to add agents and manage your support team.</p>
+          <button @click="$inertia.visit('/subscription')" class="btn-primary py-2 px-4 text-xs">Upgrade to Unlock</button>
+        </div>
+
+        <div :class="['transition-all duration-500', !hasMultiAgent ? 'opacity-20 pointer-events-none blur-[2px] select-none' : '']">
+          <div class="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
+            <div><h3 class="text-sm font-semibold text-nexus-200">Team Management</h3><p class="text-xs text-nexus-500 mt-0.5">Invite agents to handle support and orders.</p></div>
+          </div>
+          <div class="p-6">
+            <form @submit.prevent="inviteAgent" class="flex gap-3 mb-6">
+              <input v-model="agentForm.name" placeholder="Name" class="input-premium flex-1" required />
+              <input v-model="agentForm.email" type="email" placeholder="Email" class="input-premium flex-1" required />
+              <input v-model="agentForm.password" type="password" placeholder="Password" class="input-premium flex-1" required minlength="8" />
+              <button type="submit" :disabled="agentForm.processing" class="btn-primary whitespace-nowrap">Invite Agent</button>
+            </form>
+
+            <div class="space-y-3">
+              <div v-for="agent in agents" :key="agent.id" class="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-nexus-300">{{ agent.name.charAt(0).toUpperCase() }}</div>
+                  <div>
+                    <div class="text-sm font-medium text-nexus-200">{{ agent.name }}</div>
+                    <div class="text-xs text-nexus-500">{{ agent.email }}</div>
+                  </div>
+                </div>
+                <button @click="removeAgent(agent)" class="text-xs text-accent-rose hover:bg-accent-rose/10 px-3 py-1.5 rounded-lg transition-colors">Remove</button>
+              </div>
+              <div v-if="!agents?.length" class="text-sm text-nexus-600 text-center py-4">No agents added yet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ConfirmModal 
+        :show="!!agentToDelete" 
+        title="Remove Agent" 
+        :message="`Are you sure you want to remove ${agentToDelete?.name}? They will lose all access.`" 
+        @close="agentToDelete = null" 
+        @confirm="executeRemoveAgent" 
+      />
+
       <!-- Channels -->
       <div class="glass gradient-border rounded-2xl overflow-hidden">
-        <div class="px-6 py-4 border-b border-white/[0.04]">
-          <h3 class="text-sm font-semibold text-nexus-200">Channel Integration</h3>
-          <p class="text-xs text-nexus-500 mt-1">Connect your messaging channels so customer messages appear in your inbox.</p>
+        <div class="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-semibold text-nexus-200">Channel Integration</h3>
+            <p class="text-xs text-nexus-500 mt-1">Connect your messaging channels so customer messages appear in your inbox.</p>
+          </div>
+          <div v-if="!hasAllChannels" class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md" :class="channelsUsed > 0 ? 'bg-accent-amber/10 text-accent-amber' : 'bg-white/5 text-nexus-500'">
+            {{ channelsUsed }}/1 Channel
+          </div>
         </div>
         <div class="p-6 space-y-5">
 
           <!-- Facebook + Instagram (OAuth) -->
-          <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-            <div class="flex items-center gap-3">
-              <div class="flex -space-x-1">
-                <PlatformIcon platform="facebook" class="w-5 h-5" />
-                <PlatformIcon platform="instagram" class="w-5 h-5" />
-              </div>
-              <div>
-                <div class="text-sm font-semibold text-nexus-200">Facebook & Instagram</div>
-                <div v-if="facebookConnected" class="text-xs text-emerald-400 mt-0.5">✓ Connected — Page ID {{ creds.facebook_page_id }}<span v-if="creds.instagram_page_id"> · Instagram linked</span></div>
-                <div v-else class="text-xs text-nexus-500 mt-0.5">Not connected</div>
-              </div>
+          <div class="relative">
+            <div v-if="metaLocked" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
+              <div class="text-xs font-bold text-nexus-300 mb-1">🔒 Channel Slot Used</div>
+              <p class="text-[10px] text-nexus-500 max-w-[200px] mb-2">Disconnect WhatsApp first, or upgrade to Pro for all channels.</p>
+              <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-cyan hover:underline">Upgrade →</button>
             </div>
-            <div class="flex items-center gap-2">
-              <button v-if="facebookConnected" @click="disconnectForm.delete('/auth/meta')" :disabled="disconnectForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">Disconnect</button>
-              <a href="/auth/meta" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-                {{ facebookConnected ? 'Reconnect' : 'Connect with Facebook' }}
-              </a>
-            </div>
-          </div>
-
-          <!-- WhatsApp (Embedded Signup) -->
-          <div class="rounded-xl bg-white/[0.02] border border-white/[0.05] overflow-hidden">
-            <div class="flex items-center justify-between p-4">
+            <div :class="['flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all', metaLocked ? 'opacity-30 pointer-events-none blur-[1px]' : '']">
               <div class="flex items-center gap-3">
-                <PlatformIcon platform="whatsapp" class="w-5 h-5" />
+                <div class="flex -space-x-1">
+                  <PlatformIcon platform="facebook" class="w-5 h-5" />
+                  <PlatformIcon platform="instagram" class="w-5 h-5" />
+                </div>
                 <div>
-                  <div class="text-sm font-semibold text-nexus-200">WhatsApp</div>
-                  <div v-if="whatsappConnected" class="text-xs text-emerald-400 mt-0.5">✓ Connected — Phone ID {{ creds.whatsapp_phone_id }}</div>
+                  <div class="text-sm font-semibold text-nexus-200">Facebook & Instagram</div>
+                  <div v-if="facebookConnected" class="text-xs text-emerald-400 mt-0.5">✓ Connected — Page ID {{ creds.facebook_page_id }}<span v-if="creds.instagram_page_id"> · Instagram linked</span></div>
                   <div v-else class="text-xs text-nexus-500 mt-0.5">Not connected</div>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <button v-if="whatsappConnected" @click="disconnectWaForm.delete('/auth/whatsapp')" :disabled="disconnectWaForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">Disconnect</button>
-                <button @click="launchWhatsAppSignup" :disabled="waConnecting" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  {{ whatsappConnected ? 'Reconnect' : 'Connect WhatsApp' }}
-                </button>
+                <button v-if="facebookConnected" @click="disconnectForm.delete('/auth/meta')" :disabled="disconnectForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">Disconnect</button>
+                <a href="/auth/meta" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+                  {{ facebookConnected ? 'Reconnect' : 'Connect with Facebook' }}
+                </a>
               </div>
             </div>
-            <div v-if="waError" class="px-4 pb-3 text-xs text-red-400">{{ waError }}</div>
+          </div>
+
+          <!-- WhatsApp (Embedded Signup) -->
+          <div class="relative">
+            <div v-if="whatsappLocked" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
+              <div class="text-xs font-bold text-nexus-300 mb-1">🔒 Channel Slot Used</div>
+              <p class="text-[10px] text-nexus-500 max-w-[200px] mb-2">Disconnect Facebook first, or upgrade to Pro for all channels.</p>
+              <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-cyan hover:underline">Upgrade →</button>
+            </div>
+            <div :class="['rounded-xl bg-white/[0.02] border border-white/[0.05] overflow-hidden transition-all', whatsappLocked ? 'opacity-30 pointer-events-none blur-[1px]' : '']">
+              <div class="flex items-center justify-between p-4">
+                <div class="flex items-center gap-3">
+                  <PlatformIcon platform="whatsapp" class="w-5 h-5" />
+                  <div>
+                    <div class="text-sm font-semibold text-nexus-200">WhatsApp</div>
+                    <div v-if="whatsappConnected" class="text-xs text-emerald-400 mt-0.5">✓ Connected — Phone ID {{ creds.whatsapp_phone_id }}</div>
+                    <div v-else class="text-xs text-nexus-500 mt-0.5">Not connected</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="whatsappConnected" @click="disconnectWaForm.delete('/auth/whatsapp')" :disabled="disconnectWaForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">Disconnect</button>
+                  <button @click="launchWhatsAppSignup" :disabled="waConnecting" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    {{ whatsappConnected ? 'Reconnect' : 'Connect WhatsApp' }}
+                  </button>
+                </div>
+              </div>
+              <div v-if="waError" class="px-4 pb-3 text-xs text-red-400">{{ waError }}</div>
+            </div>
           </div>
 
         </div>
@@ -107,10 +172,13 @@ import { computed, ref, onMounted } from 'vue';
 import { usePage, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const merchant = computed(() => page.props.merchant);
+const merchant = computed(() => page.props.auth?.merchant);
+const agents = computed(() => page.props.agents || []);
+const hasMultiAgent = computed(() => merchant.value?.features?.includes('priority_inbox'));
 
 const creds = computed(() => merchant.value?.meta_credentials || {});
 const facebookConnected = computed(() => !!creds.value.facebook_page_id);
@@ -118,8 +186,17 @@ const whatsappConnected = computed(() => !!creds.value.whatsapp_phone_id);
 const waConnecting = ref(false);
 const waError = ref('');
 
+// Channel gating: Starter = 1 channel, Pro/Ultimate = all
+const hasAllChannels = computed(() => merchant.value?.features?.includes('all_channels'));
+const channelsUsed = computed(() => (facebookConnected.value ? 1 : 0) + (whatsappConnected.value ? 1 : 0));
+const metaLocked = computed(() => !hasAllChannels.value && !facebookConnected.value && whatsappConnected.value);
+const whatsappLocked = computed(() => !hasAllChannels.value && !whatsappConnected.value && facebookConnected.value);
+
+const agentToDelete = ref(null);
+
 const profileForm = useForm({ business_name: merchant.value?.business_name || '', phone: merchant.value?.phone || '', country: merchant.value?.country || '', city: merchant.value?.city || '' });
-const accountForm = useForm({ name: auth.value?.name || '', email: auth.value?.email || '', password: '', password_confirmation: '' });
+const accountForm = useForm({ name: auth.value?.user?.name || '', email: auth.value?.user?.email || '', password: '', password_confirmation: '' });
+const agentForm = useForm({ name: '', email: '', password: '' });
 const channelsForm = useForm({
   whatsapp_phone_id: creds.value.whatsapp_phone_id || '',
   whatsapp_token:    creds.value.whatsapp_token || '',
@@ -129,6 +206,26 @@ const disconnectWaForm = useForm({});
 
 function saveProfile() { profileForm.put('/settings/profile', { preserveScroll: true }); }
 function saveAccount() { accountForm.put('/settings/account', { preserveScroll: true }); }
+
+function inviteAgent() {
+  agentForm.post('/settings/agents', {
+    preserveScroll: true,
+    onSuccess: () => agentForm.reset(),
+  });
+}
+
+function removeAgent(agent) {
+  agentToDelete.value = agent;
+}
+
+function executeRemoveAgent() {
+  if (agentToDelete.value) {
+    router.delete(`/settings/agents/${agentToDelete.value.id}`, { 
+      preserveScroll: true,
+      onSuccess: () => agentToDelete.value = null
+    });
+  }
+}
 
 // ─── WhatsApp Embedded Signup ─────────────────────────────────────────────────
 

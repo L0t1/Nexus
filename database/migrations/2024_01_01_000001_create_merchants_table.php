@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('country')->default('XK'); // Kosovo
             $table->string('city')->nullable();
             $table->string('address')->nullable();
-            $table->enum('subscription_tier', ['starter', 'growth', 'enterprise'])->default('starter');
+            $table->enum('subscription_tier', ['starter', 'pro', 'ultimate'])->default('starter');
             $table->timestamp('subscription_expires_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->json('settings')->nullable(); // courier API keys, notification prefs, etc.

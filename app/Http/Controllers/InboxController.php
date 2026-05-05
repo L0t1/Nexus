@@ -15,16 +15,26 @@ class InboxController extends Controller
     {
         $merchant = $request->user()->merchant;
 
-        $conversations = $merchant->conversations()
+        $hasPriorityInbox = $merchant->hasFeature('priority_inbox');
+
+        $query = $merchant->conversations()
             ->with(['contact:id,name,phone,platform,city', 'assignee:id,name'])
             ->when($request->input('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->input('platform'), fn ($q, $platform) => $q->forPlatform($platform))
             ->when($request->input('search'), function ($q, $search) {
                 $q->whereHas('contact', fn ($c) => $c->where('name', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%"));
-            })
-            ->latest('last_message_at')
-            ->paginate(30);
+            });
+
+        if ($hasPriorityInbox) {
+            $query->withCount(['orders' => fn($q) => $q->where('fulfillment_status', 'delivered')])
+                  ->orderByDesc('orders_count')
+                  ->orderByDesc('last_message_at');
+        } else {
+            $query->latest('last_message_at');
+        }
+
+        $conversations = $query->paginate(30);
 
         return Inertia::render('Inbox/Index', [
             'conversations' => $conversations,

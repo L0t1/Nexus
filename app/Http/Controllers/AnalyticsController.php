@@ -91,6 +91,28 @@ class AnalyticsController extends Controller
             ->map(fn ($v) => (int) $v)
             ->toArray();
 
+        // ── Top Products ──────────────────────────────────────────────────────────
+        $ordersWithItems = $merchant->orders()
+            ->where('created_at', '>=', $startDate)
+            ->whereNotNull('items')
+            ->select('items')
+            ->get();
+            
+        $productCounts = [];
+        foreach ($ordersWithItems as $order) {
+            foreach ($order->items as $item) {
+                $name = $item['name'] ?? 'Unknown';
+                $qty = (int)($item['qty'] ?? 1);
+                if (!isset($productCounts[$name])) {
+                    $productCounts[$name] = ['name' => $name, 'sold' => 0];
+                }
+                $productCounts[$name]['sold'] += $qty;
+            }
+        }
+        
+        usort($productCounts, fn($a, $b) => $b['sold'] <=> $a['sold']);
+        $topProducts = array_slice($productCounts, 0, 5);
+
         return Inertia::render('Analytics/Index', [
             'chartData' => $chartData,
             'summary' => [
@@ -105,8 +127,8 @@ class AnalyticsController extends Controller
             'statusBreakdown'  => $statusBreakdown,
             'topCities'        => $topCities,
             'channelBreakdown' => $channelBreakdown,
+            'topProducts'      => $topProducts,
             'days'             => $days,
         ]);
     }
 }
-

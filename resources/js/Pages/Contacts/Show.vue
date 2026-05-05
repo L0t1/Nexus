@@ -57,16 +57,28 @@
           </div>
         </div>
       </div>
+
+      <ConfirmModal 
+        :show="showDeleteModal" 
+        title="Delete Contact?" 
+        message="Are you sure you want to permanently delete this contact? This action cannot be undone." 
+        @close="showDeleteModal = false" 
+        @confirm="confirmDelete" 
+      />
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
+import ConfirmModal from '@/Components/ConfirmModal.vue';
 
 const props = defineProps({ contact: { type: Object, required: true } });
+
+const showDeleteModal = ref(false);
 
 const form = useForm({
   name: props.contact.name || '',
@@ -79,4 +91,9 @@ const form = useForm({
 });
 
 function save() { form.put(`/contacts/${props.contact.id}`); }
+
+function confirmDelete() {
+  showDeleteModal.value = false;
+  router.delete(`/contacts/${props.contact.id}`);
+}
 </script>

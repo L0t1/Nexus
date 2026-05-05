@@ -1,137 +1,77 @@
-# NEXUS CRM
+# NEXUS CRM - Developer Documentation
 
-> Chat-to-Cart e-commerce platform for the Balkan market. Turns Instagram, WhatsApp, and Facebook DMs into trackable orders with AI-powered address extraction.
+> Chat-to-Cart e-commerce platform designed for the Balkan market. Turns Instagram, WhatsApp, and Facebook DMs into trackable orders with AI-powered address extraction.
 
-## Quick Start
+## System Architecture
+
+Nexus CRM is built on a modern monolithic architecture using the VILT stack, emphasizing performance, real-time reactivity, and multi-tenant security.
+
+### Core Stack
+- **Backend**: Laravel 13, PHP 8.2
+- **Frontend**: Vue 3 (Composition API), Inertia.js, Tailwind CSS 4
+- **Database**: SQLite (Local Dev) / MySQL 8 (Production)
+- **Auth & Authorization**: Laravel Sanctum + Spatie Permissions (`admin` vs `agent` roles)
+
+---
+
+## Technical Features & Workflows
+
+### 1. Multi-Tenancy & Subscriptions
+- **Tenant Context:** Users belong to a `Merchant`. Most records (Orders, Products, Contacts, Conversations) are scoped strictly to the `merchant_id`.
+- **Subscription Gates:** Feature access is controlled via `Merchant::hasFeature()`. The system strictly enforces the following tiers:
+  - **Starter**: Up to 500 orders/mo, 1 Channel Integration, Basic Analytics.
+  - **Pro**: Unlimited orders, All Channel Integrations, Product & Stock Management, Advanced Analytics.
+  - **Ultimate**: All Pro features, plus AI Chat Extraction, Priority Inbox Sorting, and Marketing Broadcasts.
+- **Enforcement:** Features are verified gracefully on the backend controllers, and the frontend dynamically locks unavailable UI components, offering seamless up-sells directly to the `/subscription` route.
+
+### 2. Intelligent Order & Inventory Management
+- **Lifecycle:** Orders move through statuses (`draft` -> `confirmed` -> `dispatched` -> `delivered` / `returned` / `cancelled`).
+- **Dynamic Stock linking:** Orders are directly linked to the `Product` models.
+  - When an order transitions to **Delivered**, stock is automatically decremented.
+  - When an order transitions to **Returned** or **Cancelled**, stock is safely incremented back.
+- **Constraints:** Payment statuses strictly enforce `pending`, `collected`, `returned`, and `refunded` via database CHECK constraints (aligned with the Cash on Delivery model common in the Balkans).
+
+### 3. AI Extraction & Smart-Draft Engine
+- **GPT-4o-mini Integration:** The `AiExtractionService` securely processes incoming chat texts.
+- **Data Parsing:** It identifies Name, Phone Number, City, Street Address, and Product Intent using strict JSON output formatting.
+- **Frontend Hydration:** Extracted data is injected into Inertia's payload, allowing the Vue frontend to auto-fill the "Smart Order" drawer seamlessly.
+
+### 4. Real-time Frontend Reactivity
+- **Inertia Polling:** The `Inbox` and `Sidebar` use lightweight Inertia partial reloads (`router.reload({ only: ['messages', 'orders', 'stats'] })`) to fetch live updates without refreshing the DOM.
+- **Dynamic Stats:** Red/yellow indicator badges (unread conversations, pending orders) in the navigation sidebar are purely driven by backend metrics shared globally via `HandleInertiaRequests`.
+
+---
+
+## Local Development Setup
 
 ```bash
 # 1. Install dependencies
 composer install
 npm install
 
-# 2. Set up environment
+# 2. Environment Configuration
 cp .env.example .env
 php artisan key:generate
 
-# 3. Create database & seed demo data
+# 3. Database & Seeding (Includes roles & demo user)
 php artisan migrate --seed
 
-# 4. Start development servers (both required)
-npx vite          # Terminal 1 — Frontend HMR
-php artisan serve  # Terminal 2 — Backend
+# 4. Start Development Servers (Requires 2 separate terminals)
+npx vite           # Terminal 1 - Frontend HMR & Tailwind Compilation
+php artisan serve  # Terminal 2 - Backend Server
 ```
 
-**Open:** http://localhost:8000  
-**Login:** `admin@nexus.test` / `password`
+**Demo Account:**
+- **Email:** `admin@nexus.test`
+- **Password:** `password`
 
-## Tech Stack
+## Integrations & Webhooks
+- **Meta Integrations:** The platform ingests incoming requests from Meta (Instagram & Facebook Messenger) via `WebhookController`. Verify tokens are validated via standard SHA256 HMAC signatures.
+- **WhatsApp Cloud API:** Standardized connection for DMs and outbound templated notifications.
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Laravel 13, PHP 8.2 |
-| Frontend | Vue 3 (Composition API), Inertia.js |
-| Styling | Tailwind CSS 4 |
-| State | Pinia |
-| Database | SQLite (dev), MySQL 8 (prod) |
-| Auth | Sanctum + Spatie Permissions |
-| Queue | Laravel Queue (sync dev, Redis prod) |
-| Infra | Docker Compose (PHP-FPM, Nginx, MySQL, Redis) |
+## Database Management
+- Due to strict SQLite CHECK constraints on Enums (like `payment_status`), always use proper Laravel Migration conventions if modifying core enum columns, or recreate the tables entirely during local development (`migrate:fresh`).
 
-## Features
-
-### Core
-- **Unified Inbox** — All IG/WA/FB messages in one view
-- **Chat View** — Real-time conversation with message bubbles, reply, and Smart-Draft order panel
-- **Orders** — Full pipeline: Draft → Confirmed → Dispatched → Delivered/Returned
-- **Contacts** — Searchable customer database across all channels
-- **Analytics** — Revenue, delivery rate, AOV, top cities, channel breakdown
-- **Settings** — Business profile, account, channel token management
-
-### AI Engine
-- **GPT-4o-mini extraction** — Parses Albanian/English messages for name, phone, city, address, product intent
-- **Regex fallback** — Works without OpenAI key, handles Kosovo phone formats and 30 city names
-- **Smart-Draft** — Pre-fills order form from AI extraction data
-
-### Integrations
-- **Meta Webhooks** — Instagram DMs, Facebook Messenger (signature-validated)
-- **WhatsApp Cloud API** — Inbound messages + outbound notifications
-- **Courier Interface** — Pluggable adapter for any shipping provider
-- **Notifications** — WhatsApp + SMS order status updates
-
-## Project Structure
-
-```
-app/
-├── Console/Commands/
-│   └── SimulateWebhook.php       # Test webhooks locally
-├── Http/Controllers/
-│   ├── Auth/AuthController.php   # Login, Register, Logout
-│   ├── Api/WebhookController.php # Meta/WhatsApp webhooks
-│   ├── DashboardController.php
-│   ├── InboxController.php       # + reply endpoint
-│   ├── OrderController.php       # + dispatch to courier
-│   ├── ContactController.php
-│   ├── AnalyticsController.php
-│   └── SettingsController.php
-├── Jobs/
-│   └── SendOutboundMessage.php   # Queued platform API calls
-├── Models/
-│   ├── User.php, Merchant.php, Contact.php
-│   ├── Conversation.php, Message.php, Order.php
-├── Services/
-│   ├── MessageProcessor.php      # Unified message ingestion
-│   ├── AiExtractionService.php   # GPT + regex extraction
-│   ├── NotificationService.php   # WA + SMS notifications
-│   └── Courier/
-│       ├── CourierServiceInterface.php
-│       └── DefaultCourierService.php
-resources/js/
-├── Layouts/AuthenticatedLayout.vue
-├── Components/
-│   ├── PlatformIcon.vue, StatusBadge.vue, StatCard.vue
-├── Pages/
-│   ├── Auth/Login.vue, Auth/Register.vue
-│   ├── Dashboard.vue
-│   ├── Inbox/Index.vue, Inbox/Show.vue
-│   ├── Orders/Index.vue, Orders/Show.vue
-│   ├── Contacts/Index.vue, Contacts/Show.vue
-│   ├── Analytics/Index.vue
-│   ├── Settings/Index.vue
-│   └── Onboarding.vue
-```
-
-## Environment Variables
-
-```env
-# Required
-APP_KEY=                    # php artisan key:generate
-
-# Optional integrations
-OPENAI_API_KEY=             # AI extraction (regex works without it)
-META_APP_ID=                # From developers.facebook.com
-META_APP_SECRET=            # From developers.facebook.com
-META_VERIFY_TOKEN=          # Your custom verify string
-META_PAGE_TOKEN=            # Facebook Page access token
-WHATSAPP_TOKEN=             # WhatsApp Cloud API token
-WHATSAPP_PHONE_ID=          # WhatsApp phone number ID
-```
-
-## Development Commands
-
-```bash
-# Simulate an incoming message (no Meta API needed)
-php artisan nexus:simulate --platform=whatsapp --message="Dua ni bluze, Prishtina"
-
-# Re-seed the database
-php artisan migrate:fresh --seed
-
-# Production build
-npx vite build
-
-# Docker (production)
-docker-compose up -d
-```
-
-## License
-
-Proprietary — All rights reserved.
+## Roles
+- **Admin**: System configuration, subscription management, full product catalog control, and analytics access.
+- **Agent**: Day-to-day operations—messaging in the Inbox, drafting orders, and updating shipment statuses.

@@ -19,6 +19,7 @@ class Contact extends Model
         'name',
         'phone',
         'email',
+        'gender',
         'city',
         'neighborhood',
         'street_address',

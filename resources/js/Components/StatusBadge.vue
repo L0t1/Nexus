@@ -23,6 +23,7 @@ const config = {
   active:           { label: 'Active',             badge: 'badge-emerald', dot: 'bg-accent-emerald' },
   closed:           { label: 'Closed',             badge: 'badge-gray',    dot: 'bg-slate-400' },
   pending:          { label: 'Pending',            badge: 'badge-amber',   dot: 'bg-accent-amber' },
+  collected:        { label: 'Collected',          badge: 'badge-emerald', dot: 'bg-accent-emerald' },
   paid:             { label: 'Paid',               badge: 'badge-emerald', dot: 'bg-accent-emerald' },
   failed:           { label: 'Failed',             badge: 'badge-rose',    dot: 'bg-accent-rose' },
   sent:             { label: 'Sent',               badge: 'badge-indigo',  dot: 'bg-nexus-400' },
