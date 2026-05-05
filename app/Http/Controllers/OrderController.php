@@ -25,10 +25,12 @@ class OrderController extends Controller
             ->when($request->input('status'), fn ($q, $s) => $q->where('fulfillment_status', $s))
             ->when($request->input('payment'), fn ($q, $p) => $q->where('payment_status', $p))
             ->when($request->input('search'), function ($q, $search) {
-                $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_phone', 'like', "%{$search}%")
-                  ->orWhere('tracking_number', 'like', "%{$search}%");
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('order_number', 'like', "%{$search}%")
+                        ->orWhere('customer_name', 'like', "%{$search}%")
+                        ->orWhere('customer_phone', 'like', "%{$search}%")
+                        ->orWhere('tracking_number', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->paginate(25);

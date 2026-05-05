@@ -57,15 +57,15 @@ class BroadcastController extends Controller
             $query->where('total_orders', '>=', $validated['min_orders']);
         }
 
-        $contacts = $query->get();
+        $contactCount = $query->count();
 
-        if ($contacts->isEmpty()) {
+        if ($contactCount === 0) {
             return back()->withErrors(['message' => 'No contacts match the selected filters.']);
         }
 
-        // In a real app, we would dispatch a queued job per contact to send the message.
+        // In a real app, we would dispatch a queued job to chunk over the query.
         // For now, we simulate success and return back.
         
-        return back()->with('success', "Broadcast successfully queued for {$contacts->count()} contacts!");
+        return back()->with('success', "Broadcast successfully queued for {$contactCount} contacts!");
     }
 }

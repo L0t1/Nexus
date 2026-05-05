@@ -36,14 +36,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return \Inertia\Inertia::render('Welcome');
+})->name('home');
 
 // Authenticated routes (all require verified email)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Onboarding completion
     Route::post('/onboarding/complete', function (\Illuminate\Http\Request $request) {

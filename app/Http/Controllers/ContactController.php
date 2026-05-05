@@ -16,10 +16,12 @@ class ContactController extends Controller
 
         $contacts = $merchant->contacts()
             ->when($request->input('search'), function ($q, $search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('city', 'like', "%{$search}%");
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%");
+                });
             })
             ->when($request->input('platform'), fn ($q, $p) => $q->where('platform', $p))
             ->withCount(['orders', 'conversations'])

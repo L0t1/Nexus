@@ -54,7 +54,14 @@
 
           <!-- Shipping -->
           <div class="glass rounded-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Shipping Details</h3></div>
+            <div class="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-nexus-200">Shipping Details</h3>
+              <button @click="copyShippingInfo" class="btn-secondary text-[10px] py-1.5 px-3 flex items-center gap-1.5">
+                <svg v-if="copied" class="w-3.5 h-3.5 text-accent-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <svg v-else class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                {{ copied ? 'Copied!' : 'Copy for Courier' }}
+              </button>
+            </div>
             <div class="p-6 grid grid-cols-2 gap-5">
               <div><div class="text-[10px] font-semibold text-nexus-600 uppercase tracking-wider mb-1">City</div><div class="text-sm text-nexus-200">{{ order.shipping_city || '—' }}</div></div>
               <div><div class="text-[10px] font-semibold text-nexus-600 uppercase tracking-wider mb-1">Neighborhood</div><div class="text-sm text-nexus-200">{{ order.shipping_neighborhood || '—' }}</div></div>
@@ -155,6 +162,25 @@ const statusOptions = ['confirmed', 'processing', 'dispatched', 'in_transit', 'd
 const showStatusMenu = ref(false);
 const showPaymentMenu = ref(false);
 const showDeleteModal = ref(false);
+const copied = ref(false);
+
+function copyShippingInfo() {
+  const o = props.order;
+  const address = [o.shipping_street, o.shipping_neighborhood, o.shipping_city].filter(Boolean).join(', ');
+  const items = (o.items || []).map(i => `${i.qty}x ${i.name}`).join(', ');
+  
+  const text = `*Order: ${o.order_number}*
+*Name:* ${o.customer_name}
+*Phone:* ${o.customer_phone}
+*Address:* ${address}
+*Items:* ${items}
+*Total:* €${Number(o.total || 0).toFixed(2)}
+*Notes:* ${o.shipping_notes || 'None'}`;
+
+  navigator.clipboard.writeText(text);
+  copied.value = true;
+  setTimeout(() => copied.value = false, 2000);
+}
 
 function confirmDelete() {
   showDeleteModal.value = false;

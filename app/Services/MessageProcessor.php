@@ -173,7 +173,7 @@ class MessageProcessor
 
         // Run AI extraction on text messages
         if ($text && strlen($text) > 10) {
-            $this->aiService->extractOrderData($message);
+            \App\Jobs\ProcessAiExtraction::dispatch($message);
         }
     }
 
@@ -198,19 +198,25 @@ class MessageProcessor
             default => null,
         };
 
-        if ($credentialKey) {
-            $merchant = Merchant::where('is_active', true)
-                ->get()
-                ->first(function ($m) use ($credentialKey, $recipientId) {
-                    $creds = $m->meta_credentials ?? [];
-                    return ($creds[$credentialKey] ?? null) === $recipientId;
-                });
-
-            if ($merchant) return $merchant;
+        if (!$credentialKey) {
+            Log::warning('Unknown platform in webhook', ['platform' => $platform]);
+            return null;
         }
 
-        // Fallback: single-tenant dev mode — return first active merchant
-        return Merchant::where('is_active', true)->first();
+        // Use cursor() to avoid loading all merchants into memory at once.
+        // meta_credentials is encrypted JSON so we can't query it in SQL.
+        $merchant = Merchant::where('is_active', true)
+            ->cursor()
+            ->first(function ($m) use ($credentialKey, $recipientId) {
+                $creds = $m->meta_credentials ?? [];
+                return ($creds[$credentialKey] ?? null) === $recipientId;
+            });
+
+        if (!$merchant) {
+            Log::warning("No merchant found for {$platform} recipient: {$recipientId}. Message dropped.");
+        }
+
+        return $merchant;
     }
 
     private function fetchProfileName(string $senderId, string $platform, Merchant $merchant): ?string

@@ -60,7 +60,8 @@ class Order extends Model
 
         static::creating(function (Order $order) {
             if (empty($order->order_number)) {
-                $order->order_number = 'NX-' . strtoupper(Str::random(8));
+                // Example: NX-20260505-ABC12D
+                $order->order_number = 'NX-' . date('Ymd') . '-' . strtoupper(Str::random(6));
             }
         });
     }

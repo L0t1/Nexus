@@ -57,7 +57,11 @@ class HandleInertiaRequests extends Middleware
                     'subscription_tier' => $merchant->subscription_tier,
                     'logo_path' => $merchant->logo_path,
                     'features' => $merchant->allowed_features,
-                    'meta_credentials' => $merchant->meta_credentials,
+                    'meta_credentials' => [
+                        'facebook_page_id'  => ($merchant->meta_credentials ?? [])['facebook_page_id'] ?? null,
+                        'instagram_page_id' => ($merchant->meta_credentials ?? [])['instagram_page_id'] ?? null,
+                        'whatsapp_phone_id' => ($merchant->meta_credentials ?? [])['whatsapp_phone_id'] ?? null,
+                    ],
                     'onboarding_completed' => $merchant->onboarding_completed,
                     'subscription_expires_at' => $merchant->subscription_expires_at?->toISOString(),
                 ] : null,

@@ -91,27 +91,30 @@ class AnalyticsController extends Controller
             ->map(fn ($v) => (int) $v)
             ->toArray();
 
-        // ── Top Products ──────────────────────────────────────────────────────────
-        $ordersWithItems = $merchant->orders()
-            ->where('created_at', '>=', $startDate)
-            ->whereNotNull('items')
-            ->select('items')
-            ->get();
-            
-        $productCounts = [];
-        foreach ($ordersWithItems as $order) {
-            foreach ($order->items as $item) {
-                $name = $item['name'] ?? 'Unknown';
-                $qty = (int)($item['qty'] ?? 1);
-                if (!isset($productCounts[$name])) {
-                    $productCounts[$name] = ['name' => $name, 'sold' => 0];
+        // ── Top Products (Cached for 1 hour to prevent loading all JSON items) ──
+        $cacheKey = "merchant:{$merchant->id}:top_products:{$days}";
+        $topProducts = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($merchant, $startDate) {
+            $ordersWithItems = $merchant->orders()
+                ->where('created_at', '>=', $startDate)
+                ->whereNotNull('items')
+                ->select('items')
+                ->get();
+                
+            $productCounts = [];
+            foreach ($ordersWithItems as $order) {
+                foreach ($order->items as $item) {
+                    $name = $item['name'] ?? 'Unknown';
+                    $qty = (int)($item['qty'] ?? 1);
+                    if (!isset($productCounts[$name])) {
+                        $productCounts[$name] = ['name' => $name, 'sold' => 0];
+                    }
+                    $productCounts[$name]['sold'] += $qty;
                 }
-                $productCounts[$name]['sold'] += $qty;
             }
-        }
-        
-        usort($productCounts, fn($a, $b) => $b['sold'] <=> $a['sold']);
-        $topProducts = array_slice($productCounts, 0, 5);
+            
+            usort($productCounts, fn($a, $b) => $b['sold'] <=> $a['sold']);
+            return array_slice($productCounts, 0, 5);
+        });
 
         return Inertia::render('Analytics/Index', [
             'chartData' => $chartData,

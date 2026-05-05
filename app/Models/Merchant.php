@@ -84,6 +84,11 @@ class Merchant extends Model
     {
         $tier = $this->subscription_tier ?? 'starter';
 
+        // If subscription has expired, fall back to starter
+        if (!$this->isSubscriptionActive()) {
+            $tier = 'starter';
+        }
+
         $features = [
             'starter' => ['basic_analytics', '1_channel'],
             'pro' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders'],

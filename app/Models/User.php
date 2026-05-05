@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'merchant_id'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable // implements MustVerifyEmail — re-enable for production
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -57,8 +57,15 @@ class User extends Authenticatable // implements MustVerifyEmail — re-enable f
 
     // ─── Helpers ──────────────────────────────────
 
+    protected ?Merchant $resolvedMerchant = null;
+
     public function getMerchantAttribute(): ?Merchant
     {
-        return $this->ownedMerchant ?? $this->employer;
+        if ($this->resolvedMerchant !== null) {
+            return $this->resolvedMerchant;
+        }
+        
+        $this->resolvedMerchant = $this->ownedMerchant ?? $this->employer;
+        return $this->resolvedMerchant;
     }
 }

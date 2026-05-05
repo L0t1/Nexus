@@ -20,7 +20,7 @@ class NotificationService
 
         // Try WhatsApp first, fall back to SMS
         try {
-            $this->sendWhatsApp($phone, $message);
+            $this->sendWhatsApp($phone, $message, $order);
         } catch (\Exception $e) {
             // Mask phone number in logs to avoid PII leakage (show last 4 digits only)
             $maskedPhone = '***' . substr($phone, -4);
@@ -44,15 +44,16 @@ class NotificationService
         };
     }
 
-    private function sendWhatsApp(string $phone, string $message): void
+    private function sendWhatsApp(string $phone, string $message, Order $order): void
     {
-        $token = config('services.whatsapp.token');
-        $phoneId = config('services.whatsapp.phone_id');
+        $merchant = $order->merchant;
+        $token = $merchant->meta_credentials['whatsapp_token'] ?? config('services.whatsapp.token');
+        $phoneId = $merchant->meta_credentials['whatsapp_phone_id'] ?? config('services.whatsapp.phone_id');
 
         if (!$token || !$phoneId) return;
 
         Http::withToken($token)->post(
-            "https://graph.facebook.com/v18.0/{$phoneId}/messages",
+            "https://graph.facebook.com/v19.0/{$phoneId}/messages",
             [
                 'messaging_product' => 'whatsapp',
                 'to' => preg_replace('/[^0-9+]/', '', $phone),
