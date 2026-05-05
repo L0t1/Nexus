@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────────
+# docker-compose.prod.yml
+#
+# Production overrides. Apply with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# This file:
+#   - Removes all host-port bindings for DB & Redis (only accessible inside Docker network)
+#   - Exposes only Nginx on port 80/443
+#   - Uses production PHP-FPM optimizations
+# ─────────────────────────────────────────────────────────────────
+version: '3.8'
+
+services:
+  db:
+    ports: []        # Remove loopback binding — not accessible from host
+
+  redis:
+    ports: []        # Remove loopback binding — not accessible from host
+
+  web:
+    ports:
+      - "80:80"
+      - "443:443"
+
+  app:
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+
+  worker:
+    deploy:
+      replicas: 2    # Scale Horizon workers in production

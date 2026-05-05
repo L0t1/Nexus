@@ -1,0 +1,290 @@
+<template>
+  <AuthenticatedLayout title="Conversation">
+    <div class="flex h-[calc(100vh-140px)] gap-4 animate-fade-in">
+      <!-- Chat area -->
+      <div class="flex-1 glass-glow rounded-2xl flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="px-5 py-3.5 border-b border-white/[0.04] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <button @click="$inertia.visit('/inbox')" class="p-1.5 rounded-lg hover:bg-surface-hover text-nexus-500 hover:text-nexus-300 transition-all">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-nexus-500/30 to-accent-cyan/20 flex items-center justify-center text-sm font-bold text-nexus-200">
+              {{ conversation.contact?.name?.[0]?.toUpperCase() || '?' }}
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-nexus-100">{{ conversation.contact?.name || 'Unknown' }}</div>
+              <div class="flex items-center gap-2 text-xs text-nexus-500">
+                <PlatformIcon :platform="conversation.platform" class="w-3.5 h-3.5" />
+                <span>{{ conversation.contact?.phone }}</span>
+                <span v-if="conversation.contact?.city" class="opacity-50">·</span>
+                <span v-if="conversation.contact?.city">{{ conversation.contact.city }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <button @click="showDeleteModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-red-500 hover:text-red-400 hover:bg-red-500/10 border-red-500/20">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              Delete
+            </button>
+            <StatusBadge :status="conversation.status" />
+            <button @click="openManualOrder" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+              <span>✍️</span> Manual Order
+            </button>
+            <button @click="openSmartOrder" class="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 bg-gradient-to-r from-accent-emerald to-accent-cyan border-none text-white shadow-lg shadow-accent-emerald/20 hover:shadow-accent-emerald/40">
+              <span>✨</span> Smart Order
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-5 space-y-3">
+          <div v-for="msg in sortedMessages" :key="msg.id" :class="['flex', msg.direction === 'outbound' ? 'justify-end' : 'justify-start']">
+            <div :class="['max-w-[65%] px-4 py-3 text-sm', msg.direction === 'outbound' ? 'bubble-outbound text-white' : 'bubble-inbound text-nexus-200']">
+              <p class="leading-relaxed">{{ msg.body }}</p>
+              <div :class="['text-[10px] mt-1.5 flex items-center gap-1', msg.direction === 'outbound' ? 'text-white/50 justify-end' : 'text-nexus-600']">
+                {{ formatTime(msg.created_at) }}
+                <span v-if="msg.direction === 'outbound'">
+                  <!-- Read: Double Blue -->
+                  <svg v-if="msg.status === 'read'" class="w-3 h-3 text-accent-cyan" viewBox="0 0 16 16" fill="currentColor"><path d="M8.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L2.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093L8.95 4.992zm-.92 5.14.92.92a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.091-1.028L9.477 9.417l-.485-.486z"/></svg>
+                  <!-- Delivered: Double Grey -->
+                  <svg v-else-if="msg.status === 'delivered'" class="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M8.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L2.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093L8.95 4.992zm-.92 5.14.92.92a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.091-1.028L9.477 9.417l-.485-.486z"/></svg>
+                  <!-- Sent: Single Grey -->
+                  <svg v-else class="w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>
+                </span>
+              </div>
+              <!-- AI badge -->
+              <div v-if="msg.ai_extraction" class="mt-3 px-3 py-2 rounded-xl bg-nexus-500/8 border border-nexus-500/15 text-xs space-y-0.5">
+                <div class="text-nexus-400 font-semibold flex items-center gap-1 mb-1"><span>🤖</span> AI Detected:</div>
+                <div v-if="msg.ai_extraction.customer_name" class="text-nexus-300">Name: {{ msg.ai_extraction.customer_name }}</div>
+                <div v-if="msg.ai_extraction.phone_number" class="text-nexus-300">Phone: {{ msg.ai_extraction.phone_number }}</div>
+                <div v-if="msg.ai_extraction.city" class="text-nexus-300">City: {{ msg.ai_extraction.city }}</div>
+                <div v-if="msg.ai_extraction.street_address" class="text-nexus-300">Address: {{ msg.ai_extraction.street_address }}</div>
+                <div v-if="msg.ai_extraction.product_intent" class="text-nexus-300">Product: {{ msg.ai_extraction.product_intent }}</div>
+                <div v-if="msg.ai_extraction.quantity" class="text-nexus-300">Quantity: {{ msg.ai_extraction.quantity }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-if="!sortedMessages.length" class="flex flex-col items-center justify-center h-full text-nexus-700">
+            <svg class="w-12 h-12 mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
+            <span class="text-sm">No messages yet</span>
+          </div>
+        </div>
+
+        <!-- Reply -->
+        <div class="px-5 py-3.5 border-t border-white/[0.04]">
+          <form @submit.prevent="sendReply" class="flex gap-3">
+            <input v-model="replyText" type="text" placeholder="Type a message..." class="input-premium flex-1" />
+            <button type="submit" :disabled="!replyText.trim()" class="btn-primary px-5 disabled:opacity-30">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Panel Overlay (Mobile) -->
+      <div v-if="showOrderPanel" @click="showOrderPanel = false" class="fixed inset-0 bg-black/60 z-40 lg:hidden"></div>
+
+      <!-- Order Panel -->
+      <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-x-full lg:translate-x-4" enter-to-class="opacity-100 translate-x-0" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-full lg:translate-x-4">
+        <div v-if="showOrderPanel" class="fixed inset-y-0 right-0 w-full sm:w-96 z-50 glass-strong border-l border-white/[0.04] flex flex-col lg:static lg:z-auto lg:border-0 lg:glass-glow lg:rounded-2xl lg:h-full flex-shrink-0 shadow-2xl lg:shadow-none">
+          <div class="px-5 py-3.5 border-b border-white/[0.04] flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-nexus-200 flex items-center gap-2"><span>📦</span> Order Details</h3>
+            <button @click="showOrderPanel = false" class="text-nexus-600 hover:text-nexus-300 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+          </div>
+          <form @submit.prevent="submitOrder" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Customer Name *</label><input v-model="orderForm.customer_name" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_name}]" /><div v-if="orderForm.errors.customer_name" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_name }}</div></div>
+            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Phone *</label><input v-model="orderForm.customer_phone" type="tel" oninput="this.value = this.value.replace(/[^0-9\s\+\-\(\)]/g, '')" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_phone}]" /><div v-if="orderForm.errors.customer_phone" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_phone }}</div></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">City *</label><input v-model="orderForm.shipping_city" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_city}]" /><div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div></div>
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Neighborhood</label><input v-model="orderForm.shipping_neighborhood" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_neighborhood}]" /><div v-if="orderForm.errors.shipping_neighborhood" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_neighborhood }}</div></div>
+            </div>
+            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Address *</label><input v-model="orderForm.shipping_street" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_street}]" /><div v-if="orderForm.errors.shipping_street" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_street }}</div></div>
+            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Shipping Notes</label><textarea v-model="orderForm.shipping_notes" rows="2" placeholder="Gate codes, delivery instructions..." :class="['input-premium py-2 text-sm', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_notes}]"></textarea><div v-if="orderForm.errors.shipping_notes" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_notes }}</div></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Payment *</label>
+                <select v-model="orderForm.payment_method" :class="['input-premium cursor-pointer', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.payment_method}]">
+                  <option value="cod">Cash on Delivery</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="online">Online Payment</option>
+                </select>
+                <div v-if="orderForm.errors.payment_method" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.payment_method }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Product *</label>
+                <input v-model="itemName" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}]" />
+                <div v-if="itemErrors.name" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.name }}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Qty *</label>
+                <input v-model.number="itemQty" type="number" min="1" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.qty}]" />
+                <div v-if="itemErrors.qty" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.qty }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Price (€) *</label>
+                <input v-model.number="itemPrice" type="number" min="0" step="0.01" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.price}]" />
+                <div v-if="itemErrors.price" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.price }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Shipping (€)</label>
+                <input v-model.number="orderForm.shipping_cost" type="number" min="0" step="0.01" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_cost}]" />
+                <div v-if="orderForm.errors.shipping_cost" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ orderForm.errors.shipping_cost }}</div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-white/[0.04]">
+              <div class="flex justify-between text-sm mb-4"><span class="text-nexus-500">Total</span><span class="font-bold text-xl text-gradient">€{{ ((itemQty * itemPrice) + (orderForm.shipping_cost || 0)).toFixed(2) }}</span></div>
+              <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-accent-emerald to-accent-cyan text-white text-sm font-semibold transition-all hover:shadow-lg hover:shadow-accent-emerald/20">✓ Confirm Order</button>
+            </div>
+          </form>
+        </div>
+      </Transition>
+      <!-- Delete Confirm Modal -->
+      <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+        <div class="relative bg-nexus-900 border border-white/10 p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 glass-strong animate-fade-in">
+          <h3 class="text-lg font-bold text-nexus-100 mb-2 text-center">Delete Chat?</h3>
+          <p class="text-sm text-nexus-400 text-center mb-6">Are you sure you want to permanently delete this conversation and all its messages? This action cannot be undone.</p>
+          <div class="flex gap-3">
+            <button @click="showDeleteModal = false" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold transition-all">Cancel</button>
+            <button @click="confirmDelete" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-all shadow-lg shadow-red-500/20">Delete Forever</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AuthenticatedLayout>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { router, useForm } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import PlatformIcon from '@/Components/PlatformIcon.vue';
+import StatusBadge from '@/Components/StatusBadge.vue';
+
+const props = defineProps({
+  conversation: { type: Object, required: true },
+  messages: { type: Object, default: () => ({ data: [] }) },
+  orders: { type: Array, default: () => [] },
+});
+
+const messagesContainer = ref(null);
+let pollingInterval = null;
+
+onMounted(() => {
+  scrollToBottom();
+  
+  // Auto-refresh chat every 3 seconds
+  pollingInterval = setInterval(() => {
+    router.reload({ 
+      only: ['messages', 'orders'], 
+      preserveScroll: true, 
+      preserveState: true,
+      onSuccess: () => {
+        // Give the DOM a tiny fraction of a second to render the new message before scrolling
+        nextTick(() => scrollToBottom());
+      }
+    });
+  }, 3000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
+});
+
+const replyText = ref('');
+const showOrderPanel = ref(false);
+const showDeleteModal = ref(false);
+const itemName = ref('');
+const itemQty = ref(1);
+const itemPrice = ref(0);
+
+const orderForm = useForm({
+  customer_name: props.conversation.contact?.name || '',
+  customer_phone: props.conversation.contact?.phone || '',
+  shipping_city: props.conversation.contact?.city || '',
+  shipping_neighborhood: '',
+  shipping_street: '',
+  shipping_notes: '',
+  shipping_cost: 3.00,
+  payment_method: 'cod',
+  contact_id: props.conversation.contact?.id,
+  conversation_id: props.conversation.id,
+  items: [],
+});
+
+const itemErrors = computed(() => {
+  return {
+    name: orderForm.errors['items.0.name'] || orderForm.errors?.items?.[0]?.name,
+    qty: orderForm.errors['items.0.qty'] || orderForm.errors?.items?.[0]?.qty,
+    price: orderForm.errors['items.0.price'] || orderForm.errors?.items?.[0]?.price,
+  };
+});
+
+const sortedMessages = computed(() => [...(props.messages?.data || [])].reverse());
+
+function openManualOrder() {
+  orderForm.reset();
+  orderForm.customer_name = props.conversation.contact?.name || '';
+  orderForm.customer_phone = props.conversation.contact?.phone || '';
+  orderForm.shipping_city = props.conversation.contact?.city || '';
+  orderForm.shipping_neighborhood = '';
+  orderForm.shipping_street = '';
+  orderForm.shipping_notes = '';
+  orderForm.payment_method = 'cod';
+  itemName.value = '';
+  itemQty.value = 1;
+  itemPrice.value = '';
+  showOrderPanel.value = true;
+}
+
+function openSmartOrder() {
+  openManualOrder(); // reset first
+  
+  if (!props.messages || !props.messages.data.length) {
+    showOrderPanel.value = true;
+    return;
+  }
+  
+  const latestExtractedMsg = props.messages.data.find(m => m.ai_extraction);
+  if (latestExtractedMsg) {
+    const ai = latestExtractedMsg.ai_extraction;
+    if (ai.customer_name) orderForm.customer_name = ai.customer_name;
+    if (ai.phone_number) orderForm.customer_phone = ai.phone_number;
+    if (ai.city) orderForm.shipping_city = ai.city;
+    if (ai.street_address) orderForm.shipping_street = ai.street_address;
+    if (ai.product_intent && typeof ai.product_intent === 'string' && ai.product_intent !== 'Unknown Product') {
+      itemName.value = ai.product_intent;
+    }
+    if (ai.quantity) itemQty.value = ai.quantity;
+  }
+  showOrderPanel.value = true;
+}
+
+function sendReply() {
+  if (!replyText.value.trim()) return;
+  router.post(`/inbox/${props.conversation.id}/reply`, { body: replyText.value }, {
+    preserveScroll: true,
+    onSuccess: () => { replyText.value = ''; nextTick(() => scrollToBottom()); },
+  });
+}
+
+function submitOrder() {
+  orderForm.items = [{ name: itemName.value || 'Product', qty: itemQty.value, price: itemPrice.value }];
+  orderForm.post('/orders', { onSuccess: () => { showOrderPanel.value = false; } });
+}
+
+function confirmDelete() {
+  showDeleteModal.value = false;
+  router.delete(`/inbox/${props.conversation.id}`);
+}
+
+function scrollToBottom() {
+  if (messagesContainer.value) messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+}
+
+function formatTime(d) {
+  return d ? new Date(d).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+}
+
+onMounted(() => nextTick(() => scrollToBottom()));
+</script>

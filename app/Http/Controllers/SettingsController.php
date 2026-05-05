@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class SettingsController extends Controller
+{
+    public function index(Request $request): Response
+    {
+        $merchant = $request->user()->merchant;
+
+        return Inertia::render('Settings/Index', [
+            'merchant' => array_merge($merchant->toArray(), [
+                'meta_credentials' => $merchant->meta_credentials ?? [],
+            ]),
+            'user'                  => $request->user()->only('id', 'name', 'email'),
+            'metaAppId'             => config('services.meta.app_id'),
+            'metaWhatsappConfigId'  => config('services.meta.whatsapp_config_id'),
+        ]);
+    }
+
+    public function subscription(Request $request): Response
+    {
+        return Inertia::render('Subscription/Index', [
+            'merchant' => $request->user()->merchant,
+        ]);
+    }
+
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $merchant = $request->user()->merchant;
+
+        $validated = $request->validate([
+            'business_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'email' => 'nullable|email|max:255',
+            'city' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:500',
+        ]);
+
+        $merchant->update($validated);
+
+        return back()->with('success', 'Business profile updated.');
+    }
+
+    public function updateAccount(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
+        ]);
+
+        $request->user()->update($validated);
+
+        return back()->with('success', 'Account updated.');
+    }
+
+    public function updateChannels(Request $request): RedirectResponse
+    {
+        $merchant = $request->user()->merchant;
+
+        // WhatsApp only — Facebook/Instagram are connected via OAuth
+        $validated = $request->validate([
+            'whatsapp_phone_id' => 'nullable|string|max:64',
+            'whatsapp_token'    => 'nullable|string|max:512',
+        ]);
+
+        // Merge with existing so OAuth-saved FB/IG tokens are never wiped
+        $existing = $merchant->meta_credentials ?? [];
+        $merchant->update([
+            'meta_credentials' => array_merge($existing, array_filter($validated)),
+        ]);
+
+        return back()->with('success', 'Channel settings saved.');
+    }
+}
