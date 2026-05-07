@@ -12,8 +12,8 @@ php artisan route:cache
 php artisan view:cache
 php artisan storage:link
 
-# Run migrations automatically (safe in production with --force)
-php artisan migrate --force
+# Run migrations automatically and seed demo data (safe in production with --force and idempotent seeder)
+php artisan migrate --seed --force
 
 # Fix permissions for the web server after artisan commands ran as root
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache

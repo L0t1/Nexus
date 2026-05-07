@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Prevent duplicate seeding on multiple deployments
+        if (User::where('email', 'admin@nexus.test')->exists()) {
+            return;
+        }
         // Create roles
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'agent']);
