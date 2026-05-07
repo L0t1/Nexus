@@ -63,6 +63,10 @@ Route::get('/resources', function () {
     return view('landing.resources');
 })->name('resources');
 
+Route::get('/privacy-policy', function () {
+    return view('landing.privacy');
+})->name('privacy');
+
 // Authenticated routes (all require verified email)
 Route::middleware(['auth', 'verified'])->group(function () {
 
