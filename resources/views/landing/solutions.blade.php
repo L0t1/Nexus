@@ -257,10 +257,8 @@
         </div>
 <!-- Links -->
 <div class="flex gap-lg flex-wrap justify-center">
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="#">Terms of Service</a>
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="#">Security</a>
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="#">Cookie Settings</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('privacy') }}">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('terms') }}">Terms of Service</a>
 </div>
 </footer>
 </body></html>

@@ -286,10 +286,8 @@
 </div>
 <!-- Links -->
 <div class="flex flex-wrap justify-center gap-md">
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="#">Privacy Policy</a>
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="#">Terms of Service</a>
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="#">Security</a>
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="#">Cookie Settings</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('privacy') }}">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('terms') }}">Terms of Service</a>
 </div>
 </div>
 </footer>

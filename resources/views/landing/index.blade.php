@@ -311,10 +311,7 @@
 <div class="font-h3 text-h3 font-bold text-on-surface">Nexus CRM</div>
 <div class="flex flex-wrap justify-center gap-md">
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('privacy') }}">Privacy Policy</a>
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Terms of Service</a>
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Security</a>
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Status</a>
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Contact</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('terms') }}">Terms of Service</a>
 </div>
 <div class="font-label-sm text-label-sm text-secondary text-center md:text-right">
                 © 2024 Nexus CRM. Elite command center for high-growth enterprises.

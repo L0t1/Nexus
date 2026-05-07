@@ -379,10 +379,8 @@
                 © 2024 Nexus CRM. Elite Craftsmanship for High-Growth Ultimate.
             </span>
 <div class="flex items-center gap-lg">
-<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="#">Terms of Service</a>
-<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="#">Security</a>
-<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="#">Cookie Settings</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="{{ route('privacy') }}">Privacy Policy</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-secondary hover:opacity-80 transition-colors transition-opacity" href="{{ route('terms') }}">Terms of Service</a>
 </div>
 </div>
 </footer>
