@@ -11,7 +11,7 @@
         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-nexus-500 via-nexus-600 to-accent-cyan flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-nexus-600/30 animate-glow">
           <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
         </div>
-        <h1 class="text-3xl font-bold text-gradient tracking-tight">NEXUS</h1>
+        <h1 class="text-3xl font-bold text-[#4cd7f6] tracking-tight">Nexus CRM</h1>
         <p class="text-nexus-500 text-sm mt-2">Sign in to your dashboard</p>
       </div>
 
@@ -27,7 +27,7 @@
             <label class="block text-xs font-semibold text-nexus-400 mb-2 uppercase tracking-wider">Password</label>
             <input v-model="form.password" type="password" required placeholder="••••••••" class="input-premium" />
           </div>
-          <button type="submit" :disabled="form.processing" class="btn-primary w-full flex items-center justify-center gap-2 py-3">
+          <button type="submit" :disabled="form.processing" class="btn-primary w-full flex items-center justify-center gap-2">
             <svg v-if="form.processing" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
             <span>{{ form.processing ? 'Signing in...' : 'Sign in' }}</span>
           </button>

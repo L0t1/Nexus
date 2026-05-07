@@ -175,6 +175,11 @@ class MessageProcessor
         if ($text && strlen($text) > 10) {
             \App\Jobs\ProcessAiExtraction::dispatch($message);
         }
+
+        // Fire AI auto-reply if the merchant has it enabled
+        if ($text && $merchant->canSendAiReply()) {
+            \App\Jobs\ProcessAiReply::dispatch($message, $conversation);
+        }
     }
 
     private function detectPlatform(array $payload): string

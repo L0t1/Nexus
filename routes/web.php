@@ -10,6 +10,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BroadcastController;
+use App\Http\Controllers\AiSettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,8 +44,24 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
-    return \Inertia\Inertia::render('Welcome');
+    return view('landing.index');
 })->name('home');
+
+Route::get('/features', function () {
+    return view('landing.features');
+})->name('features');
+
+Route::get('/pricing', function () {
+    return view('landing.pricing');
+})->name('pricing');
+
+Route::get('/solutions', function () {
+    return view('landing.solutions');
+})->name('solutions');
+
+Route::get('/resources', function () {
+    return view('landing.resources');
+})->name('resources');
 
 // Authenticated routes (all require verified email)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -116,6 +133,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/settings/agents', [SettingsController::class, 'storeAgent'])->name('settings.agents.store');
         Route::delete('/settings/agents/{agent}', [SettingsController::class, 'destroyAgent'])->name('settings.agents.destroy');
         Route::get('/subscription', [SettingsController::class, 'subscription'])->name('subscription.index');
+
+        // AI settings — available to Pro and Ultimate plans
+        Route::get('/settings/ai', [AiSettingsController::class, 'show'])->name('settings.ai');
+        Route::put('/settings/ai', [AiSettingsController::class, 'update'])->name('settings.ai.update');
+        Route::post('/settings/ai/toggle', [AiSettingsController::class, 'toggle'])->name('settings.ai.toggle');
 
         // Meta OAuth — connect Facebook Pages & Instagram automatically
         Route::get('/auth/meta', [OAuthController::class, 'redirectToMeta'])->name('oauth.meta.redirect');

@@ -47,6 +47,11 @@
               <p class="leading-relaxed">{{ msg.body }}</p>
               <div :class="['text-[10px] mt-1.5 flex items-center gap-1', msg.direction === 'outbound' ? 'text-white/50 justify-end' : 'text-nexus-600']">
                 {{ formatTime(msg.created_at) }}
+                <!-- AI-generated label -->
+                <span v-if="msg.is_ai_generated" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-accent-violet/20 text-accent-violet text-[9px] font-bold uppercase tracking-wide">
+                  <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
+                  AI
+                </span>
                 <span v-if="msg.direction === 'outbound'">
                   <!-- Read: Double Blue -->
                   <svg v-if="msg.status === 'read'" class="w-3 h-3 text-accent-cyan" viewBox="0 0 16 16" fill="currentColor"><path d="M8.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L2.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093L8.95 4.992zm-.92 5.14.92.92a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.091-1.028L9.477 9.417l-.485-.486z"/></svg>

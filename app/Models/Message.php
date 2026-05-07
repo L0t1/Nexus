@@ -22,6 +22,7 @@ class Message extends Model
         'media',
         'ai_extraction',
         'is_ai_processed',
+        'is_ai_generated',
         'status',
     ];
 
@@ -29,6 +30,7 @@ class Message extends Model
         'media' => 'array',
         'ai_extraction' => 'array',
         'is_ai_processed' => 'boolean',
+        'is_ai_generated' => 'boolean',
     ];
 
     // ─── Relationships ────────────────────────────
