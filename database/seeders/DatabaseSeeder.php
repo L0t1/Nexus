@@ -17,8 +17,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Prevent duplicate seeding on multiple deployments
-        if (User::where('email', 'admin@nexus.test')->exists()) {
+        // Prevent duplicate seeding on multiple deployments, but ensure the demo user is verified
+        $existingAdmin = User::where('email', 'admin@nexus.test')->first();
+        if ($existingAdmin) {
+            if (!$existingAdmin->email_verified_at) {
+                $existingAdmin->update(['email_verified_at' => now()]);
+            }
             return;
         }
         // Create roles
@@ -29,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $user = User::create([
             'name' => 'Demo Admin',
             'email' => 'admin@nexus.test',
+            'email_verified_at' => now(),
             'password' => Hash::make('password'),
         ]);
         $user->assignRole('admin');
