@@ -82,6 +82,7 @@ class OrderController extends Controller
             'items.*.name' => 'required|string|max:255',
             'items.*.qty' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0.01',
+            'items.*.product_id' => 'nullable|integer|exists:products,id',
             'shipping_cost' => 'nullable|numeric|min:0',
             'payment_method' => 'required|in:cod,bank_transfer,online',
             'contact_id'      => 'nullable|exists:contacts,id,merchant_id,' . $merchant->id,

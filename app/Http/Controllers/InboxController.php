@@ -59,10 +59,17 @@ class InboxController extends Controller
             ->latest()
             ->get();
 
+        // Pass available products so the order form can offer product selection
+        $products = $request->user()->merchant->products()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'price', 'stock', 'sku']);
+
         return Inertia::render('Inbox/Show', [
             'conversation' => $conversation,
             'messages' => $messages,
             'orders' => $orders,
+            'products' => $products,
         ]);
     }
 

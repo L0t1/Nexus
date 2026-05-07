@@ -118,7 +118,11 @@
               </div>
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Product *</label>
-                <input v-model="itemName" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}]" />
+                <select v-if="products.length" v-model="selectedProductId" @change="onProductSelect" :class="['input-premium cursor-pointer', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}]">
+                  <option value="">— Custom product —</option>
+                  <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }} (€{{ Number(p.price).toFixed(2) }}) — {{ p.stock }} in stock</option>
+                </select>
+                <input v-if="!products.length || selectedProductId === ''" v-model="itemName" type="text" placeholder="Product name" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}, products.length ? 'mt-2' : '']" />
                 <div v-if="itemErrors.name" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.name }}</div>
               </div>
             </div>
@@ -170,6 +174,7 @@ const props = defineProps({
   conversation: { type: Object, required: true },
   messages: { type: Object, default: () => ({ data: [] }) },
   orders: { type: Array, default: () => [] },
+  products: { type: Array, default: () => [] },
 });
 
 const messagesContainer = ref(null);
@@ -199,6 +204,7 @@ onUnmounted(() => {
 const replyText = ref('');
 const showOrderPanel = ref(false);
 const showDeleteModal = ref(false);
+const selectedProductId = ref('');
 const itemName = ref('');
 const itemQty = ref(1);
 const itemPrice = ref(0);
@@ -236,6 +242,7 @@ function openManualOrder() {
   orderForm.shipping_street = '';
   orderForm.shipping_notes = '';
   orderForm.payment_method = 'cod';
+  selectedProductId.value = '';
   itemName.value = '';
   itemQty.value = 1;
   itemPrice.value = '';
@@ -273,8 +280,23 @@ function sendReply() {
   });
 }
 
+function onProductSelect() {
+  if (selectedProductId.value) {
+    const product = props.products.find(p => p.id === selectedProductId.value);
+    if (product) {
+      itemName.value = product.name;
+      itemPrice.value = product.price;
+    }
+  } else {
+    itemName.value = '';
+    itemPrice.value = '';
+  }
+}
+
 function submitOrder() {
-  orderForm.items = [{ name: itemName.value || 'Product', qty: itemQty.value, price: itemPrice.value }];
+  const item = { name: itemName.value || 'Product', qty: itemQty.value, price: itemPrice.value };
+  if (selectedProductId.value) item.product_id = selectedProductId.value;
+  orderForm.items = [item];
   orderForm.post('/orders', { onSuccess: () => { showOrderPanel.value = false; } });
 }
 
