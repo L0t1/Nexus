@@ -16,14 +16,17 @@ class AnalyticsController extends Controller
         $startDate = now()->subDays($days);
 
         // ── Revenue chart — one DB query, zero PHP-level groupBy ──────────────
+        $isPgsql = config('database.default') === 'pgsql';
+        $dateExpr = $isPgsql ? "created_at::date" : "DATE(created_at)";
+
         $rawDailyData = $merchant->orders()
             ->where('created_at', '>=', $startDate)
             ->whereIn('fulfillment_status', ['confirmed', 'dispatched', 'in_transit', 'delivered'])
-            ->selectRaw("DATE(created_at) as day, SUM(total) as revenue, COUNT(*) as orders")
-            ->groupByRaw("DATE(created_at)")
+            ->selectRaw("{$dateExpr} as day, SUM(total) as revenue, COUNT(*) as orders")
+            ->groupByRaw($dateExpr)
             ->orderBy('day')
             ->get()
-            ->keyBy('day');
+            ->keyBy(fn ($row) => (string) $row->day);
 
         $chartData = collect();
         for ($i = $days; $i >= 0; $i--) {
@@ -70,7 +73,7 @@ class AnalyticsController extends Controller
         $topCities = $merchant->orders()
             ->where('created_at', '>=', $startDate)
             ->whereNotNull('shipping_city')
-            ->selectRaw("shipping_city, COUNT(*) as orders, ROUND(SUM(total), 2) as revenue")
+            ->selectRaw("shipping_city, COUNT(*) as orders, SUM(total) as revenue")
             ->groupBy('shipping_city')
             ->orderByDesc('orders')
             ->take(10)
