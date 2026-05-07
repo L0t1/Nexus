@@ -310,7 +310,7 @@
 <div class="flex flex-col md:flex-row justify-between items-center px-margin max-w-7xl mx-auto gap-lg">
 <div class="font-h3 text-h3 font-bold text-on-surface">Nexus CRM</div>
 <div class="flex flex-wrap justify-center gap-md">
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('privacy') }}">Privacy Policy</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Terms of Service</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Security</a>
 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="#">Status</a>

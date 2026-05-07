@@ -32,7 +32,8 @@ class DashboardController extends Controller
                     SUM(CASE WHEN fulfillment_status = 'delivered' THEN 1 ELSE 0 END) as delivered,
                     SUM(CASE WHEN DATE(created_at) = ? THEN total ELSE 0 END) as revenue_today,
                     SUM(CASE WHEN DATE(created_at) >= ? THEN total ELSE 0 END) as revenue_month,
-                    SUM(CASE WHEN payment_method = 'cod' AND payment_status = 'pending' AND fulfillment_status = 'delivered' THEN total ELSE 0 END) as cod_pending
+                    SUM(CASE WHEN payment_method = 'cod' AND payment_status = 'pending' AND fulfillment_status = 'delivered' THEN 1 ELSE 0 END) as cod_pending_count,
+                    SUM(CASE WHEN payment_method = 'cod' AND payment_status = 'pending' AND fulfillment_status = 'delivered' THEN total ELSE 0 END) as cod_amount
                 ", [$today, $today, $monthStart])
                 ->first();
 
@@ -54,7 +55,8 @@ class DashboardController extends Controller
                 'active_conversations'  => (int) $convStats->active_conversations,
                 'unread_conversations'  => (int) $convStats->unread_conversations,
                 'total_contacts'        => $merchant->contacts()->count(),
-                'cod_pending'           => round((float) $orderStats->cod_pending, 2),
+                'cod_pending'           => (int) $orderStats->cod_pending_count,
+                'cod_amount'            => round((float) $orderStats->cod_amount, 2),
             ];
         });
 
@@ -73,7 +75,7 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'stats'               => $stats,
             'recentOrders'        => $recentOrders,
-            'recentConversations' => $recentConversations,
+            'activeChats'         => $recentConversations,
         ]);
     }
 }
