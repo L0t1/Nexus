@@ -15,5 +15,8 @@ php artisan storage:link
 # Run migrations automatically (safe in production with --force)
 php artisan migrate --force
 
+# Fix permissions for the web server after artisan commands ran as root
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
 # Start Apache in foreground
 apache2-foreground
