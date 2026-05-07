@@ -72,7 +72,7 @@ Route::get('/terms-of-service', function () {
 })->name('terms');
 
 // Authenticated routes (all require verified email)
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () { // 'verified' removed temporarily
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
