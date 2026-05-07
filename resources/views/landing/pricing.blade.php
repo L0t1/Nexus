@@ -247,7 +247,7 @@
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">AI Order Extraction</span>
+<span class="font-body-md text-body-md text-on-surface-variant">✨ Smart Order — AI auto-fills orders from chat</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
