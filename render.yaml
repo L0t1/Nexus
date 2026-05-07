@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: nexus-crm
+    env: php
+    region: frankfurt # You can change this to your preferred region (e.g., oregon, ohio)
+    plan: free # Change to starter/pro for production
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php artisan storage:link
+      # Run migrations during deployment. Make sure Neon is connected!
+      php artisan migrate --force
+    # Render's native PHP environment automatically detects 'public' as the web root for Laravel
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        sync: false # Paste your Neon PostgreSQL connection string here in the Render Dashboard
+      - key: DATABASE_URL
+        sync: false # Same as above, some parts of Laravel check DATABASE_URL first
