@@ -20,21 +20,21 @@ class DashboardController extends Controller
         // Single aggregated query replaces 11 separate DB round-trips.
         // Cached for 60 seconds per merchant to protect under rapid refreshes.
         $stats = Cache::remember("dashboard:stats:{$merchant->id}", 60, function () use ($merchant) {
-            $today      = now()->toDateString();
-            $monthStart = now()->startOfMonth()->toDateString();
+            $todayStart = now()->startOfDay()->toDateTimeString();
+            $monthStart = now()->startOfMonth()->toDateTimeString();
 
             $orderStats = $merchant->orders()
                 ->selectRaw("
                     COUNT(*) as total_orders,
-                    SUM(CASE WHEN DATE(created_at) = ? THEN 1 ELSE 0 END) as orders_today,
+                    SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as orders_today,
                     SUM(CASE WHEN fulfillment_status IN ('draft','confirmed','processing') THEN 1 ELSE 0 END) as pending_orders,
                     SUM(CASE WHEN fulfillment_status IN ('dispatched','in_transit','out_for_delivery') THEN 1 ELSE 0 END) as in_transit,
                     SUM(CASE WHEN fulfillment_status = 'delivered' THEN 1 ELSE 0 END) as delivered,
-                    SUM(CASE WHEN DATE(created_at) = ? THEN total ELSE 0 END) as revenue_today,
-                    SUM(CASE WHEN DATE(created_at) >= ? THEN total ELSE 0 END) as revenue_month,
+                    SUM(CASE WHEN created_at >= ? THEN total ELSE 0 END) as revenue_today,
+                    SUM(CASE WHEN created_at >= ? THEN total ELSE 0 END) as revenue_month,
                     SUM(CASE WHEN payment_method = 'cod' AND payment_status = 'pending' AND fulfillment_status = 'delivered' THEN 1 ELSE 0 END) as cod_pending_count,
                     SUM(CASE WHEN payment_method = 'cod' AND payment_status = 'pending' AND fulfillment_status = 'delivered' THEN total ELSE 0 END) as cod_amount
-                ", [$today, $today, $monthStart])
+                ", [$todayStart, $todayStart, $monthStart])
                 ->first();
 
             $convStats = $merchant->conversations()
