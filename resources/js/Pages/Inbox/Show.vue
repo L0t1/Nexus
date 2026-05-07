@@ -102,7 +102,7 @@
             <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Customer Name *</label><input v-model="orderForm.customer_name" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_name}]" /><div v-if="orderForm.errors.customer_name" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_name }}</div></div>
             <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Phone *</label><input v-model="orderForm.customer_phone" type="tel" oninput="this.value = this.value.replace(/[^0-9\s\+\-\(\)]/g, '')" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_phone}]" /><div v-if="orderForm.errors.customer_phone" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_phone }}</div></div>
             <div class="grid grid-cols-2 gap-3">
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">City *</label><input v-model="orderForm.shipping_city" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_city}]" /><div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div></div>
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">City *</label><CitySelect v-model="orderForm.shipping_city" :input-class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_city}]" /><div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div></div>
               <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Neighborhood</label><input v-model="orderForm.shipping_neighborhood" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_neighborhood}]" /><div v-if="orderForm.errors.shipping_neighborhood" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_neighborhood }}</div></div>
             </div>
             <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Address *</label><input v-model="orderForm.shipping_street" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_street}]" /><div v-if="orderForm.errors.shipping_street" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_street }}</div></div>
@@ -169,6 +169,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
+import CitySelect from '@/Components/CitySelect.vue';
 
 const props = defineProps({
   conversation: { type: Object, required: true },
