@@ -44,7 +44,11 @@
         <div ref="messagesContainer" class="flex-1 overflow-y-auto p-5 space-y-3">
           <div v-for="msg in sortedMessages" :key="msg.id" :class="['flex', msg.direction === 'outbound' ? 'justify-end' : 'justify-start']">
             <div :class="['max-w-[65%] px-4 py-3 text-sm', msg.direction === 'outbound' ? 'bubble-outbound text-white' : 'bubble-inbound text-nexus-200']">
-              <p class="leading-relaxed">{{ msg.body }}</p>
+              <!-- Image message -->
+              <div v-if="msg.type === 'image' && msg.media?.url" class="mb-2 -mx-1 -mt-1">
+                <img :src="msg.media.url" :alt="msg.body || 'Image'" class="rounded-lg max-w-full max-h-64 object-contain cursor-pointer" @click="window.open(msg.media.url, '_blank')" />
+              </div>
+              <p v-if="msg.body" class="leading-relaxed">{{ msg.body }}</p>
               <div :class="['text-[10px] mt-1.5 flex items-center gap-1', msg.direction === 'outbound' ? 'text-white/50 justify-end' : 'text-nexus-600']">
                 {{ formatTime(msg.created_at) }}
                 <!-- AI-generated label -->

@@ -16,6 +16,7 @@ class Product extends Model
         'name',
         'sku',
         'description',
+        'image_path',
         'price',
         'stock',
         'is_active',
@@ -26,6 +27,13 @@ class Product extends Model
         'stock' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : null;
+    }
 
     public function merchant()
     {

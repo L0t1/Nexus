@@ -29,8 +29,16 @@
             <tbody class="divide-y divide-white/[0.04]">
               <tr v-for="product in products.data" :key="product.id" class="hover:bg-white/[0.01] transition-colors group">
                 <td class="px-6 py-4">
-                  <div class="text-sm font-medium text-nexus-200">{{ product.name }}</div>
-                  <div class="text-xs text-nexus-600 truncate max-w-xs mt-0.5">{{ product.description || 'No description' }}</div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg overflow-hidden bg-white/[0.03] border border-white/[0.06] shrink-0 flex items-center justify-center">
+                      <img v-if="product.image_url" :src="product.image_url" :alt="product.name" class="w-full h-full object-cover" />
+                      <svg v-else class="w-5 h-5 text-nexus-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" /></svg>
+                    </div>
+                    <div>
+                      <div class="text-sm font-medium text-nexus-200">{{ product.name }}</div>
+                      <div class="text-xs text-nexus-600 truncate max-w-xs mt-0.5">{{ product.description || 'No description' }}</div>
+                    </div>
+                  </div>
                 </td>
                 <td class="px-6 py-4 text-sm text-nexus-400">{{ product.sku || '-' }}</td>
                 <td class="px-6 py-4 text-sm font-medium text-nexus-200">€{{ parseFloat(product.price).toFixed(2) }}</td>
@@ -115,6 +123,23 @@
             </div>
 
             <div>
+              <label class="block text-xs font-medium text-nexus-400 mb-1.5">Product Image</label>
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.06] flex items-center justify-center shrink-0">
+                  <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
+                  <svg v-else class="w-6 h-6 text-nexus-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" /></svg>
+                </div>
+                <div class="flex-1">
+                  <label class="block cursor-pointer">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-nexus-300 hover:bg-white/[0.08] transition-colors">📷 Choose Image</span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" @change="onImageSelect" class="hidden" />
+                  </label>
+                  <p class="text-[10px] text-nexus-600 mt-1">JPG, PNG or WebP · Max 2MB</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
               <label class="block text-xs font-medium text-nexus-400 mb-1.5">Description</label>
               <textarea v-model="form.description" rows="3" class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors resize-none"></textarea>
             </div>
@@ -159,16 +184,29 @@ const form = useForm({
   name: '',
   sku: '',
   description: '',
+  image: null,
   price: 0,
   stock: 0,
   is_active: true,
 });
+
+const imagePreview = ref(null);
+const imageFile = ref(null);
+
+function onImageSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  imageFile.value = file;
+  imagePreview.value = URL.createObjectURL(file);
+}
 
 function openCreateModal() {
   isEditing.value = false;
   editingId.value = null;
   form.reset();
   form.clearErrors();
+  imagePreview.value = null;
+  imageFile.value = null;
   isModalOpen.value = true;
 }
 
@@ -182,6 +220,8 @@ function openEditModal(product) {
   form.stock = product.stock;
   form.is_active = product.is_active;
   form.clearErrors();
+  imagePreview.value = product.image_url || null;
+  imageFile.value = null;
   isModalOpen.value = true;
 }
 
@@ -190,13 +230,25 @@ function closeModal() {
 }
 
 function submit() {
+  const formData = new FormData();
+  formData.append('name', form.name);
+  formData.append('sku', form.sku || '');
+  formData.append('description', form.description || '');
+  formData.append('price', form.price);
+  formData.append('stock', form.stock);
+  formData.append('is_active', form.is_active ? '1' : '0');
+  if (imageFile.value) formData.append('image', imageFile.value);
+
   if (isEditing.value) {
-    form.put(`/products/${editingId.value}`, {
+    formData.append('_method', 'PUT');
+    router.post(`/products/${editingId.value}`, formData, {
       onSuccess: () => closeModal(),
+      onError: (errors) => { form.errors = errors; },
     });
   } else {
-    form.post('/products', {
+    router.post('/products', formData, {
       onSuccess: () => closeModal(),
+      onError: (errors) => { form.errors = errors; },
     });
   }
 }
