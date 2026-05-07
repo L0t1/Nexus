@@ -40,7 +40,7 @@ class DashboardController extends Controller
             $convStats = $merchant->conversations()
                 ->selectRaw("
                     SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_conversations,
-                    SUM(CASE WHEN is_unread = 1 THEN 1 ELSE 0 END) as unread_conversations
+                    SUM(CASE WHEN is_unread = true THEN 1 ELSE 0 END) as unread_conversations
                 ")
                 ->first();
 
