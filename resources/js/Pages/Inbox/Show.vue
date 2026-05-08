@@ -85,6 +85,16 @@
 
         <!-- Reply -->
         <div class="px-5 py-3.5 border-t border-white/[0.04]">
+          <!-- Template dropdown -->
+          <Transition enter-active-class="transition ease-out duration-150" enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0 translate-y-2">
+            <div v-if="showTemplates && filteredTemplates.length" class="mb-2 glass-strong rounded-xl overflow-hidden border border-white/10 max-h-48 overflow-y-auto">
+              <div v-for="(tpl, i) in filteredTemplates" :key="tpl.id" @click="insertTemplate(tpl)" :class="['px-4 py-2.5 cursor-pointer flex items-center gap-3 text-sm transition-colors', i === selectedTemplateIdx ? 'bg-nexus-500/15 text-nexus-100' : 'text-nexus-300 hover:bg-white/5']">
+                <span class="font-mono text-xs text-accent-cyan shrink-0">{{ tpl.shortcut }}</span>
+                <span class="truncate">{{ tpl.name }}</span>
+                <span v-if="tpl.category" class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-nexus-500/10 text-nexus-500 ml-auto shrink-0">{{ tpl.category }}</span>
+              </div>
+            </div>
+          </Transition>
           <!-- Image preview strip -->
           <div v-if="replyImage" class="mb-2 flex items-center gap-2">
             <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-white/[0.08]">
@@ -98,9 +108,17 @@
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" /></svg>
               <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="onReplyImageSelect" class="hidden" />
             </label>
-            <input v-model="replyText" type="text" placeholder="Type a message..." class="input-premium flex-1" />
+            <input v-model="replyText" @input="onReplyInput" @keydown.tab.prevent="selectTemplate" type="text" placeholder="Type / for templates..." class="input-premium flex-1" />
+            <button type="button" @click="showScheduleModal = true" class="p-2.5 rounded-xl text-nexus-500 hover:text-accent-amber hover:bg-accent-amber/10 transition-colors shrink-0" title="Schedule message">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </button>
             <button type="submit" :disabled="!replyText.trim() && !replyImage" class="btn-primary px-5 disabled:opacity-30">Send</button>
           </form>
+          <!-- Scheduled messages indicator -->
+          <div v-if="scheduledMessages.length" class="mt-2 flex items-center gap-2 text-[10px] text-accent-amber">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {{ scheduledMessages.length }} message(s) scheduled
+          </div>
         </div>
       </div>
 
@@ -174,12 +192,39 @@
         @close="showDeleteModal = false" 
         @confirm="confirmDelete" 
       />
+
+      <!-- Schedule Message Modal -->
+      <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="showScheduleModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div @click="showScheduleModal = false" class="absolute inset-0 bg-black/60"></div>
+          <div class="relative glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-base font-bold text-nexus-100 mb-4">Schedule Message</h3>
+            <form @submit.prevent="scheduleMessage" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Message</label>
+                <textarea v-model="scheduleForm.body" rows="3" class="input-premium py-2.5 text-sm resize-none" placeholder="Your message..." required></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Send At</label>
+                <input v-model="scheduleForm.scheduled_at" type="datetime-local" class="input-premium" required />
+              </div>
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" @click="showScheduleModal = false" class="btn-secondary text-sm px-4 py-2">Cancel</button>
+                <button type="submit" class="btn-primary text-sm px-4 py-2 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Schedule
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Transition>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
@@ -192,6 +237,8 @@ const props = defineProps({
   messages: { type: Object, default: () => ({ data: [] }) },
   orders: { type: Array, default: () => [] },
   products: { type: Array, default: () => [] },
+  templates: { type: Array, default: () => [] },
+  scheduledMessages: { type: Array, default: () => [] },
 });
 
 const messagesContainer = ref(null);
@@ -235,7 +282,12 @@ function clearReplyImage() {
   replyImagePreview.value = null;
 }
 const showDeleteModal = ref(false);
+const showScheduleModal = ref(false);
+const showTemplates = ref(false);
+const filteredTemplates = ref([]);
+const selectedTemplateIdx = ref(0);
 const selectedProductId = ref('');
+const scheduleForm = reactive({ body: '', scheduled_at: '' });
 const itemName = ref('');
 const itemQty = ref(1);
 const itemPrice = ref(0);
@@ -350,4 +402,52 @@ function formatTime(d) {
 }
 
 onMounted(() => nextTick(() => scrollToBottom()));
+
+// ── Template slash commands ──────────────────────────
+function onReplyInput() {
+  const text = replyText.value;
+  if (text.startsWith('/')) {
+    const search = text.slice(1).toLowerCase();
+    filteredTemplates.value = props.templates.filter(t =>
+      t.shortcut.slice(1).includes(search) || t.name.toLowerCase().includes(search)
+    );
+    showTemplates.value = filteredTemplates.value.length > 0;
+    selectedTemplateIdx.value = 0;
+  } else {
+    showTemplates.value = false;
+  }
+}
+
+function selectTemplate() {
+  if (showTemplates.value && filteredTemplates.value.length) {
+    insertTemplate(filteredTemplates.value[selectedTemplateIdx.value]);
+  }
+}
+
+function insertTemplate(tpl) {
+  // Replace variables
+  let body = tpl.body;
+  body = body.replace('{customer_name}', props.conversation.contact?.name || '');
+  body = body.replace('{order_number}', '');
+  body = body.replace('{tracking_number}', '');
+  replyText.value = body;
+  showTemplates.value = false;
+  // Track usage
+  fetch(`/templates/${tpl.id}/use`, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content, 'Accept': 'application/json' } });
+}
+
+// ── Scheduled messages ──────────────────────────────
+function scheduleMessage() {
+  router.post('/scheduled-messages', {
+    conversation_id: props.conversation.id,
+    body: scheduleForm.body,
+    scheduled_at: scheduleForm.scheduled_at,
+  }, {
+    onSuccess: () => {
+      showScheduleModal.value = false;
+      scheduleForm.body = '';
+      scheduleForm.scheduled_at = '';
+    },
+  });
+}
 </script>

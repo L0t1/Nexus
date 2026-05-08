@@ -65,11 +65,25 @@ class InboxController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'price', 'stock', 'sku']);
 
+        // Quick reply templates
+        $templates = $request->user()->merchant->replyTemplates()
+            ->orderByDesc('usage_count')
+            ->get(['id', 'shortcut', 'name', 'body', 'category']);
+
+        // Pending scheduled messages for this conversation
+        $scheduledMessages = $request->user()->merchant->scheduledMessages()
+            ->where('conversation_id', $conversation->id)
+            ->where('status', 'pending')
+            ->orderBy('scheduled_at')
+            ->get();
+
         return Inertia::render('Inbox/Show', [
-            'conversation' => $conversation,
-            'messages' => $messages,
-            'orders' => $orders,
-            'products' => $products,
+            'conversation'      => $conversation,
+            'messages'          => $messages,
+            'orders'            => $orders,
+            'products'          => $products,
+            'templates'         => $templates,
+            'scheduledMessages' => $scheduledMessages,
         ]);
     }
 
