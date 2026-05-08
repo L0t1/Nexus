@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderEvent;
 use App\Services\Courier\CourierServiceInterface;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -60,7 +61,7 @@ class OrderController extends Controller
     {
         abort_unless($order->merchant_id === $request->user()->merchant?->id, 403);
 
-        $order->load(['contact', 'conversation', 'creator:id,name']);
+        $order->load(['contact', 'conversation', 'creator:id,name', 'events.user:id,name']);
 
         return Inertia::render('Orders/Show', [
             'order' => $order,
@@ -128,6 +129,9 @@ class OrderController extends Controller
         $order->calculateTotal();
         $order->save();
 
+        // Audit log
+        OrderEvent::log($order, 'created', "Order created by {$request->user()->name}.");
+
         if ($order->contact) {
             $order->contact->incrementOrderStats($order->total);
         }
@@ -165,6 +169,19 @@ class OrderController extends Controller
 
         $order->update($updates);
         $newStatus = $order->fulfillment_status;
+
+        // Audit log for status change
+        if (isset($validated['fulfillment_status'])) {
+            OrderEvent::log($order, 'status_change', "Status changed from {$oldStatus} to {$newStatus}.", [
+                'from' => $oldStatus,
+                'to'   => $newStatus,
+            ]);
+        }
+        if (isset($validated['payment_status'])) {
+            OrderEvent::log($order, 'payment_change', "Payment status changed to {$validated['payment_status']}.", [
+                'to' => $validated['payment_status'],
+            ]);
+        }
 
         // Auto-Stock Deduction
         if ($oldStatus !== 'delivered' && $newStatus === 'delivered') {
@@ -207,6 +224,10 @@ class OrderController extends Controller
 
         $courier = app(CourierServiceInterface::class);
         $result = $courier->createShipment($order);
+
+        OrderEvent::log($order, 'dispatched', "Order dispatched. Tracking: {$result['tracking_number']}.", [
+            'tracking_number' => $result['tracking_number'],
+        ]);
 
         $this->notifications->sendOrderNotification($order->fresh(), 'dispatched');
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Order extends Model
@@ -27,7 +28,12 @@ class Order extends Model
         'items',
         'subtotal',
         'shipping_cost',
+        'discount_amount',
         'total',
+        'currency',
+        'tax_rate',
+        'tax_amount',
+        'coupon_id',
         'payment_method',
         'payment_status',
         'courier_provider',
@@ -46,7 +52,10 @@ class Order extends Model
         'ai_confidence' => 'array',
         'subtotal' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'total' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'dispatched_at' => 'datetime',
         'delivered_at' => 'datetime',
         'is_ai_generated' => 'boolean',
@@ -88,6 +97,31 @@ class Order extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function events(): HasMany
+    {
+        return $this->hasMany(OrderEvent::class)->latest();
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class);
+    }
+
+    public function csatSurvey()
+    {
+        return $this->hasOne(CsatSurvey::class);
+    }
+
     // ─── Scopes ───────────────────────────────────
 
     public function scopePending($query)
@@ -127,7 +161,15 @@ class Order extends Model
     {
         $subtotal = collect($this->items ?? [])->sum(fn ($item) => ($item['qty'] ?? 1) * ($item['price'] ?? 0));
         $this->subtotal = $subtotal;
-        $this->total = $subtotal + $this->shipping_cost;
+
+        // Apply discount
+        $discounted = $subtotal - ($this->discount_amount ?? 0);
+
+        // Apply tax
+        $taxRate = $this->tax_rate ?? 0;
+        $this->tax_amount = round($discounted * ($taxRate / 100), 2);
+
+        $this->total = $discounted + $this->tax_amount + ($this->shipping_cost ?? 0);
     }
 
     public function canBeDispatched(): bool
