@@ -48,7 +48,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        abort_unless($product->merchant_id === $request->user()->merchant_id, 403);
+        abort_unless($product->merchant_id === $request->user()->merchant?->id, 403);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
