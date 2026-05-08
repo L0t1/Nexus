@@ -10,7 +10,19 @@
             <p class="text-xs text-nexus-500 mt-0.5">{{ formatDate(order.created_at) }}</p>
           </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button @click="generateInvoice" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+            Invoice
+          </button>
+          <button @click="sendSurvey" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            CSAT
+          </button>
+          <button @click="showReturnModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-accent-rose hover:bg-accent-rose/10">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" /></svg>
+            Return
+          </button>
           <button v-if="$page.props.auth?.user?.roles?.includes('admin')" @click="showDeleteModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-red-500 hover:text-red-400 hover:bg-red-500/10 border-red-500/20">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             Delete
@@ -113,25 +125,55 @@
             </div>
           </div>
 
-          <!-- Timeline -->
+          <!-- Audit Timeline -->
           <div class="glass rounded-2xl overflow-hidden">
-            <div class="px-5 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">Timeline</h3></div>
-            <div class="p-5 space-y-3">
-              <div class="flex items-center gap-3 text-xs">
-                <div class="w-2 h-2 rounded-full bg-nexus-400"></div>
-                <span class="text-nexus-400">Created {{ formatDate(order.created_at) }}</span>
-              </div>
-              <div v-if="order.dispatched_at" class="flex items-center gap-3 text-xs">
-                <div class="w-2 h-2 rounded-full bg-accent-cyan"></div>
-                <span class="text-nexus-400">Dispatched {{ formatDate(order.dispatched_at) }}</span>
-              </div>
-              <div v-if="order.delivered_at" class="flex items-center gap-3 text-xs">
-                <div class="w-2 h-2 rounded-full bg-accent-emerald"></div>
-                <span class="text-nexus-400">Delivered {{ formatDate(order.delivered_at) }}</span>
-              </div>
-              <div v-if="order.tracking_number" class="mt-3 pt-3 border-t border-white/[0.04]">
-                <div class="text-[10px] text-nexus-600 uppercase tracking-wider mb-1">Tracking</div>
-                <div class="text-xs font-mono text-accent-cyan">{{ order.tracking_number }}</div>
+            <div class="px-5 py-4 border-b border-white/[0.04] flex items-center gap-2">
+              <svg class="w-4 h-4 text-nexus-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <h3 class="text-sm font-semibold text-nexus-200">Activity Timeline</h3>
+            </div>
+            <div class="p-5">
+              <div class="relative">
+                <!-- Vertical line -->
+                <div class="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-nexus-500/30 via-nexus-600/20 to-transparent"></div>
+                
+                <div v-for="(event, i) in auditEvents" :key="event.id || i" class="relative pl-7 pb-4 last:pb-0">
+                  <!-- Dot -->
+                  <div :class="['absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 transition-all', eventDotClass(event)]"></div>
+                  
+                  <div class="text-sm text-nexus-200 leading-snug">{{ event.description }}</div>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[10px] text-nexus-600">{{ formatDate(event.created_at) }}</span>
+                    <span v-if="event.user" class="text-[10px] text-nexus-500 flex items-center gap-1">
+                      <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>
+                      {{ event.user.name }}
+                    </span>
+                    <span v-else-if="event.is_system" class="text-[10px] text-accent-violet/60 flex items-center gap-1">
+                      <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12" /></svg>
+                      System
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Fallback for orders without events -->
+                <div v-if="!auditEvents.length" class="space-y-3">
+                  <div class="relative pl-7">
+                    <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-nexus-500/40 bg-nexus-500/10"></div>
+                    <div class="text-sm text-nexus-400">Created {{ formatDate(order.created_at) }}</div>
+                  </div>
+                  <div v-if="order.dispatched_at" class="relative pl-7">
+                    <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-accent-cyan/40 bg-accent-cyan/10"></div>
+                    <div class="text-sm text-nexus-400">Dispatched {{ formatDate(order.dispatched_at) }}</div>
+                  </div>
+                  <div v-if="order.delivered_at" class="relative pl-7">
+                    <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-accent-emerald/40 bg-accent-emerald/10"></div>
+                    <div class="text-sm text-nexus-400">Delivered {{ formatDate(order.delivered_at) }}</div>
+                  </div>
+                </div>
+
+                <div v-if="order.tracking_number" class="mt-3 pt-3 border-t border-white/[0.04]">
+                  <div class="text-[10px] text-nexus-600 uppercase tracking-wider mb-1">Tracking</div>
+                  <div class="text-xs font-mono text-accent-cyan">{{ order.tracking_number }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -145,12 +187,32 @@
         @close="showDeleteModal = false" 
         @confirm="confirmDelete" 
       />
+
+      <!-- Return Modal -->
+      <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="showReturnModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div @click="showReturnModal = false" class="absolute inset-0 bg-black/60"></div>
+          <div class="relative glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-base font-bold text-nexus-100 mb-4">Request Return</h3>
+            <form @submit.prevent="submitReturn" class="space-y-4">
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Reason</label>
+                <select v-model="returnForm.reason" class="input-premium"><option value="defective">Defective Product</option><option value="wrong_item">Wrong Item</option><option value="not_as_described">Not As Described</option><option value="changed_mind">Changed Mind</option><option value="late_delivery">Late Delivery</option><option value="other">Other</option></select>
+              </div>
+              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Description</label><textarea v-model="returnForm.description" rows="3" class="input-premium resize-none" placeholder="Details about the return..."></textarea></div>
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" @click="showReturnModal = false" class="btn-secondary text-sm px-4 py-2">Cancel</button>
+                <button type="submit" class="btn-primary text-sm px-4 py-2">Submit Return</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Transition>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
@@ -162,7 +224,26 @@ const statusOptions = ['confirmed', 'processing', 'dispatched', 'in_transit', 'd
 const showStatusMenu = ref(false);
 const showPaymentMenu = ref(false);
 const showDeleteModal = ref(false);
+const showReturnModal = ref(false);
 const copied = ref(false);
+const returnForm = reactive({ reason: 'other', description: '' });
+
+const auditEvents = computed(() => props.order.events || []);
+
+function eventDotClass(event) {
+  const type = event.type;
+  if (type === 'created') return 'border-nexus-400/50 bg-nexus-400/15';
+  if (type === 'status_change') {
+    const to = event.metadata?.to;
+    if (to === 'delivered') return 'border-accent-emerald/50 bg-accent-emerald/15';
+    if (to === 'dispatched' || to === 'in_transit') return 'border-accent-cyan/50 bg-accent-cyan/15';
+    if (to === 'returned' || to === 'cancelled') return 'border-accent-rose/50 bg-accent-rose/15';
+    return 'border-accent-amber/50 bg-accent-amber/15';
+  }
+  if (type === 'payment_change') return 'border-accent-violet/50 bg-accent-violet/15';
+  if (type === 'dispatched') return 'border-accent-cyan/50 bg-accent-cyan/15';
+  return 'border-nexus-500/30 bg-nexus-500/10';
+}
 
 function copyShippingInfo() {
   const o = props.order;
@@ -201,5 +282,19 @@ function updatePaymentStatus(status) {
 
 function formatDate(d) {
   return d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+}
+
+function generateInvoice() {
+  router.post(`/orders/${props.order.id}/invoice`);
+}
+
+function sendSurvey() {
+  router.post(`/orders/${props.order.id}/survey`);
+}
+
+function submitReturn() {
+  router.post(`/orders/${props.order.id}/return`, { ...returnForm }, {
+    onSuccess: () => { showReturnModal.value = false; returnForm.reason = 'other'; returnForm.description = ''; }
+  });
 }
 </script>
