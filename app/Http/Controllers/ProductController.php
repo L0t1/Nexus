@@ -76,7 +76,7 @@ class ProductController extends Controller
 
     public function destroy(Request $request, Product $product)
     {
-        abort_unless($product->merchant_id === $request->user()->merchant_id, 403);
+        abort_unless($product->merchant_id === $request->user()->merchant?->id, 403);
         
         $product->delete();
 

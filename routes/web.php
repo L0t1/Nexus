@@ -127,14 +127,12 @@ Route::middleware(['auth'])->group(function () { // 'verified' removed temporari
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
-    // Delete routes — role check handled via frontend button visibility + controller ownership check
-    Route::delete('/inbox/{conversation}', [InboxController::class, 'destroy'])->name('inbox.destroy');
-    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-
     // Admin-only routes (requires the 'admin' role)
     Route::middleware('role:admin')->group(function () {
+        Route::delete('/inbox/{conversation}', [InboxController::class, 'destroy'])->name('inbox.destroy');
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
