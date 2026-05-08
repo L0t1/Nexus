@@ -78,15 +78,32 @@ class InboxController extends Controller
         abort_unless($conversation->merchant_id === $request->user()->merchant?->id, 403);
 
         $validated = $request->validate([
-            'body' => 'required|string|max:5000',
+            'body' => 'nullable|string|max:5000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
         ]);
+
+        // Determine message type and media
+        $type = 'text';
+        $media = null;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('chat-images', 'public');
+            $type = 'image';
+            $media = ['url' => asset('storage/' . $path), 'path' => $path];
+        }
+
+        // Must have either text or image
+        if (empty($validated['body']) && !$media) {
+            return back();
+        }
 
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'user_id' => $request->user()->id,
             'direction' => 'outbound',
-            'type' => 'text',
-            'body' => $validated['body'],
+            'type' => $type,
+            'body' => $validated['body'] ?? null,
+            'media' => $media,
             'status' => 'sent',
         ]);
 

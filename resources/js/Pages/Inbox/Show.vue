@@ -85,9 +85,21 @@
 
         <!-- Reply -->
         <div class="px-5 py-3.5 border-t border-white/[0.04]">
-          <form @submit.prevent="sendReply" class="flex gap-3">
+          <!-- Image preview strip -->
+          <div v-if="replyImage" class="mb-2 flex items-center gap-2">
+            <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-white/[0.08]">
+              <img :src="replyImagePreview" class="w-full h-full object-cover" />
+              <button @click="clearReplyImage" class="absolute top-0.5 right-0.5 w-4 h-4 bg-black/60 rounded-full flex items-center justify-center text-white text-[10px] hover:bg-black/80">&times;</button>
+            </div>
+            <span class="text-xs text-nexus-500">{{ replyImage.name }}</span>
+          </div>
+          <form @submit.prevent="sendReply" class="flex gap-2 items-center">
+            <label class="p-2.5 rounded-xl text-nexus-500 hover:text-nexus-300 hover:bg-white/[0.04] cursor-pointer transition-colors shrink-0">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" /></svg>
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" @change="onReplyImageSelect" class="hidden" />
+            </label>
             <input v-model="replyText" type="text" placeholder="Type a message..." class="input-premium flex-1" />
-            <button type="submit" :disabled="!replyText.trim()" class="btn-primary px-5 disabled:opacity-30">Send</button>
+            <button type="submit" :disabled="!replyText.trim() && !replyImage" class="btn-primary px-5 disabled:opacity-30">Send</button>
           </form>
         </div>
       </div>
@@ -207,7 +219,21 @@ onUnmounted(() => {
 });
 
 const replyText = ref('');
+const replyImage = ref(null);
+const replyImagePreview = ref(null);
 const showOrderPanel = ref(false);
+
+function onReplyImageSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  replyImage.value = file;
+  replyImagePreview.value = URL.createObjectURL(file);
+}
+
+function clearReplyImage() {
+  replyImage.value = null;
+  replyImagePreview.value = null;
+}
 const showDeleteModal = ref(false);
 const selectedProductId = ref('');
 const itemName = ref('');
@@ -278,10 +304,15 @@ function openSmartOrder() {
 }
 
 function sendReply() {
-  if (!replyText.value.trim()) return;
-  router.post(`/inbox/${props.conversation.id}/reply`, { body: replyText.value }, {
+  if (!replyText.value.trim() && !replyImage.value) return;
+
+  const data = new FormData();
+  if (replyText.value.trim()) data.append('body', replyText.value);
+  if (replyImage.value) data.append('image', replyImage.value);
+
+  router.post(`/inbox/${props.conversation.id}/reply`, data, {
     preserveScroll: true,
-    onSuccess: () => { replyText.value = ''; nextTick(() => scrollToBottom()); },
+    onSuccess: () => { replyText.value = ''; clearReplyImage(); nextTick(() => scrollToBottom()); },
   });
 }
 
