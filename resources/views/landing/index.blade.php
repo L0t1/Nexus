@@ -257,6 +257,106 @@
 <p class="font-body-md text-body-md text-on-surface-variant">Flawless tracking pipeline from 'Pending Review' to 'Successfully Delivered'. Monitor logistics without leaving the command center.</p>
 </div>
 </div>
+<!-- Small Feature 3 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">storefront</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Public Storefront</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">A branded catalog where customers browse and order directly via WhatsApp.</p>
+</div>
+</div>
+<!-- Small Feature 4 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">sync</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">WhatsApp Sync</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Automatically push your inventory to WhatsApp Business API native catalogs.</p>
+</div>
+</div>
+<!-- Small Feature 5 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">monitoring</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Demand Forecast</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">AI-powered 14-day predictions, restock alerts, and team activity logs.</p>
+</div>
+</div>
+<!-- Small Feature 6 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">receipt_long</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Invoices & Coupons</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">One-click PDFs, tax handling, and robust discount validation rules.</p>
+</div>
+</div>
+<!-- Medium Feature 2 -->
+<div class="glass-card rounded-xl p-lg md:col-span-2 flex flex-col justify-center min-h-[300px] relative overflow-hidden bg-gradient-to-br from-surface-dim to-surface-container-low">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center mb-md relative z-10">
+<span class="material-symbols-outlined text-[24px] text-primary">sentiment_satisfied</span>
+</div>
+<div class="relative z-10 max-w-lg">
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">CSAT & Returns</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Automated satisfaction surveys with NPS scoring, and a complete lifecycle workflow for order returns and refunds.</p>
+</div>
+</div>
+<!-- Small Feature 7 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">contacts</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">CRM Profiles</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Unified customer records tracking total spent, order history, and platform origins.</p>
+</div>
+</div>
+<!-- Small Feature 8 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">sell</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Tags & Segments</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Auto-tag customers based on behavioral rules like order count or geographic location.</p>
+</div>
+</div>
+<!-- Small Feature 9 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">campaign</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Broadcasts</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Send mass updates, scheduled messages, and automated follow-up sequences.</p>
+</div>
+</div>
+<!-- Medium Feature 3 -->
+<div class="glass-card rounded-xl p-lg md:col-span-2 flex flex-col justify-center min-h-[300px] relative overflow-hidden bg-gradient-to-br from-surface-dim to-surface-container-low">
+<div class="w-12 h-12 rounded-lg bg-secondary-container/20 border border-secondary/30 flex items-center justify-center mb-md relative z-10">
+<span class="material-symbols-outlined text-[24px] text-secondary">quick_phrases</span>
+</div>
+<div class="relative z-10 max-w-lg">
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Quick Reply Templates</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Type '/' to instantly insert pre-written replies with dynamic customer variables. Save hours on repetitive questions.</p>
+</div>
+</div>
+<!-- Small Feature 10 -->
+<div class="glass-card rounded-xl p-lg flex flex-col justify-between min-h-[300px]">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high border border-white/10 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-[24px] text-on-surface">format_list_bulleted</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">Activity Logs</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">A comprehensive, immutable audit trail tracking all agent actions across the workspace.</p>
+</div>
+</div>
 </div>
 </section>
 <!-- Pricing -->
@@ -273,8 +373,9 @@
 <div class="font-h1 text-h1 text-on-surface mb-md">$49<span class="text-h3 text-on-surface-variant">/mo</span></div>
 <ul class="space-y-sm mb-lg border-t border-white/5 pt-md">
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> 1 Channel Integration</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> 500 Orders/mo</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Basic Inbox</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> 500 Orders / mo</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Unified Inbox</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> CRM Profiles & Tags</li>
 </ul>
 <button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">Select Starter</button>
 </div>
@@ -282,23 +383,26 @@
 <div class="glass-layer-2 rounded-xl p-xl border-primary/30 relative transform md:scale-105 z-10">
 <div class="absolute top-0 right-0 bg-gradient-to-r from-primary to-secondary text-surface-container-lowest font-label-sm text-[10px] px-sm py-xs rounded-bl-lg rounded-tr-lg uppercase tracking-widest font-bold">Recommended</div>
 <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-sm">Pro</div>
-<div class="font-h1 text-h1 text-on-surface mb-md">$149<span class="text-h3 text-on-surface-variant">/mo</span></div>
+<div class="font-h1 text-h1 text-on-surface mb-md">$99<span class="text-h3 text-on-surface-variant">/mo</span></div>
 <div class="text-sm text-secondary mb-md font-bold">30-Day Free Trial</div>
 <ul class="space-y-sm mb-lg border-t border-white/10 pt-md">
-<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Unlimited Channels</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Unlimited Orders</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Basic AI Extraction</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Unlimited Channels & Orders</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Storefront & WA Sync</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Invoices, Coupons & CSAT</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Team Logs & Broadcasts</li>
 </ul>
 <button class="w-full btn-gradient text-white py-sm rounded-lg font-label-sm text-label-sm uppercase">Start Pro Trial</button>
 </div>
 <!-- Ultimate -->
 <div class="glass-card rounded-xl p-xl">
 <div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-sm">Ultimate</div>
-<div class="font-h1 text-h1 text-on-surface mb-md">$399<span class="text-h3 text-on-surface-variant">/mo</span></div>
+<div class="font-h3 text-h3 text-on-surface mb-md flex items-center h-[57px]">Custom Pricing</div>
 <ul class="space-y-sm mb-lg border-t border-white/5 pt-md">
-<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Full AI Extraction Suite</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Priority Logistics API</li>
-<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Broadcasts & Priority Inbox</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Everything in Pro</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Full AI Order Extraction</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Smart Order (AI Auto-fills)</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> AI Demand Forecasting</li>
+<li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Dedicated Priority API</li>
 </ul>
 <button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">Contact Sales</button>
 </div>

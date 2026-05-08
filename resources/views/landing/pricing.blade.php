@@ -172,11 +172,11 @@
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">Basic Analytics</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Unified Inbox & Manual Orders</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">No AI Features</span>
+<span class="font-body-md text-body-md text-on-surface-variant">CRM Profiles & Basic Tags</span>
 </li>
 </ul>
 </div>
@@ -202,23 +202,23 @@
 <ul class="flex flex-col gap-md">
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface">Unlimited Orders</span>
+<span class="font-body-md text-body-md text-on-surface">Unlimited Channels & Orders</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface">Unlimited Omni-Channels</span>
+<span class="font-body-md text-body-md text-on-surface">Storefront & WA Sync</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface">Advanced Analytics & Products</span>
+<span class="font-body-md text-body-md text-on-surface">Invoices, Coupons & CSAT</span>
+</li>
+<li class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface">Team Logs & Broadcasts</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 <span class="font-body-md text-body-md text-on-surface">No AI Features</span>
-</li>
-<li class="flex items-center gap-md">
-<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface">Product Management</span>
 </li>
 </ul>
 </div>
@@ -239,19 +239,23 @@
 <ul class="flex flex-col gap-md">
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">Unlimited Orders & Channels</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Everything in Pro</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">Unlimited AI Auto-Reply</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Full AI Order Extraction</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">✨ Smart Order — AI auto-fills orders from chat</span>
+<span class="font-body-md text-body-md text-on-surface-variant">✨ Smart Order (AI Auto-fills)</span>
 </li>
 <li class="flex items-center gap-md">
 <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
-<span class="font-body-md text-body-md text-on-surface-variant">Broadcasts & Priority Inbox</span>
+<span class="font-body-md text-body-md text-on-surface-variant">AI Demand Forecasting</span>
+</li>
+<li class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Dedicated Priority API</span>
 </li>
 </ul>
 </div>
@@ -272,47 +276,95 @@
 <tbody class="font-body-md text-body-md text-on-surface-variant">
 <!-- Category Row -->
 <tr class="bg-white/5 border-b border-white/5">
-<td class="p-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-widest bg-surface-container-low" colspan="4">Core CRM Engine</td>
+<td class="p-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-widest bg-surface-container-low" colspan="4">Core Operations</td>
 </tr>
 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Contact Storage Limit</td>
-<td class="p-md text-center">10,000</td>
+<td class="p-md px-lg">Omni-Channel Inbox</td>
+<td class="p-md text-center">Basic</td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]">Unlimited</td>
+<td class="p-md text-center">Priority Routing</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Order Management</td>
+<td class="p-md text-center">500 / mo</td>
 <td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]">Unlimited</td>
 <td class="p-md text-center">Unlimited</td>
 </tr>
 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Custom Data Fields</td>
-<td class="p-md text-center">50</td>
-<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]">500</td>
-<td class="p-md text-center">Unlimited</td>
-</tr>
-<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Omni-channel Feed</td>
-<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md px-lg">Team &amp; Activity Logs</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
 <td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
 <td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
 </tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Product Inventory</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+
 <!-- Category Row -->
 <tr class="bg-white/5 border-b border-white/5">
-<td class="p-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-widest bg-surface-container-low" colspan="4">Intelligence &amp; Automation</td>
+<td class="p-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-widest bg-surface-container-low" colspan="4">Marketing &amp; Commerce</td>
 </tr>
 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Workflow Automations</td>
-<td class="p-md text-center">Basic (10 rules)</td>
-<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]">Advanced (Unlimited)</td>
-<td class="p-md text-center">Custom Architecture</td>
+<td class="p-md px-lg">CRM Profiles &amp; Tags</td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
 </tr>
 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Predictive Lead Scoring (AI)</td>
+<td class="p-md px-lg">Broadcasts &amp; Follow-ups</td>
 <td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
 <td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
 <td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Public Storefront</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">WhatsApp Catalog Sync</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Invoices, Coupons &amp; CSAT</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+</tr>
+
+<!-- Category Row -->
+<tr class="bg-white/5 border-b border-white/5">
+<td class="p-md px-lg font-label-sm text-label-sm text-on-surface uppercase tracking-widest bg-surface-container-low" colspan="4">AI Intelligence</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Full AI Order Extraction</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-outline-variant">remove</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-secondary">check</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">Smart Order (AI Auto-fills)</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-outline-variant">remove</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-secondary">check</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-md px-lg">AI Demand Forecasting</td>
+<td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-outline-variant">remove</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-secondary">check</span></td>
 </tr>
 <tr class="hover:bg-white/5 transition-colors">
-<td class="p-md px-lg">Sentiment Analysis</td>
+<td class="p-md px-lg">AI Auto-Reply</td>
 <td class="p-md text-center text-outline-variant"><span class="material-symbols-outlined">remove</span></td>
-<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-primary">check</span></td>
-<td class="p-md text-center"><span class="material-symbols-outlined text-primary">check</span></td>
+<td class="p-md text-center border-l border-r border-primary/10 bg-primary/[0.02]"><span class="material-symbols-outlined text-outline-variant">remove</span></td>
+<td class="p-md text-center"><span class="material-symbols-outlined text-secondary">check</span></td>
 </tr>
 </tbody>
 </table>

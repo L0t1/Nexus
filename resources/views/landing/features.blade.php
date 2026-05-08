@@ -227,6 +227,106 @@
 </div>
 </div>
 </section>
+
+<!-- Section 3: CRM & Marketing Suite -->
+<section class="flex flex-col gap-lg mt-xl mb-xl">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[28px]" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<h2 class="font-h2 text-h2 text-on-surface">CRM & Marketing Suite</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+    <!-- Profiles -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[20px]">contacts</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">CRM Profiles</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Centralized customer records tracking total spent, lifetime orders, and contact history.</p>
+        </div>
+    </div>
+    <!-- Tags -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]">sell</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Auto-Tagging</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Create behavioral rules that automatically assign tags when criteria like 'Total Spent > $500' are met.</p>
+        </div>
+    </div>
+    <!-- Broadcasts -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[20px]">schedule</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Follow-Up Sequences</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Recover abandoned carts or send post-delivery check-ins with automated scheduled messaging.</p>
+        </div>
+    </div>
+    <!-- Templates -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]">quick_phrases</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Slash-Command Replies</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Save hours with dynamic templates (e.g., "Hi {name}") accessible instantly via the '/' command.</p>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Section 4: Commerce & Analytics Suite -->
+<section class="flex flex-col gap-lg mt-xl mb-xl">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">insights</span>
+<h2 class="font-h2 text-h2 text-on-surface">Commerce & Analytics Suite</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+    <!-- Storefront -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Public Storefront</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">A branded, public-facing product catalog. Customers browse and order directly via WhatsApp.</p>
+        </div>
+    </div>
+    <!-- WA Sync -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[20px]">sync</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">WhatsApp Sync</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Keep your Meta WhatsApp Business catalog in perfect sync with your Nexus inventory.</p>
+        </div>
+    </div>
+    <!-- Forecasting -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Demand Forecasting</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">AI-powered 14-day predictions, alerting you before top-selling products go out of stock.</p>
+        </div>
+    </div>
+    <!-- CSAT -->
+    <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
+        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[20px]">sentiment_satisfied</span>
+        </div>
+        <div>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">CSAT & Returns</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">Automated satisfaction surveys, NPS scoring, and a full lifecycle for returns and refunds.</p>
+        </div>
+    </div>
+</div>
+</section>
 </main>
 <!-- Footer (Generated from JSON) -->
 <footer class="w-full bg-surface-container-lowest border-t border-white/5 mt-2xl">

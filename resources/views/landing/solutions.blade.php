@@ -165,6 +165,9 @@
 <li class="flex items-center gap-md font-body-md text-body-md text-on-surface">
 <span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Automated quick replies
                     </li>
+<li class="flex items-center gap-md font-body-md text-body-md text-on-surface">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span> Public Storefront & WA Sync
+                    </li>
 </ul>
 </div>
 <!-- Solution 2: High-Volume Brands (Spans 8 columns, feature image) -->
@@ -176,7 +179,7 @@
 </div>
 <h3 class="font-h3 text-h3 mb-sm text-primary">High-Volume E-com</h3>
 <p class="font-body-md text-body-md text-on-surface-variant">
-                            Built for established brands processing thousands of orders daily. Deploy complex automation logic, predictive inventory alerts, and deep-dive cohort analytics without database lag.
+                            Built for established brands processing thousands of orders daily. Deploy complex automation logic, AI demand forecasting, CSAT surveys, and deep-dive cohort analytics without database lag.
                         </p>
 </div>
 <div class="mt-lg flex items-center gap-md">
