@@ -15,6 +15,7 @@ class ContactController extends Controller
         $merchant = $request->user()->merchant;
 
         $contacts = $merchant->contacts()
+            ->with('tags:id,name,color')
             ->when($request->input('search'), function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -24,13 +25,19 @@ class ContactController extends Controller
                 });
             })
             ->when($request->input('platform'), fn ($q, $p) => $q->where('platform', $p))
+            ->when($request->input('tag'), function ($q, $tagId) {
+                $q->whereHas('tags', fn ($t) => $t->where('tags.id', $tagId));
+            })
             ->withCount(['orders', 'conversations'])
             ->latest()
             ->paginate(25);
 
+        $allTags = $merchant->tags()->withCount('contacts')->get();
+
         return Inertia::render('Contacts/Index', [
             'contacts' => $contacts,
-            'filters' => $request->only(['search', 'platform']),
+            'tags'     => $allTags,
+            'filters'  => $request->only(['search', 'platform', 'tag']),
         ]);
     }
 
@@ -38,11 +45,18 @@ class ContactController extends Controller
     {
         abort_unless($contact->merchant_id === $request->user()->merchant?->id, 403);
 
-        $contact->load(['conversations' => fn ($q) => $q->latest()->take(5), 'orders' => fn ($q) => $q->latest()->take(10)]);
+        $contact->load([
+            'conversations' => fn ($q) => $q->latest()->take(5),
+            'orders' => fn ($q) => $q->latest()->take(10),
+            'tags:id,name,color',
+        ]);
         $contact->loadCount(['orders', 'conversations']);
 
+        $merchantTags = $request->user()->merchant->tags()->get(['id', 'name', 'color']);
+
         return Inertia::render('Contacts/Show', [
-            'contact' => $contact,
+            'contact'      => $contact,
+            'merchantTags' => $merchantTags,
         ]);
     }
 

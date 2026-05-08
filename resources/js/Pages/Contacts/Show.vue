@@ -16,6 +16,33 @@
         </div>
       </div>
 
+      <!-- Tags Section -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <span v-for="tag in contact.tags" :key="tag.id" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity" :style="{ backgroundColor: tag.color + '20', color: tag.color }" @click="toggleTag(tag.id)">
+          <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: tag.color }"></span>
+          {{ tag.name }}
+          <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </span>
+        
+        <!-- Add Tag Dropdown -->
+        <div class="relative">
+          <button @click="showTagDropdown = !showTagDropdown" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-nexus-500/10 text-nexus-400 hover:text-nexus-300 hover:bg-nexus-500/15 transition-all">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+            Add Tag
+          </button>
+          <div v-if="showTagDropdown" @click="showTagDropdown = false" class="fixed inset-0 z-30"></div>
+          <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0 scale-95">
+            <div v-if="showTagDropdown" class="absolute top-full left-0 mt-2 w-48 glass-strong rounded-xl overflow-hidden shadow-2xl z-40 py-1 border border-white/10">
+              <div v-for="mt in availableTags" :key="mt.id" @click="toggleTag(mt.id)" class="px-4 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2 text-xs text-nexus-200 transition-colors">
+                <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: mt.color }"></span>
+                {{ mt.name }}
+              </div>
+              <div v-if="!availableTags.length" class="px-4 py-3 text-center text-xs text-nexus-600">All tags assigned</div>
+            </div>
+          </Transition>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Edit form -->
         <div class="lg:col-span-2">
@@ -70,15 +97,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PlatformIcon from '@/Components/PlatformIcon.vue';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
 
-const props = defineProps({ contact: { type: Object, required: true } });
+const props = defineProps({
+  contact: { type: Object, required: true },
+  merchantTags: { type: Array, default: () => [] },
+});
 
 const showDeleteModal = ref(false);
+const showTagDropdown = ref(false);
 
 const form = useForm({
   name: props.contact.name || '',
@@ -90,7 +121,18 @@ const form = useForm({
   notes: props.contact.notes || '',
 });
 
+// Tags not yet assigned to this contact
+const availableTags = computed(() => {
+  const assignedIds = (props.contact.tags || []).map(t => t.id);
+  return props.merchantTags.filter(t => !assignedIds.includes(t.id));
+});
+
 function save() { form.put(`/contacts/${props.contact.id}`); }
+
+function toggleTag(tagId) {
+  showTagDropdown.value = false;
+  router.post(`/contacts/${props.contact.id}/tag`, { tag_id: tagId }, { preserveState: true });
+}
 
 function confirmDelete() {
   showDeleteModal.value = false;
