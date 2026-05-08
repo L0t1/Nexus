@@ -22,6 +22,10 @@ class Merchant extends Model
         'country',
         'city',
         'address',
+        'default_currency',
+        'default_tax_rate',
+        'tax_label',
+        'tax_inclusive',
         'subscription_tier',
         'subscription_expires_at',
         'is_active',
@@ -42,6 +46,8 @@ class Merchant extends Model
         'onboarding_completed' => 'boolean',
         'ai_enabled' => 'boolean',
         'ai_monthly_messages_count' => 'integer',
+        'default_tax_rate' => 'decimal:2',
+        'tax_inclusive' => 'boolean',
     ];
 
     // ─── Relationships ────────────────────────────
@@ -69,6 +75,56 @@ class Merchant extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    public function replyTemplates(): HasMany
+    {
+        return $this->hasMany(ReplyTemplate::class);
+    }
+
+    public function scheduledMessages(): HasMany
+    {
+        return $this->hasMany(ScheduledMessage::class);
+    }
+
+    public function followUpSequences(): HasMany
+    {
+        return $this->hasMany(FollowUpSequence::class);
+    }
+
+    public function coupons(): HasMany
+    {
+        return $this->hasMany(Coupon::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function returns(): HasMany
+    {
+        return $this->hasMany(OrderReturn::class);
+    }
+
+    public function csatSurveys(): HasMany
+    {
+        return $this->hasMany(CsatSurvey::class);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
+    public function forecasts(): HasMany
+    {
+        return $this->hasMany(DemandForecast::class);
     }
 
     // ─── Helpers ──────────────────────────────────
