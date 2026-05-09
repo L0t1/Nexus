@@ -140,7 +140,10 @@ class OrderController extends Controller
         $this->notifications->sendOrderNotification($order, 'confirmed');
 
         // Activity Log
-        \App\Models\ActivityLog::record($merchant->id, 'order.created', "Created order #{$order->order_number} for {$order->customer_name}.", 'Order', $order->id);
+        \App\Models\ActivityLog::record($merchant->id, 'order.created', "Created order #{$order->order_number} for {$order->customer_name}.", 'Order', $order->id, [
+            'order' => $order->order_number,
+            'customer' => $order->customer_name
+        ]);
 
         return redirect()->route('orders.show', $order)
             ->with('success', 'Order #' . $order->order_number . ' created successfully.');
@@ -200,7 +203,10 @@ class OrderController extends Controller
         }
 
         // Activity Log
-        \App\Models\ActivityLog::record($order->merchant_id, 'order.status_changed', "Updated order #{$order->order_number} status to {$order->fulfillment_status}.", 'Order', $order->id);
+        \App\Models\ActivityLog::record($order->merchant_id, 'order.status_changed', "Updated order #{$order->order_number} status to {$order->fulfillment_status}.", 'Order', $order->id, [
+            'order' => $order->order_number,
+            'status' => $order->fulfillment_status
+        ]);
 
         return back()->with('success', 'Order status updated.');
     }
@@ -238,7 +244,9 @@ class OrderController extends Controller
         $this->notifications->sendOrderNotification($order->fresh(), 'dispatched');
 
         // Activity Log
-        \App\Models\ActivityLog::record($order->merchant_id, 'order.dispatched', "Dispatched order #{$order->order_number}. Tracking: {$result['tracking_number']}.", 'Order', $order->id);
+        \App\Models\ActivityLog::record($order->merchant_id, 'order.dispatched', "Dispatched order #{$order->order_number}. Tracking: {$result['tracking_number']}.", 'Order', $order->id, [
+            'order' => $order->order_number
+        ]);
 
         return back()->with('success', "Order dispatched. Tracking: {$result['tracking_number']}");
     }

@@ -689,4 +689,38 @@ export default {
     dark: 'Modaliteti i Errët',
     light: 'Modaliteti i Ndritshëm',
   },
+
+  // ─── Team Activity ────────────────────────────────
+  teamActivity: {
+    title: 'Aktiviteti i Ekipit',
+    subtitle: 'Ndiqni performancën e ekipit tuaj dhe veprimet e fundit',
+    activeDays: 'Ditë Aktive',
+    actions: 'Veprime',
+    perDay: 'Për Ditë',
+    activityBreakdown: 'Analiza e Aktivitetit',
+    activityFeed: 'Burimi i Aktivitetit',
+    noActivity: 'Nuk ka aktivitet të regjistruar ende.',
+    system: 'Sistemi',
+    last7: '7 Ditët e Fundit',
+    last14: '14 Ditët e Fundit',
+    last30: '30 Ditët e Fundit',
+  },
+
+  activity: {
+    'order.created': 'Krijoi porosinë #{order} për {customer}',
+    'order.status_changed': 'Ndryshoi statusin e porosisë #{order} në {status}',
+    'order.dispatched': 'Dërgoi porosinë #{order}',
+    'order.deleted': 'Fshiu porosinë #{order}',
+    'message.sent': 'Dërgoi mesazh te {customer}',
+    'product.created': 'Krijoi produktin: {name}',
+    'product.updated': 'Përditësoi produktin: {name}',
+    'product.deleted': 'Fshiu produktin: {name}',
+    'agent.invited': 'Ftoi agjentin e ri: {name}',
+    'agent.removed': 'Hoqi agjentin: {name}',
+    'settings.profile_updated': 'Përditësoi cilësimet e profilit të biznesit',
+    'settings.account_updated': 'Përditësoi cilësimet e llogarisë personale',
+    'catalog.synced': 'Katalogu i WhatsApp u sinkronizua: {count} produkte',
+    'coupon.created': 'Krijoi kuponin: {code}',
+    'invoice.generated': 'Gjeneroi faturën për porosinë #{order}',
+  },
 };

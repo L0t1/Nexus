@@ -42,7 +42,9 @@
               <div class="flex items-center gap-3">
                 <div :class="['w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold', log.user ? 'bg-accent-violet/15 text-accent-violet' : 'bg-nexus-500/10 text-nexus-600']">{{ log.user?.name?.[0] || 'S' }}</div>
                 <div>
-                  <div class="text-sm text-nexus-200">{{ log.description }}</div>
+                  <div class="text-sm text-nexus-200">
+                    {{ $te('activity.' + log.action) ? $t('activity.' + log.action, log.metadata || {}) : log.description }}
+                  </div>
                   <div class="flex items-center gap-2 mt-0.5">
                     <span class="text-[10px] text-nexus-500">{{ log.user?.name || $t('teamActivity.system') }}</span>
                     <span class="text-[10px] text-nexus-700">·</span>

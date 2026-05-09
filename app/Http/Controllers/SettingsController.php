@@ -44,7 +44,7 @@ class SettingsController extends Controller
 
         $user->assignRole('agent');
 
-        \App\Models\ActivityLog::record($merchant->id, 'agent.invited', "Invited new agent: {$user->name}.", 'User', $user->id);
+        \App\Models\ActivityLog::record($merchant->id, 'agent.invited', "Invited new agent: {$user->name}.", 'User', $user->id, ['name' => $user->name]);
 
         return back()->with('success', 'Agent added successfully.');
     }
@@ -57,7 +57,7 @@ class SettingsController extends Controller
             abort(403);
         }
 
-        \App\Models\ActivityLog::record($merchant->id, 'agent.removed', "Removed agent: {$agent->name}.", 'User', $agent->id);
+        \App\Models\ActivityLog::record($merchant->id, 'agent.removed', "Removed agent: {$agent->name}.", 'User', $agent->id, ['name' => $agent->name]);
         $agent->delete();
 
         return back()->with('success', 'Agent removed successfully.');

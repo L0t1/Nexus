@@ -689,4 +689,38 @@ export default {
     dark: 'Dark Mode',
     light: 'Light Mode',
   },
+
+  // ─── Team Activity ────────────────────────────────
+  teamActivity: {
+    title: 'Team Activity',
+    subtitle: 'Track your team’s performance and recent actions',
+    activeDays: 'Active Days',
+    actions: 'Actions',
+    perDay: 'Per Day',
+    activityBreakdown: 'Activity Breakdown',
+    activityFeed: 'Activity Feed',
+    noActivity: 'No activity logged yet.',
+    system: 'System',
+    last7: 'Last 7 Days',
+    last14: 'Last 14 Days',
+    last30: 'Last 30 Days',
+  },
+
+  activity: {
+    'order.created': 'Created order #{order} for {customer}',
+    'order.status_changed': 'Updated order #{order} status to {status}',
+    'order.dispatched': 'Dispatched order #{order}',
+    'order.deleted': 'Deleted order #{order}',
+    'message.sent': 'Sent message to {customer}',
+    'product.created': 'Created product: {name}',
+    'product.updated': 'Updated product: {name}',
+    'product.deleted': 'Deleted product: {name}',
+    'agent.invited': 'Invited new agent: {name}',
+    'agent.removed': 'Removed agent: {name}',
+    'settings.profile_updated': 'Updated business profile settings',
+    'settings.account_updated': 'Updated personal account settings',
+    'catalog.synced': 'WhatsApp catalog synced: {count} products',
+    'coupon.created': 'Created coupon: {code}',
+    'invoice.generated': 'Generated invoice for order #{order}',
+  },
 };

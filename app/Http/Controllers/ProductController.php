@@ -42,7 +42,7 @@ class ProductController extends Controller
         unset($validated['image']);
 
         $product = $request->user()->merchant->products()->create($validated);
-        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.created', "Created product: {$product->name}.", 'Product', $product->id);
+        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.created', "Created product: {$product->name}.", 'Product', $product->id, ['name' => $product->name]);
 
         return redirect()->back()->with('success', 'Product created successfully.');
     }
@@ -71,7 +71,7 @@ class ProductController extends Controller
         unset($validated['image']);
 
         $product->update($validated);
-        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.updated', "Updated product: {$product->name}.", 'Product', $product->id);
+        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.updated', "Updated product: {$product->name}.", 'Product', $product->id, ['name' => $product->name]);
 
         return redirect()->back()->with('success', 'Product updated successfully.');
     }
@@ -80,7 +80,7 @@ class ProductController extends Controller
     {
         abort_unless($product->merchant_id === $request->user()->merchant?->id, 403);
         
-        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.deleted', "Deleted product: {$product->name}.", 'Product', $product->id);
+        \App\Models\ActivityLog::record($request->user()->merchant_id, 'product.deleted', "Deleted product: {$product->name}.", 'Product', $product->id, ['name' => $product->name]);
         $product->delete();
 
         return redirect()->back()->with('success', 'Product deleted successfully.');
