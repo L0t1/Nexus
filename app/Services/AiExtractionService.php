@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Message;
+use App\Models\Order;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -49,6 +50,11 @@ class AiExtractionService
                         'ai_extraction' => $data,
                         'is_ai_processed' => true,
                     ]);
+
+                    // Automatically create/update a draft order if intent is high
+                    if (!empty($data['has_order_intent'])) {
+                        $this->createDraftOrder($message, $data);
+                    }
                 }
             } else {
                 Log::warning('OpenAI API error', ['status' => $response->status(), 'response' => $response->body()]);
@@ -164,5 +170,40 @@ PROMPT;
             $data['street_address'] ?? null,
             $data['product_intent'] ?? null,
         ]));
+    }
+
+    private function createDraftOrder(Message $message, array $data): void
+    {
+        $conversation = $message->conversation;
+        if (!$conversation) return;
+
+        // Find existing draft for this conversation, or create a new one
+        $order = Order::firstOrNew([
+            'conversation_id' => $conversation->id,
+            'fulfillment_status' => 'draft',
+        ]);
+
+        $order->merchant_id = $conversation->merchant_id;
+        $order->contact_id = $message->contact_id ?? $conversation->contact_id;
+        $order->customer_name = $data['customer_name'] ?? $order->customer_name;
+        $order->customer_phone = $data['phone_number'] ?? $order->customer_phone;
+        $order->shipping_city = $data['city'] ?? $order->shipping_city;
+        $order->shipping_neighborhood = $data['neighborhood'] ?? $order->shipping_neighborhood;
+        $order->shipping_street = $data['street_address'] ?? $order->shipping_street;
+        $order->is_ai_generated = true;
+
+        if (!empty($data['product_intent'])) {
+            $items = $order->items ?? [];
+            if (empty($items)) {
+                $items[] = [
+                    'name' => $data['product_intent'],
+                    'qty' => $data['quantity'] ?? 1,
+                    'price' => 0,
+                ];
+                $order->items = $items;
+            }
+        }
+
+        $order->save();
     }
 }

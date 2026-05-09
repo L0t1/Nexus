@@ -34,7 +34,14 @@
           </thead>
           <tbody>
             <tr v-for="order in orders?.data" :key="order.id" class="cursor-pointer group" @click="$inertia.visit(`/orders/${order.id}`)">
-              <td><span class="font-mono text-xs font-medium text-nexus-400 group-hover:text-nexus-300 transition-colors">{{ order.order_number }}</span></td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-medium text-nexus-400 group-hover:text-nexus-300 transition-colors">{{ order.order_number }}</span>
+                  <div v-if="order.is_ai_generated" title="AI Generated" class="w-4 h-4 rounded-full bg-accent-violet/10 flex items-center justify-center">
+                    <svg class="w-2.5 h-2.5 text-accent-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12" /></svg>
+                  </div>
+                </div>
+              </td>
               <td>
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-nexus-500/15 to-accent-violet/15 flex items-center justify-center text-[10px] font-bold text-nexus-400">{{ order.customer_name?.[0] }}</div>

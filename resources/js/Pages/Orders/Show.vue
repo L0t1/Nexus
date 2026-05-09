@@ -6,11 +6,21 @@
         <div class="flex items-center gap-4">
           <button @click="$inertia.visit('/orders')" class="p-2 rounded-xl hover:bg-surface-hover text-nexus-500 hover:text-nexus-300 transition-all"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button>
           <div>
-            <h2 class="text-xl font-bold font-mono text-nexus-100 tracking-tight">{{ order.order_number }}</h2>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-bold font-mono text-nexus-100 tracking-tight">{{ order.order_number }}</h2>
+              <div v-if="order.is_ai_generated" class="px-2 py-0.5 rounded-full bg-accent-violet/10 border border-accent-violet/20 text-[10px] font-bold text-accent-violet uppercase tracking-wider flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12" /></svg>
+                AI Generated
+              </div>
+            </div>
             <p class="text-xs text-nexus-500 mt-0.5">{{ formatDate(order.created_at) }}</p>
           </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
+          <button v-if="order.conversation_id" @click="$inertia.visit(`/inbox/${order.conversation_id}`)" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 border-nexus-500/20 text-nexus-300 hover:bg-nexus-500/10">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+            View Chat
+          </button>
           <button @click="generateInvoice" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
             Invoice
