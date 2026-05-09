@@ -32,23 +32,36 @@ class Merchant extends Model
         'onboarding_completed',
         'ai_enabled',
         'ai_monthly_messages_count',
+        'ai_extra_credits',
         'ai_messages_reset_at',
         'settings',
         'meta_credentials',
     ];
 
     protected $casts = [
-        'settings' => 'encrypted:array',
-        'meta_credentials' => 'encrypted:array',
+        'settings' => 'array',
+        'meta_credentials' => 'array',
         'subscription_expires_at' => 'datetime',
         'ai_messages_reset_at' => 'datetime',
         'is_active' => 'boolean',
         'onboarding_completed' => 'boolean',
         'ai_enabled' => 'boolean',
         'ai_monthly_messages_count' => 'integer',
+        'ai_extra_credits' => 'integer',
         'default_tax_rate' => 'decimal:2',
         'tax_inclusive' => 'boolean',
     ];
+
+    protected $appends = [
+        'features',
+        'ai_messages_remaining',
+        'orders_monthly_limit',
+    ];
+
+    public function getFeaturesAttribute()
+    {
+        return $this->allowed_features;
+    }
 
     // ─── Relationships ────────────────────────────
 
@@ -131,9 +144,10 @@ class Merchant extends Model
 
     // Messages per month each tier may auto-send via AI (null = unlimited)
     public const AI_MONTHLY_LIMITS = [
-        'starter'  => 0,    // no AI
-        'pro'      => 0,    // no AI
-        'ultimate' => null, // unlimited
+        'starter'  => 0,      // No AI
+        'growth'   => 300,    // Basic AI Extraction
+        'scale'    => 1500,   // Full AI Assistant + Auto Replies
+        'ultimate' => null,   // Unlimited (Custom/Enterprise)
     ];
 
     public const FEATURES_MAP = [
@@ -141,24 +155,36 @@ class Merchant extends Model
             'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
             'orders', 'inbox', 'analytics'
         ],
-        'pro'      => [
+        'growth'   => [
+            'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
+            'orders', 'inbox', 'analytics', 'advanced_analytics',
+            'invoices', 'coupons', 'team_activity', 'ai_extraction'
+        ],
+        'scale'    => [
             'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
             'orders', 'inbox', 'analytics', 'advanced_analytics',
             'broadcasts', 'invoices', 'coupons', 'csat', 'team_activity', 
-            'storefront', 'whatsapp_sync'
+            'storefront', 'whatsapp_sync', 'forecast', 'ai_chat', 
+            'ai_extraction', 'smart_order', 'priority_inbox', 'all_channels'
         ],
         'ultimate' => [
             'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
             'orders', 'inbox', 'analytics', 'advanced_analytics',
             'broadcasts', 'invoices', 'coupons', 'csat', 'team_activity', 
             'storefront', 'whatsapp_sync', 'forecast', 'ai_chat', 
-            'ai_extraction', 'smart_order', 'priority_inbox'
+            'ai_extraction', 'smart_order', 'priority_inbox', 'custom_branding', 
+            'dedicated_support', 'all_channels'
         ],
     ];
 
     public function hasFeature(string $feature): bool
     {
         $tier = $this->subscription_tier ?? 'starter';
+
+        if ($feature === 'all_channels' && in_array($tier, ['scale', 'ultimate'])) {
+            return true;
+        }
+
         return in_array($feature, self::FEATURES_MAP[$tier] ?? []);
     }
 
@@ -186,18 +212,21 @@ class Merchant extends Model
      */
     public function canSendAiReply(): bool
     {
-        if (!$this->hasFeature('ai_chat')) return false;
+        if (!$this->hasFeature('ai_chat') && !$this->hasFeature('ai_extraction')) return false;
         if (!$this->ai_enabled) return false;
+
+        $this->maybeResetMonthlyCounter();
 
         $limit = self::AI_MONTHLY_LIMITS[$this->subscription_tier ?? 'starter'] ?? 0;
 
-        if ($limit === 0) return false;
-        if ($limit === null) return true; // unlimited
+        // They can send if:
+        // 1. They are under their monthly limit (and limit is not 0)
+        // 2. OR they have extra credits available
+        $hasMonthlyQuota = ($limit !== 0 && $limit !== null && $this->ai_monthly_messages_count < $limit);
+        $hasUnlimited = ($limit === null);
+        $hasExtraCredits = ($this->ai_extra_credits > 0);
 
-        // Reset counter if we've rolled into a new calendar month
-        $this->maybeResetMonthlyCounter();
-
-        return $this->ai_monthly_messages_count < $limit;
+        return $hasMonthlyQuota || $hasUnlimited || $hasExtraCredits;
     }
 
     /**
@@ -208,19 +237,27 @@ class Merchant extends Model
     {
         $this->maybeResetMonthlyCounter();
 
-        $newCount = $this->ai_monthly_messages_count + 1;
-        $this->increment('ai_monthly_messages_count');
-
-        // Fire quota warnings at 80% and 100%
         $limit = self::AI_MONTHLY_LIMITS[$this->subscription_tier ?? 'starter'] ?? 0;
-        if (!$limit) return; // unlimited or disabled
 
-        $threshold80 = (int) ceil($limit * 0.8);
-
-        if ($newCount === $threshold80) {
-            $this->owner->notify(new \App\Notifications\AiQuotaWarning($this, 80));
-        } elseif ($newCount >= $limit) {
-            $this->owner->notify(new \App\Notifications\AiQuotaWarning($this, 100));
+        // If we are still within the monthly limit, increment monthly count
+        if ($limit === null || $this->ai_monthly_messages_count < $limit) {
+            $this->increment('ai_monthly_messages_count');
+            $currentCount = $this->ai_monthly_messages_count;
+            
+            // Notifications for monthly quota
+            if ($limit) {
+                $threshold80 = (int) ceil($limit * 0.8);
+                if ($currentCount === $threshold80) {
+                    $this->owner->notify(new \App\Notifications\AiQuotaWarning($this, 80));
+                } elseif ($currentCount >= $limit) {
+                    $this->owner->notify(new \App\Notifications\AiQuotaWarning($this, 100));
+                }
+            }
+        } else {
+            // Spill over to extra credits
+            if ($this->ai_extra_credits > 0) {
+                $this->decrement('ai_extra_credits');
+            }
         }
     }
 
@@ -235,7 +272,8 @@ class Merchant extends Model
 
         $this->maybeResetMonthlyCounter();
 
-        return max(0, $limit - $this->ai_monthly_messages_count);
+        $monthlyRemaining = max(0, $limit - $this->ai_monthly_messages_count);
+        return $monthlyRemaining + $this->ai_extra_credits;
     }
 
     private function maybeResetMonthlyCounter(): void
@@ -250,13 +288,19 @@ class Merchant extends Model
         }
     }
 
-    public function getOrderLimitAttribute(): ?int
+    public function getOrdersMonthlyLimitAttribute(): ?int
     {
         return match ($this->subscription_tier) {
-            'starter' => 500,
-            'pro' => null,
+            'starter' => 100,
+            'growth' => 500,
+            'scale' => null,
             'ultimate' => null,
             default => 500,
         };
+    }
+
+    public function channels()
+    {
+        return $this->hasMany(Channel::class);
     }
 }

@@ -14,6 +14,7 @@ class Conversation extends Model
 
     protected $fillable = [
         'merchant_id',
+        'channel_id',
         'contact_id',
         'assigned_to',
         'external_thread_id',
@@ -48,6 +49,11 @@ class Conversation extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function channel()
+    {
+        return $this->belongsTo(Channel::class);
     }
 
     public function messages(): HasMany
