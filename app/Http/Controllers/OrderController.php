@@ -139,6 +139,9 @@ class OrderController extends Controller
         // Send confirmation notification
         $this->notifications->sendOrderNotification($order, 'confirmed');
 
+        // Activity Log
+        \App\Models\ActivityLog::record($merchant->id, 'order.created', "Created order #{$order->order_number} for {$order->customer_name}.", 'Order', $order->id);
+
         return redirect()->route('orders.show', $order)
             ->with('success', 'Order #' . $order->order_number . ' created successfully.');
     }
@@ -196,6 +199,9 @@ class OrderController extends Controller
             $this->notifications->sendOrderNotification($order, $validated['fulfillment_status']);
         }
 
+        // Activity Log
+        \App\Models\ActivityLog::record($order->merchant_id, 'order.status_changed', "Updated order #{$order->order_number} status to {$order->fulfillment_status}.", 'Order', $order->id);
+
         return back()->with('success', 'Order status updated.');
     }
 
@@ -231,12 +237,18 @@ class OrderController extends Controller
 
         $this->notifications->sendOrderNotification($order->fresh(), 'dispatched');
 
+        // Activity Log
+        \App\Models\ActivityLog::record($order->merchant_id, 'order.dispatched', "Dispatched order #{$order->order_number}. Tracking: {$result['tracking_number']}.", 'Order', $order->id);
+
         return back()->with('success', "Order dispatched. Tracking: {$result['tracking_number']}");
     }
 
     public function destroy(Request $request, Order $order): RedirectResponse
     {
         abort_unless($order->merchant_id === $request->user()->merchant?->id, 403);
+
+        // Activity Log
+        \App\Models\ActivityLog::record($order->merchant_id, 'order.deleted', "Deleted order #{$order->order_number}.", 'Order', $order->id);
 
         $order->delete();
 

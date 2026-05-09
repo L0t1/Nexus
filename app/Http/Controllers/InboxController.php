@@ -128,6 +128,9 @@ class InboxController extends Controller
             \App\Jobs\SendOutboundMessage::dispatch($message, $conversation);
         }
 
+        // Activity Log
+        \App\Models\ActivityLog::record($conversation->merchant_id, 'message.sent', "Sent message to {$conversation->contact->name}.", 'Conversation', $conversation->id);
+
         return back();
     }
 
@@ -135,6 +138,8 @@ class InboxController extends Controller
     {
         abort_unless($conversation->merchant_id === $request->user()->merchant?->id, 403);
         
+        \App\Models\ActivityLog::record($conversation->merchant_id, 'conversation.deleted', "Deleted conversation with {$conversation->contact->name}.", 'Conversation', $conversation->id);
+
         $conversation->messages()->delete();
         $conversation->delete();
         
