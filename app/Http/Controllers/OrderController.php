@@ -61,7 +61,7 @@ class OrderController extends Controller
     {
         abort_unless($order->merchant_id === $request->user()->merchant?->id, 403);
 
-        $order->load(['contact', 'conversation', 'creator:id,name', 'events.user:id,name']);
+        $order->load(['contact', 'conversation', 'creator:id,name', 'events.user:id,name', 'invoice']);
 
         return Inertia::render('Orders/Show', [
             'order' => $order,
