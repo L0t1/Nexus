@@ -86,70 +86,67 @@
             <h3 class="text-sm font-semibold text-nexus-200">{{ $t('settings.channelIntegration') }}</h3>
             <p class="text-xs text-nexus-500 mt-1">{{ $t('settings.channelDesc') }}</p>
           </div>
-          <div v-if="!hasAllChannels" class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md" :class="channelsUsed > 0 ? 'bg-accent-amber/10 text-accent-amber' : 'bg-white/5 text-nexus-500'">
-            {{ channelsUsed }}/1 {{ $t('settings.channel') }}
+          <div v-if="!hasAllChannels" class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md" :class="channels.length > 0 ? 'bg-accent-amber/10 text-accent-amber' : 'bg-white/5 text-nexus-500'">
+            {{ channels.length }}/1 {{ $t('settings.channel') }}
+          </div>
+          <div v-else class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-accent-emerald/10 text-accent-emerald">
+            {{ $t('settings.unlimitedChannels') }}
           </div>
         </div>
-        <div class="p-6 space-y-5">
-
-          <!-- Facebook + Instagram (OAuth) -->
-          <div class="relative">
-            <div v-if="metaLocked" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
-              <div class="text-xs font-bold text-nexus-300 mb-1">{{ $t('settings.slotUsed') }}</div>
-              <p class="text-[10px] text-nexus-500 max-w-[200px] mb-2">{{ $t('settings.slotUsedDesc') }}</p>
-              <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-cyan hover:underline">{{ $t('common.upgrade') }} →</button>
-            </div>
-            <div :class="['flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all', metaLocked ? 'opacity-30 pointer-events-none blur-[1px]' : '']">
+        
+        <div class="p-6 space-y-6">
+          <!-- Active Channels List -->
+          <div v-if="channels.length > 0" class="space-y-3">
+            <h4 class="text-[10px] font-bold text-nexus-500 uppercase tracking-widest px-1">Active Connections</h4>
+            <div v-for="channel in channels" :key="channel.id" class="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group">
               <div class="flex items-center gap-3">
-                <div class="flex -space-x-1">
-                  <PlatformIcon platform="facebook" class="w-5 h-5" />
-                  <PlatformIcon platform="instagram" class="w-5 h-5" />
-                </div>
+                <PlatformIcon :platform="channel.platform" class="w-5 h-5" />
                 <div>
-                  <div class="text-sm font-semibold text-nexus-200">Facebook & Instagram</div>
-                  <div v-if="facebookConnected" class="text-xs text-emerald-400 mt-0.5">{{ $t('settings.connected') }} — Page ID {{ creds.facebook_page_id }}<span v-if="creds.instagram_page_id"> · Instagram linked</span></div>
-                  <div v-else class="text-xs text-nexus-500 mt-0.5">{{ $t('settings.notConnected') }}</div>
+                  <div class="text-sm font-semibold text-nexus-200">{{ channel.label }}</div>
+                  <div class="text-[10px] text-nexus-500 mt-0.5 uppercase tracking-tighter">{{ channel.platform }} · ID: {{ channel.external_id }}</div>
                 </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button v-if="facebookConnected" @click="disconnectForm.delete('/auth/meta')" :disabled="disconnectForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">{{ $t('common.disconnect') }}</button>
-                <a href="/auth/meta" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-                  {{ facebookConnected ? $t('common.reconnect') : $t('settings.connectFacebook') }}
-                </a>
-              </div>
+              <button @click="disconnectChannel(channel)" class="text-xs text-nexus-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all px-2 py-1 rounded-lg">
+                {{ $t('common.disconnect') }}
+              </button>
             </div>
           </div>
 
-          <!-- WhatsApp (Embedded Signup) -->
-          <div class="relative">
-            <div v-if="whatsappLocked" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
-              <div class="text-xs font-bold text-nexus-300 mb-1">{{ $t('settings.slotUsed') }}</div>
-              <p class="text-[10px] text-nexus-500 max-w-[200px] mb-2">{{ $t('settings.slotUsedDesc') }}</p>
-              <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-cyan hover:underline">{{ $t('common.upgrade') }} →</button>
-            </div>
-            <div :class="['rounded-xl bg-white/[0.02] border border-white/[0.05] overflow-hidden transition-all', whatsappLocked ? 'opacity-30 pointer-events-none blur-[1px]' : '']">
-              <div class="flex items-center justify-between p-4">
-                <div class="flex items-center gap-3">
-                  <PlatformIcon platform="whatsapp" class="w-5 h-5" />
-                  <div>
-                    <div class="text-sm font-semibold text-nexus-200">WhatsApp</div>
-                    <div v-if="whatsappConnected" class="text-xs text-emerald-400 mt-0.5">{{ $t('settings.connected') }} — Phone ID {{ creds.whatsapp_phone_id }}</div>
-                    <div v-else class="text-xs text-nexus-500 mt-0.5">{{ $t('settings.notConnected') }}</div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2">
-                  <button v-if="whatsappConnected" @click="disconnectWaForm.delete('/auth/whatsapp')" :disabled="disconnectWaForm.processing" class="text-xs text-red-400 hover:text-red-300 transition-colors">{{ $t('common.disconnect') }}</button>
-                  <button @click="launchWhatsAppSignup" :disabled="waConnecting" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    {{ whatsappConnected ? $t('common.reconnect') : $t('settings.connectWhatsApp') }}
-                  </button>
-                </div>
-              </div>
-              <div v-if="waError" class="px-4 pb-3 text-xs text-red-400">{{ waError }}</div>
-            </div>
+          <div v-else class="text-center py-6 border-2 border-dashed border-white/[0.05] rounded-2xl">
+            <p class="text-xs text-nexus-500 italic">No channels connected yet. Connect your first page below.</p>
           </div>
 
+          <!-- Connection Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Meta (FB/IG) -->
+            <div class="relative">
+              <div v-if="limitReached" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
+                <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-cyan font-bold hover:underline">UPGRADE TO ADD MORE</button>
+              </div>
+              <a href="/auth/meta" :class="['flex flex-col items-center justify-center p-5 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all group', limitReached ? 'opacity-30 grayscale' : '']">
+                <div class="flex -space-x-1 mb-3">
+                  <PlatformIcon platform="facebook" class="w-6 h-6 group-hover:scale-110 transition-transform" />
+                  <PlatformIcon platform="instagram" class="w-6 h-6 group-hover:scale-110 transition-transform" />
+                </div>
+                <div class="text-xs font-bold text-nexus-200">Facebook / Instagram</div>
+                <div class="text-[10px] text-nexus-500 mt-1">Connect your Pages</div>
+              </a>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="relative">
+              <div v-if="limitReached" class="absolute inset-0 z-10 glass-strong backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-4 text-center border border-white/10">
+                <button @click="$inertia.visit('/subscription')" class="text-[10px] text-accent-violet font-bold hover:underline">UPGRADE TO ADD MORE</button>
+              </div>
+              <button @click="launchWhatsAppSignup" :disabled="waConnecting" :class="['w-full flex flex-col items-center justify-center p-5 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all group', limitReached ? 'opacity-30 grayscale' : '']">
+                <PlatformIcon platform="whatsapp" class="w-6 h-6 mb-3 group-hover:scale-110 transition-transform" />
+                <div class="text-xs font-bold text-nexus-200">WhatsApp Business</div>
+                <div class="text-[10px] text-nexus-500 mt-1">{{ waConnecting ? 'Connecting...' : 'Connect your Number' }}</div>
+              </button>
+            </div>
+          </div>
+          
+          <div v-if="waError" class="text-center text-xs text-red-400 mt-2">{{ waError }}</div>
         </div>
       </div>
 
@@ -214,33 +211,23 @@ const availableLocales = getAvailableLocales();
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const merchant = computed(() => page.props.auth?.merchant);
+const merchant = computed(() => page.props.merchant);
+const channels = computed(() => merchant.value?.channels || []);
 const agents = computed(() => page.props.agents || []);
 const hasMultiAgent = computed(() => merchant.value?.features?.includes('priority_inbox'));
 
-const creds = computed(() => merchant.value?.meta_credentials || {});
-const facebookConnected = computed(() => !!creds.value.facebook_page_id);
-const whatsappConnected = computed(() => !!creds.value.whatsapp_phone_id);
 const waConnecting = ref(false);
 const waError = ref('');
 
 // Channel gating: Starter = 1 channel, Pro/Ultimate = all
 const hasAllChannels = computed(() => merchant.value?.features?.includes('all_channels'));
-const channelsUsed = computed(() => (facebookConnected.value ? 1 : 0) + (whatsappConnected.value ? 1 : 0));
-const metaLocked = computed(() => !hasAllChannels.value && !facebookConnected.value && whatsappConnected.value);
-const whatsappLocked = computed(() => !hasAllChannels.value && !whatsappConnected.value && facebookConnected.value);
+const limitReached = computed(() => !hasAllChannels.value && channels.value.length >= 1);
 
 const agentToDelete = ref(null);
 
 const profileForm = useForm({ business_name: merchant.value?.business_name || '', phone: merchant.value?.phone || '', country: merchant.value?.country || '', city: merchant.value?.city || '' });
 const accountForm = useForm({ name: auth.value?.user?.name || '', email: auth.value?.user?.email || '', password: '', password_confirmation: '' });
 const agentForm = useForm({ name: '', email: '', password: '' });
-const channelsForm = useForm({
-  whatsapp_phone_id: creds.value.whatsapp_phone_id || '',
-  whatsapp_token:    creds.value.whatsapp_token || '',
-});
-const disconnectForm = useForm({});
-const disconnectWaForm = useForm({});
 
 function saveProfile() { profileForm.put('/settings/profile', { preserveScroll: true }); }
 function saveAccount() { accountForm.put('/settings/account', { preserveScroll: true }); }
@@ -263,6 +250,14 @@ function executeRemoveAgent() {
       onSuccess: () => agentToDelete.value = null
     });
   }
+}
+
+function disconnectChannel(channel) {
+  const url = channel.platform === 'whatsapp' ? '/auth/whatsapp' : '/auth/meta';
+  router.delete(url, {
+    data: { channel_id: channel.id },
+    preserveScroll: true
+  });
 }
 
 // ─── WhatsApp Embedded Signup ─────────────────────────────────────────────────

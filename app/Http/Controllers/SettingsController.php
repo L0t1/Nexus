@@ -16,6 +16,7 @@ class SettingsController extends Controller
         return Inertia::render('Settings/Index', [
             'merchant' => array_merge($merchant->toArray(), [
                 'meta_credentials' => $merchant->meta_credentials ?? [],
+                'channels' => $merchant->channels()->orderBy('platform')->get(),
             ]),
             'user'                  => $request->user()->only('id', 'name', 'email'),
             'agents'                => \App\Models\User::role('agent')->where('merchant_id', $merchant->id)->get(['id', 'name', 'email', 'created_at']),
