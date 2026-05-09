@@ -11,8 +11,8 @@
         <h3 class="text-lg font-bold text-nexus-100 text-center mb-2">{{ title }}</h3>
         <p class="text-sm text-nexus-400 text-center mb-6">{{ message }}</p>
         <div class="flex gap-3">
-          <button @click="$emit('close')" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold transition-all">Cancel</button>
-          <button @click="$emit('confirm')" class="flex-1 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white text-sm font-semibold transition-all">Delete</button>
+          <button @click="$emit('close')" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold transition-all">{{ $t('common.cancel') }}</button>
+          <button @click="$emit('confirm')" class="flex-1 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white text-sm font-semibold transition-all">{{ $t('common.confirm') }}</button>
         </div>
       </div>
     </div>

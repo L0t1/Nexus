@@ -1,14 +1,14 @@
 <template>
-  <AuthenticatedLayout title="Quick Reply Templates">
+  <AuthenticatedLayout :title="$t('pageTitles.templates')">
     <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-bold text-nexus-100">Quick Replies</h2>
-          <p class="text-nexus-500 text-sm mt-1">Pre-saved templates you can insert with <code class="px-1.5 py-0.5 rounded bg-nexus-800/50 text-accent-cyan text-xs">/shortcut</code> in chat</p>
+          <h2 class="text-2xl font-bold text-nexus-100">{{ $t('templates.title') }}</h2>
+          <p class="text-nexus-500 text-sm mt-1">{{ $t('templates.subtitle') }}</p>
         </div>
         <button @click="showModal = true; editingTemplate = null; resetForm()" class="btn-primary flex items-center gap-2 text-sm">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          New Template
+          {{ $t('templates.new') }}
         </button>
       </div>
 
@@ -18,8 +18,8 @@
           <svg class="w-4 h-4 text-accent-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12" /></svg>
         </div>
         <div>
-          <div class="text-sm font-medium text-nexus-200">How it works</div>
-          <div class="text-xs text-nexus-500 mt-1">Type <code class="px-1 py-0.5 rounded bg-nexus-800/50 text-accent-cyan">/</code> in the chat input to see your templates. Use variables like <code class="px-1 py-0.5 rounded bg-nexus-800/50 text-accent-amber">{customer_name}</code>, <code class="px-1 py-0.5 rounded bg-nexus-800/50 text-accent-amber">{order_number}</code> for dynamic content.</div>
+          <div class="text-sm font-medium text-nexus-200">{{ $t('templates.howItWorks') }}</div>
+          <div class="text-xs text-nexus-500 mt-1">{{ $t('templates.guide') }}</div>
         </div>
       </div>
 
@@ -43,7 +43,7 @@
           <div class="text-sm text-nexus-300 leading-relaxed whitespace-pre-wrap">{{ t.body }}</div>
           <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.04]">
             <span v-if="t.category" class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-nexus-500/10 text-nexus-400">{{ t.category }}</span>
-            <span class="text-[10px] text-nexus-600">Used {{ t.usage_count || 0 }} times</span>
+            <span class="text-[10px] text-nexus-600">{{ $t('templates.used') }} {{ t.usage_count || 0 }} {{ $t('templates.times') }}</span>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@
         <div class="w-16 h-16 rounded-2xl bg-nexus-500/5 flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-nexus-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
         </div>
-        <p class="text-nexus-600 text-sm">No templates yet. Create your first quick reply template.</p>
+        <p class="text-nexus-600 text-sm">{{ $t('templates.noTemplates') }}</p>
       </div>
 
       <!-- Create/Edit Modal -->
@@ -60,38 +60,38 @@
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div @click="showModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
-            <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editingTemplate ? 'Edit Template' : 'New Template' }}</h3>
+            <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editingTemplate ? $t('templates.edit') : $t('templates.newTitle') }}</h3>
             <form @submit.prevent="saveTemplate" class="space-y-4">
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Shortcut</label>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('templates.shortcut') }}</label>
                   <input v-model="form.shortcut" type="text" placeholder="/price" class="input-premium font-mono" required />
-                  <div class="text-[10px] text-nexus-600 mt-1">Starts with /, lowercase only</div>
+                  <div class="text-[10px] text-nexus-600 mt-1">{{ $t('templates.shortcutHint') }}</div>
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Name</label>
-                  <input v-model="form.name" type="text" placeholder="Product Pricing" class="input-premium" required />
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('templates.name') }}</label>
+                  <input v-model="form.name" type="text" :placeholder="$t('templates.name')" class="input-premium" required />
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Category</label>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('templates.category') }}</label>
                 <select v-model="form.category" class="input-premium cursor-pointer">
-                  <option value="">None</option>
-                  <option value="greeting">Greeting</option>
-                  <option value="pricing">Pricing</option>
-                  <option value="shipping">Shipping</option>
-                  <option value="returns">Returns</option>
-                  <option value="custom">Custom</option>
+                  <option value="">{{ $t('templates.none') }}</option>
+                  <option value="greeting">{{ $t('templates.greeting') }}</option>
+                  <option value="pricing">{{ $t('templates.pricing') }}</option>
+                  <option value="shipping">{{ $t('templates.shipping') }}</option>
+                  <option value="returns">{{ $t('templates.returns') }}</option>
+                  <option value="custom">{{ $t('templates.custom') }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Message Body</label>
-                <textarea v-model="form.body" rows="5" class="input-premium py-2.5 text-sm resize-none" placeholder="Hi {customer_name}! Thanks for reaching out..." required></textarea>
-                <div class="text-[10px] text-nexus-600 mt-1">Variables: {customer_name}, {order_number}, {tracking_number}</div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('templates.messageBody') }}</label>
+                <textarea v-model="form.body" rows="5" class="input-premium py-2.5 text-sm resize-none" :placeholder="$t('templates.placeholder')" required></textarea>
+                <div class="text-[10px] text-nexus-600 mt-1">{{ $t('templates.variables') }}: {customer_name}, {order_number}, {tracking_number}</div>
               </div>
               <div class="flex justify-end gap-2 pt-2">
-                <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">Cancel</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ editingTemplate ? 'Save' : 'Create' }}</button>
+                <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
+                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ editingTemplate ? $t('common.save') : $t('common.create') }}</button>
               </div>
             </form>
           </div>

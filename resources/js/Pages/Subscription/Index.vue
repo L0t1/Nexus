@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout title="Subscription">
+  <AuthenticatedLayout :title="$t('pageTitles.subscription')">
     <div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <!-- Trial Banner -->
       <div v-if="isOnTrial" class="glass-glow rounded-2xl p-5 border border-accent-cyan/20 bg-gradient-to-r from-accent-cyan/5 to-accent-violet/5">

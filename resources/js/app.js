@@ -1,6 +1,7 @@
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createPinia } from 'pinia';
+import { useI18n } from './i18n/index.js';
 import '../css/app.css';
 
 createInertiaApp({
@@ -11,11 +12,17 @@ createInertiaApp({
     },
     setup({ el, App, props, plugin }) {
         const pinia = createPinia();
+        const { t, locale } = useI18n();
 
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(pinia)
-            .mount(el);
+            .use(pinia);
+
+        // Make i18n available globally in templates
+        app.config.globalProperties.$t = t;
+        app.config.globalProperties.$locale = locale;
+
+        app.mount(el);
     },
     progress: {
         color: '#6366f1',

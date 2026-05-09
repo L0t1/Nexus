@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout title="Tags & Segmentation">
+  <AuthenticatedLayout :title="$t('pageTitles.tags')">
     <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div class="flex items-center justify-between">
         <div>
@@ -156,7 +156,7 @@
         </div>
       </Transition>
 
-      <ConfirmModal :show="showDeleteConfirm" title="Delete Tag?" message="This will remove the tag from all contacts. This action cannot be undone." @close="showDeleteConfirm = false" @confirm="doDeleteTag" />
+      <ConfirmModal :show="showDeleteConfirm" :title="$t('pageTitles.deleteTag')" :message="$t('pageTitles.deleteTagMsg')" @close="showDeleteConfirm = false" @confirm="doDeleteTag" />
     </div>
   </AuthenticatedLayout>
 </template>

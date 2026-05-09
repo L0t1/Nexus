@@ -1,14 +1,14 @@
 <template>
-  <AuthenticatedLayout title="Follow-Ups & Scheduling">
+  <AuthenticatedLayout :title="$t('pageTitles.followUps')">
     <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-bold text-nexus-100">Follow-Ups & Scheduling</h2>
-          <p class="text-nexus-500 text-sm mt-1">Abandoned cart recovery and scheduled messages</p>
+          <h2 class="text-2xl font-bold text-nexus-100">{{ $t('followUps.title') }}</h2>
+          <p class="text-nexus-500 text-sm mt-1">{{ $t('followUps.subtitle') }}</p>
         </div>
         <button @click="showCreateModal = true" class="btn-primary flex items-center gap-2 text-sm">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          New Sequence
+          {{ $t('followUps.new') }}
         </button>
       </div>
 
@@ -23,8 +23,8 @@
               <div>
                 <div class="text-sm font-semibold text-nexus-100">{{ seq.name }}</div>
                 <div class="flex items-center gap-3 mt-0.5">
-                  <span class="text-[10px] text-nexus-500">{{ seq.delay_hours }}h delay</span>
-                  <span class="text-[10px] text-nexus-500">Trigger: {{ seq.trigger_condition === 'no_order' ? 'No order placed' : 'No reply' }}</span>
+                  <span class="text-[10px] text-nexus-500">{{ seq.delay_hours }}{{ $t('followUps.delay') }}</span>
+                  <span class="text-[10px] text-nexus-500">{{ $t('followUps.trigger') }}: {{ seq.trigger_condition === 'no_order' ? $t('followUps.noOrder') : $t('followUps.noReply') }}</span>
                 </div>
               </div>
             </div>
@@ -42,15 +42,15 @@
           <div class="grid grid-cols-3 gap-3 mt-3 pt-3 border-t border-white/[0.04]">
             <div class="text-center">
               <div class="text-lg font-bold text-nexus-200">{{ seq.sent_count || 0 }}</div>
-              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">Sent</div>
+              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">{{ $t('followUps.sent') }}</div>
             </div>
             <div class="text-center">
               <div class="text-lg font-bold text-accent-emerald">{{ seq.converted_count || 0 }}</div>
-              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">Converted</div>
+              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">{{ $t('followUps.converted') }}</div>
             </div>
             <div class="text-center">
               <div class="text-lg font-bold text-accent-cyan">{{ seq.conversion_rate || '0' }}%</div>
-              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">Rate</div>
+              <div class="text-[10px] text-nexus-600 uppercase tracking-wider">{{ $t('followUps.rate') }}</div>
             </div>
           </div>
 
@@ -61,7 +61,7 @@
           <div class="w-16 h-16 rounded-2xl bg-accent-emerald/5 flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-accent-emerald/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3" /></svg>
           </div>
-          <p class="text-nexus-500 text-sm">No follow-up sequences. Create one to automatically recover abandoned carts.</p>
+          <p class="text-nexus-500 text-sm">{{ $t('followUps.noSequences') }}</p>
         </div>
       </div>
 
@@ -69,14 +69,14 @@
       <div class="glass-glow rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/[0.04] flex items-center gap-2">
           <svg class="w-4 h-4 text-accent-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <h3 class="text-sm font-semibold text-nexus-200">Scheduled Messages</h3>
-          <span class="text-[10px] text-nexus-600 ml-auto">{{ scheduledMessages.length }} pending</span>
+          <h3 class="text-sm font-semibold text-nexus-200">{{ $t('followUps.scheduledTitle') }}</h3>
+          <span class="text-[10px] text-nexus-600 ml-auto">{{ scheduledMessages.length }} {{ $t('followUps.pending') }}</span>
         </div>
         <div class="divide-y divide-white/[0.03]">
           <div v-for="msg in scheduledMessages" :key="msg.id" class="px-6 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-medium text-nexus-200">{{ msg.conversation?.contact?.name || 'Unknown' }}</span>
+                <span class="text-xs font-medium text-nexus-200">{{ msg.conversation?.contact?.name || $t('chat.unknown') }}</span>
                 <span class="text-[10px] text-nexus-600">{{ msg.conversation?.contact?.phone }}</span>
               </div>
               <div class="text-xs text-nexus-400 truncate">{{ msg.body }}</div>
@@ -92,7 +92,7 @@
             </div>
           </div>
           <div v-if="!scheduledMessages.length" class="px-6 py-8 text-center text-sm text-nexus-600">
-            No scheduled messages. You can schedule messages from the chat view.
+            {{ $t('followUps.noScheduled') }}
           </div>
         </div>
       </div>
@@ -102,33 +102,33 @@
         <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div @click="showCreateModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
-            <h3 class="text-base font-bold text-nexus-100 mb-4">New Follow-Up Sequence</h3>
+            <h3 class="text-base font-bold text-nexus-100 mb-4">{{ $t('followUps.modalTitle') }}</h3>
             <form @submit.prevent="createSequence" class="space-y-4">
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Sequence Name</label>
-                <input v-model="seqForm.name" type="text" placeholder="e.g. 24h Cart Recovery" class="input-premium" required />
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.name') }}</label>
+                <input v-model="seqForm.name" type="text" :placeholder="$t('followUps.namePlaceholder')" class="input-premium" required />
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Delay (hours)</label>
-                  <input v-model.number="seqForm.delay_hours" type="number" min="1" max="168" class="input-premium" required />
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Trigger</label>
-                  <select v-model="seqForm.trigger_condition" class="input-premium cursor-pointer">
-                    <option value="no_order">Customer didn't order</option>
-                    <option value="no_reply">Customer didn't reply</option>
-                  </select>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.delayLabel') }}</label>
+                <input v-model.number="seqForm.delay_hours" type="number" min="1" max="168" class="input-premium" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.trigger') }}</label>
+                <select v-model="seqForm.trigger_condition" class="input-premium cursor-pointer">
+                  <option value="no_order">{{ $t('followUps.triggerNoOrder') }}</option>
+                  <option value="no_reply">{{ $t('followUps.triggerNoReply') }}</option>
+                </select>
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Follow-Up Message</label>
-                <textarea v-model="seqForm.message_template" rows="4" class="input-premium py-2.5 text-sm resize-none" placeholder="Hi {customer_name}! We noticed you were interested in our products..." required></textarea>
-                <div class="text-[10px] text-nexus-600 mt-1">Available: {customer_name}, {product_name}</div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.messageLabel') }}</label>
+                <textarea v-model="seqForm.message_template" rows="4" class="input-premium py-2.5 text-sm resize-none" :placeholder="$t('followUps.messagePlaceholder')" required></textarea>
+                <div class="text-[10px] text-nexus-600 mt-1">{{ $t('followUps.availableVars') }}: {customer_name}, {product_name}</div>
               </div>
               <div class="flex justify-end gap-2 pt-2">
-                <button type="button" @click="showCreateModal = false" class="btn-secondary text-sm px-4 py-2">Cancel</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">Create Sequence</button>
+                <button type="button" @click="showCreateModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
+                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ $t('followUps.create') }}</button>
               </div>
             </form>
           </div>

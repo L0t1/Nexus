@@ -1,16 +1,16 @@
 <template>
-  <AuthenticatedLayout title="Invoice">
+  <AuthenticatedLayout :title="$t('pageTitles.invoice')">
     <div class="max-w-3xl mx-auto animate-fade-in">
       <!-- Print button -->
       <div class="flex items-center justify-between mb-6 no-print">
-        <button @click="$inertia.visit('/invoices')" class="btn-secondary text-xs flex items-center gap-1.5">← All Invoices</button>
+        <button @click="$inertia.visit('/invoices')" class="btn-secondary text-xs flex items-center gap-1.5">← {{ $t('invoices.allInvoices') }}</button>
         <div class="flex gap-2">
           <div class="flex flex-col items-end gap-2">
             <button @click="printInvoice" class="btn-primary text-sm flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" /></svg>
-              Print / Save PDF
+              {{ $t('invoices.print') }}
             </button>
-            <span class="text-[10px] text-nexus-600 italic">Hint: Select "Save as PDF" to download</span>
+            <span class="text-[10px] text-nexus-600 italic">{{ $t('invoices.printHint') }}</span>
           </div>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <!-- Header -->
         <div class="flex justify-between items-start mb-10">
           <div>
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900">INVOICE</h1>
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ $t('invoices.invoiceTitle') }}</h1>
             <div class="text-sm text-gray-500 mt-1 font-mono">{{ invoice.invoice_number }}</div>
           </div>
           <div class="text-right">
@@ -34,19 +34,19 @@
         <!-- Info row -->
         <div class="grid grid-cols-3 gap-6 mb-8 text-sm">
           <div>
-            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">Bill To</div>
+            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">{{ $t('invoices.billTo') }}</div>
             <div class="font-semibold text-gray-900">{{ invoice.customer_details?.name }}</div>
             <div class="text-gray-500">{{ invoice.customer_details?.phone }}</div>
             <div class="text-gray-500">{{ invoice.customer_details?.address }}</div>
           </div>
           <div>
-            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">Order</div>
+            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">{{ $t('invoices.order') }}</div>
             <div class="font-mono font-semibold text-gray-900">{{ invoice.order?.order_number }}</div>
           </div>
           <div class="text-right">
-            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">Dates</div>
-            <div class="text-gray-700">Issued: {{ formatDate(invoice.issued_at) }}</div>
-            <div class="text-gray-500">Due: {{ formatDate(invoice.due_at) }}</div>
+            <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">{{ $t('invoices.dates') }}</div>
+            <div class="text-gray-700">{{ $t('invoices.issued') }}: {{ formatDate(invoice.issued_at) }}</div>
+            <div class="text-gray-500">{{ $t('invoices.due') }}: {{ formatDate(invoice.due_at) }}</div>
           </div>
         </div>
 
@@ -54,10 +54,10 @@
         <table class="w-full mb-6">
           <thead>
             <tr class="border-b-2 border-gray-200">
-              <th class="text-left py-3 text-xs font-semibold text-gray-500 uppercase">Item</th>
-              <th class="text-center py-3 text-xs font-semibold text-gray-500 uppercase">Qty</th>
-              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase">Price</th>
-              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase">Total</th>
+              <th class="text-left py-3 text-xs font-semibold text-gray-500 uppercase">{{ $t('invoices.item') }}</th>
+              <th class="text-center py-3 text-xs font-semibold text-gray-500 uppercase">{{ $t('invoices.qty') }}</th>
+              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase">{{ $t('invoices.price') }}</th>
+              <th class="text-right py-3 text-xs font-semibold text-gray-500 uppercase">{{ $t('invoices.total') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -73,22 +73,22 @@
         <!-- Totals -->
         <div class="flex justify-end">
           <div class="w-64 space-y-2">
-            <div class="flex justify-between text-sm text-gray-600"><span>Subtotal</span><span>{{ currency }}{{ Number(invoice.subtotal).toFixed(2) }}</span></div>
-            <div v-if="Number(invoice.discount_amount) > 0" class="flex justify-between text-sm text-green-600"><span>Discount</span><span>-{{ currency }}{{ Number(invoice.discount_amount).toFixed(2) }}</span></div>
-            <div v-if="Number(invoice.tax_amount) > 0" class="flex justify-between text-sm text-gray-600"><span>Tax</span><span>{{ currency }}{{ Number(invoice.tax_amount).toFixed(2) }}</span></div>
-            <div class="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t-2 border-gray-900"><span>Total</span><span>{{ currency }}{{ Number(invoice.total).toFixed(2) }}</span></div>
+            <div class="flex justify-between text-sm text-gray-600"><span>{{ $t('invoices.subtotal') }}</span><span>{{ currency }}{{ Number(invoice.subtotal).toFixed(2) }}</span></div>
+            <div v-if="Number(invoice.discount_amount) > 0" class="flex justify-between text-sm text-green-600"><span>{{ $t('invoices.discount') }}</span><span>-{{ currency }}{{ Number(invoice.discount_amount).toFixed(2) }}</span></div>
+            <div v-if="Number(invoice.tax_amount) > 0" class="flex justify-between text-sm text-gray-600"><span>{{ $t('invoices.tax') }}</span><span>{{ currency }}{{ Number(invoice.tax_amount).toFixed(2) }}</span></div>
+            <div class="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t-2 border-gray-900"><span>{{ $t('invoices.total') }}</span><span>{{ currency }}{{ Number(invoice.total).toFixed(2) }}</span></div>
           </div>
         </div>
 
         <!-- Notes -->
         <div v-if="invoice.notes" class="mt-8 p-4 bg-gray-50 rounded-lg">
-          <div class="text-xs font-semibold text-gray-400 uppercase mb-1">Notes</div>
+          <div class="text-xs font-semibold text-gray-400 uppercase mb-1">{{ $t('invoices.notes') }}</div>
           <div class="text-sm text-gray-600">{{ invoice.notes }}</div>
         </div>
 
         <!-- Footer -->
         <div class="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-400">
-          Generated by Nexus CRM · {{ invoice.merchant_details?.name }}
+          {{ $t('invoices.generatedBy') }} · {{ invoice.merchant_details?.name }}
         </div>
       </div>
     </div>

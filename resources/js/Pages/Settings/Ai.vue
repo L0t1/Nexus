@@ -1,17 +1,17 @@
 <template>
-  <AuthenticatedLayout title="AI Assistant">
+  <AuthenticatedLayout :title="$t('pageTitles.aiAssistant')">
     <div class="max-w-3xl mx-auto space-y-6 animate-fade-in">
       <div>
-        <h2 class="text-2xl font-bold text-nexus-100">AI Assistant</h2>
-        <p class="text-nexus-500 text-sm mt-1">Configure your AI auto-reply bot and business knowledge base.</p>
+        <h2 class="text-2xl font-bold text-nexus-100">{{ $t('aiAssistant.title') }}</h2>
+        <p class="text-nexus-500 text-sm mt-1">{{ $t('aiAssistant.subtitle') }}</p>
       </div>
 
       <!-- Upgrade gate (Starter plan) -->
       <div v-if="!hasAiChat" class="glass-glow rounded-2xl p-8 text-center border border-accent-violet/20">
         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet to-accent-cyan flex items-center justify-center text-white text-2xl mx-auto mb-4">🤖</div>
-        <h3 class="text-lg font-bold text-nexus-100 mb-2">AI Assistant is a Pro feature</h3>
-        <p class="text-sm text-nexus-400 max-w-md mx-auto mb-5">Upgrade to Pro or Ultimate to enable AI-powered auto-replies, automatic order detection, and a personalised knowledge base for your business.</p>
-        <button @click="$inertia.visit('/subscription')" class="btn-primary">Upgrade to unlock →</button>
+        <h3 class="text-lg font-bold text-nexus-100 mb-2">{{ $t('aiAssistant.proFeature') }}</h3>
+        <p class="text-sm text-nexus-400 max-w-md mx-auto mb-5">{{ $t('aiAssistant.proDesc') }}</p>
+        <button @click="$inertia.visit('/subscription')" class="btn-primary">{{ $t('aiAssistant.upgradeBtn') }}</button>
       </div>
 
       <template v-else>
@@ -19,8 +19,8 @@
         <div class="glass-glow rounded-2xl overflow-hidden">
           <div class="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-semibold text-nexus-200">AI Auto-Reply</h3>
-              <p class="text-xs text-nexus-500 mt-0.5">When ON, the AI replies to customer messages automatically.</p>
+              <h3 class="text-sm font-semibold text-nexus-200">{{ $t('aiAssistant.autoReply') }}</h3>
+              <p class="text-xs text-nexus-500 mt-0.5">{{ $t('aiAssistant.autoReplyDesc') }}</p>
             </div>
             <!-- Toggle switch -->
             <button @click="toggleAi" :disabled="toggling"
@@ -32,10 +32,10 @@
           <!-- Usage meter -->
           <div class="px-6 py-5">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-semibold text-nexus-400 uppercase tracking-wider">Monthly Usage</span>
+              <span class="text-xs font-semibold text-nexus-400 uppercase tracking-wider">{{ $t('aiAssistant.monthlyUsage') }}</span>
               <span class="text-xs text-nexus-300 font-medium">
-                <template v-if="usage.limit === null">{{ usage.used }} sent · <span class="text-accent-cyan">Unlimited</span></template>
-                <template v-else>{{ usage.used }} / {{ usage.limit }} replies</template>
+                <template v-if="usage.limit === null">{{ usage.used }} {{ $t('aiAssistant.sent') }} · <span class="text-accent-cyan">{{ $t('aiAssistant.unlimited') }}</span></template>
+                <template v-else>{{ usage.used }} / {{ usage.limit }} {{ $t('aiAssistant.replies') }}</template>
               </span>
             </div>
             <div v-if="usage.limit !== null" class="w-full h-2 rounded-full bg-white/5 overflow-hidden">
@@ -44,9 +44,9 @@
                 :style="{ width: Math.min(usagePercent, 100) + '%' }" />
             </div>
             <div v-if="usage.limit !== null" class="flex justify-between mt-1.5">
-              <span class="text-[10px] text-nexus-600">Resets 1st of every month</span>
+              <span class="text-[10px] text-nexus-600">{{ $t('aiAssistant.resets') }}</span>
               <span :class="['text-[10px] font-medium', usagePercent >= 100 ? 'text-accent-rose' : usagePercent >= 80 ? 'text-accent-amber' : 'text-nexus-500']">
-                {{ usagePercent >= 100 ? 'Limit reached — replies paused' : usage.remaining + ' remaining' }}
+                {{ usagePercent >= 100 ? $t('aiAssistant.limitReached') : usage.remaining + ' ' + $t('aiAssistant.remaining') }}
               </span>
             </div>
           </div>
@@ -55,53 +55,53 @@
         <!-- ── Business Info Form ──────────────────────────────── -->
         <div class="glass rounded-2xl overflow-hidden">
           <div class="px-6 py-4 border-b border-white/[0.04]">
-            <h3 class="text-sm font-semibold text-nexus-200">Business Knowledge</h3>
-            <p class="text-xs text-nexus-500 mt-0.5">This information is injected into every AI conversation so it always knows your business.</p>
+            <h3 class="text-sm font-semibold text-nexus-200">{{ $t('aiAssistant.businessKnowledge') }}</h3>
+            <p class="text-xs text-nexus-500 mt-0.5">{{ $t('aiAssistant.knowledgeDesc') }}</p>
           </div>
           <form @submit.prevent="saveSettings" class="p-6 space-y-4">
             <!-- Description -->
             <div>
-              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Business Description</label>
-              <textarea v-model="form.description" rows="3" placeholder="What does your business sell? Who are your customers?" class="input-premium py-2 text-sm w-full" />
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.businessDesc') }}</label>
+              <textarea v-model="form.description" rows="3" :placeholder="$t('aiAssistant.descPlaceholder')" class="input-premium py-2 text-sm w-full" />
             </div>
 
             <!-- Language -->
             <div>
-              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Reply Language</label>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.replyLang') }}</label>
               <select v-model="form.language" class="input-premium cursor-pointer w-full">
-                <option value="auto">Auto-detect (Albanian & English)</option>
-                <option value="sq">Always Albanian (Shqip)</option>
-                <option value="en">Always English</option>
+                <option value="auto">{{ $t('aiAssistant.langAuto') }}</option>
+                <option value="sq">{{ $t('aiAssistant.langSq') }}</option>
+                <option value="en">{{ $t('aiAssistant.langEn') }}</option>
               </select>
             </div>
 
             <!-- Greeting -->
             <div>
-              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Default Greeting</label>
-              <input v-model="form.greeting" type="text" placeholder="e.g. Hello! How can I help you today?" class="input-premium w-full" />
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.greeting') }}</label>
+              <input v-model="form.greeting" type="text" :placeholder="$t('aiAssistant.greetPlaceholder')" class="input-premium w-full" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Return Policy -->
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Return Policy</label>
-                <textarea v-model="form.return_policy" rows="3" placeholder="e.g. Returns accepted within 14 days with receipt." class="input-premium py-2 text-sm w-full" />
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.returnPolicy') }}</label>
+                <textarea v-model="form.return_policy" rows="3" :placeholder="$t('aiAssistant.returnPlaceholder')" class="input-premium py-2 text-sm w-full" />
               </div>
               <!-- Shipping Info -->
               <div>
-                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Shipping Info</label>
-                <textarea v-model="form.shipping_info" rows="3" placeholder="e.g. We ship Kosovo-wide. Delivery 1-3 days, €3 flat." class="input-premium py-2 text-sm w-full" />
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.shippingInfo') }}</label>
+                <textarea v-model="form.shipping_info" rows="3" :placeholder="$t('aiAssistant.shipPlaceholder')" class="input-premium py-2 text-sm w-full" />
               </div>
             </div>
 
             <!-- Business Hours -->
             <div>
-              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Business Hours</label>
-              <input v-model="form.business_hours" type="text" placeholder="e.g. Mon–Fri 09:00–18:00, Sat 10:00–14:00" class="input-premium w-full" />
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('aiAssistant.hours') }}</label>
+              <input v-model="form.business_hours" type="text" :placeholder="$t('aiAssistant.hoursPlaceholder')" class="input-premium w-full" />
             </div>
 
             <div class="pt-2">
-              <button type="submit" :disabled="infoForm.processing" class="btn-primary">Save Business Info</button>
+              <button type="submit" :disabled="infoForm.processing" class="btn-primary">{{ $t('aiAssistant.saveInfo') }}</button>
             </div>
           </form>
         </div>
@@ -110,21 +110,21 @@
         <div class="glass rounded-2xl overflow-hidden">
           <div class="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-semibold text-nexus-200">FAQs</h3>
-              <p class="text-xs text-nexus-500 mt-0.5">Add common questions and answers. The AI will use these to respond accurately.</p>
+              <h3 class="text-sm font-semibold text-nexus-200">{{ $t('aiAssistant.faqs') }}</h3>
+              <p class="text-xs text-nexus-500 mt-0.5">{{ $t('aiAssistant.faqsDesc') }}</p>
             </div>
             <button type="button" @click="addFaq" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Add FAQ
+              {{ $t('aiAssistant.addFaq') }}
             </button>
           </div>
           <div class="p-6 space-y-3">
-            <div v-if="!form.faqs.length" class="text-sm text-nexus-600 text-center py-6">No FAQs yet. Add one to teach the AI how to handle common questions.</div>
+            <div v-if="!form.faqs.length" class="text-sm text-nexus-600 text-center py-6">{{ $t('aiAssistant.noFaqs') }}</div>
             <div v-for="(faq, index) in form.faqs" :key="index" class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] space-y-2">
               <div class="flex items-start gap-2">
                 <div class="flex-1 space-y-2">
-                  <input v-model="faq.q" type="text" placeholder="Question — e.g. Do you deliver to Prizren?" class="input-premium text-sm w-full" />
-                  <textarea v-model="faq.a" rows="2" placeholder="Answer — e.g. Yes! We deliver everywhere in Kosovo within 1-2 days." class="input-premium py-2 text-sm w-full" />
+                  <input v-model="faq.q" type="text" :placeholder="$t('aiAssistant.qPlaceholder')" class="input-premium text-sm w-full" />
+                  <textarea v-model="faq.a" rows="2" :placeholder="$t('aiAssistant.aPlaceholder')" class="input-premium py-2 text-sm w-full" />
                 </div>
                 <button @click="removeFaq(index)" class="mt-1 p-1.5 rounded-lg text-nexus-600 hover:text-accent-rose hover:bg-accent-rose/10 transition-colors flex-shrink-0">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -132,7 +132,7 @@
               </div>
             </div>
             <div v-if="form.faqs.length" class="pt-2">
-              <button type="button" @click="saveFaqs" :disabled="infoForm.processing" class="btn-primary">Save FAQs</button>
+              <button type="button" @click="saveFaqs" :disabled="infoForm.processing" class="btn-primary">{{ $t('aiAssistant.saveFaqs') }}</button>
             </div>
           </div>
         </div>
@@ -143,8 +143,8 @@
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
           </div>
           <div>
-            <div class="text-sm font-semibold text-nexus-200 mb-0.5">Products are synced automatically</div>
-            <p class="text-xs text-nexus-500 leading-relaxed">Your active product catalogue (name, price, stock) is injected into every AI conversation in real time. Keep your products up to date on the <button @click="$inertia.visit('/products')" class="text-accent-cyan hover:underline">Products page</button> and the AI will always have accurate info.</p>
+            <div class="text-sm font-semibold text-nexus-200 mb-0.5">{{ $t('aiAssistant.syncTitle') }}</div>
+            <p class="text-xs text-nexus-500 leading-relaxed">{{ $t('aiAssistant.syncDesc1') }} <button @click="$inertia.visit('/products')" class="text-accent-cyan hover:underline">{{ $t('aiAssistant.productsPage') }}</button> {{ $t('aiAssistant.syncDesc2') }}</p>
           </div>
         </div>
 
@@ -154,8 +154,8 @@
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div>
-            <div class="text-sm font-semibold text-nexus-200 mb-0.5">Auto-order creation</div>
-            <p class="text-xs text-nexus-500 leading-relaxed">When the AI detects a complete order (name, phone, city, address, and product) from a customer message, it automatically creates a <span class="text-nexus-300 font-medium">Draft order</span> for you to review. Go to <button @click="$inertia.visit('/orders')" class="text-accent-emerald hover:underline">Orders</button> to confirm or edit before dispatching.</p>
+            <div class="text-sm font-semibold text-nexus-200 mb-0.5">{{ $t('aiAssistant.autoOrderTitle') }}</div>
+            <p class="text-xs text-nexus-500 leading-relaxed">{{ $t('aiAssistant.autoOrderDesc1') }} <span class="text-nexus-300 font-medium">{{ $t('aiAssistant.draftOrder') }}</span> {{ $t('aiAssistant.autoOrderDesc2') }} <button @click="$inertia.visit('/orders')" class="text-accent-emerald hover:underline">{{ $t('aiAssistant.orders') }}</button> {{ $t('aiAssistant.autoOrderDesc3') }}</p>
           </div>
         </div>
       </template>

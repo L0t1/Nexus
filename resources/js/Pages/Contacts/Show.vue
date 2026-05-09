@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout title="Contact Details">
+  <AuthenticatedLayout :title="$t('pageTitles.contactDetails')">
     <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div class="flex items-center gap-4">
         <button @click="$inertia.visit('/contacts')" class="p-2 rounded-lg hover:bg-surface-glass text-nexus-400 hover:text-nexus-200 transition-all">

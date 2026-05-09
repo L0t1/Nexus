@@ -1,20 +1,20 @@
 <template>
-  <AuthenticatedLayout title="Orders">
+  <AuthenticatedLayout :title="$t('orders.title')">
     <div class="space-y-5 animate-fade-in">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-bold text-nexus-100">Orders</h2>
-          <p class="text-nexus-500 text-sm mt-1">Manage your order pipeline</p>
+          <h2 class="text-2xl font-bold text-nexus-100">{{ $t('orders.title') }}</h2>
+          <p class="text-nexus-500 text-sm mt-1">{{ $t('orders.subtitle') }}</p>
         </div>
         <div class="flex items-center gap-2">
-          <a href="/export/orders" class="btn-secondary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg> Export CSV</a>
-          <button @click="$inertia.visit('/inbox')" class="btn-primary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> New Order</button>
+          <a href="/export/orders" class="btn-secondary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg> {{ $t('common.export') }}</a>
+          <button @click="$inertia.visit('/inbox')" class="btn-primary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> {{ $t('orders.newOrder') }}</button>
         </div>
       </div>
 
       <!-- Status tabs -->
       <div class="flex gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/[0.04] w-full sm:w-fit overflow-x-auto hide-scrollbar">
-        <button v-for="f in statusFilters" :key="f.value" @click="setFilter(f.value)" :class="['px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap', activeFilter === f.value ? 'bg-nexus-500/15 text-nexus-300 shadow-sm' : 'text-nexus-600 hover:text-nexus-400']">{{ f.label }}</button>
+        <button v-for="f in statusFilters" :key="f.value" @click="setFilter(f.value)" :class="['px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap', activeFilter === f.value ? 'bg-nexus-500/15 text-nexus-300 shadow-sm' : 'text-nexus-600 hover:text-nexus-400']">{{ $t(f.label) }}</button>
       </div>
 
       <!-- Table -->
@@ -23,13 +23,13 @@
           <table class="w-full table-premium min-w-[800px]">
           <thead>
             <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>City</th>
-              <th>Status</th>
-              <th>Payment</th>
-              <th class="text-right">Total</th>
-              <th class="text-right">Date</th>
+              <th>{{ $t('orders.order') }}</th>
+              <th>{{ $t('orders.customer') }}</th>
+              <th>{{ $t('orders.city') }}</th>
+              <th>{{ $t('orders.status') }}</th>
+              <th>{{ $t('orders.payment') }}</th>
+              <th class="text-right">{{ $t('orders.total') }}</th>
+              <th class="text-right">{{ $t('orders.date') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +62,7 @@
         </div>
         <div v-if="!orders?.data?.length" class="p-16 text-center">
           <div class="w-16 h-16 rounded-2xl bg-nexus-500/5 flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-nexus-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" /></svg></div>
-          <p class="text-nexus-600 text-sm">No orders found</p>
+          <p class="text-nexus-600 text-sm">{{ $t('orders.noOrders') }}</p>
         </div>
       </div>
     </div>
@@ -82,12 +82,12 @@ const props = defineProps({
 
 const activeFilter = ref(props.filters.status || '');
 const statusFilters = [
-  { label: 'All', value: '' },
-  { label: 'Draft', value: 'draft' },
-  { label: 'Confirmed', value: 'confirmed' },
-  { label: 'Dispatched', value: 'dispatched' },
-  { label: 'Delivered', value: 'delivered' },
-  { label: 'Returned', value: 'returned' },
+  { label: 'orders.all', value: '' },
+  { label: 'orders.draft', value: 'draft' },
+  { label: 'orders.confirmed', value: 'confirmed' },
+  { label: 'orders.dispatched', value: 'dispatched' },
+  { label: 'orders.delivered', value: 'delivered' },
+  { label: 'orders.returned', value: 'returned' },
 ];
 
 function setFilter(v) { activeFilter.value = v; router.get('/orders', { status: v }, { preserveState: true }); }

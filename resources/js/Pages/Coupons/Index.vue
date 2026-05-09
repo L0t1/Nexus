@@ -1,9 +1,9 @@
 <template>
-  <AuthenticatedLayout title="Coupons & Discounts">
+  <AuthenticatedLayout :title="$t('pageTitles.coupons')">
     <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <div class="flex items-center justify-between">
-        <div><h2 class="text-2xl font-bold text-nexus-100">Coupons & Discounts</h2><p class="text-nexus-500 text-sm mt-1">Create and manage discount codes</p></div>
-        <button @click="showModal = true; editing = null; resetForm()" class="btn-primary flex items-center gap-2 text-sm">+ New Coupon</button>
+        <div><h2 class="text-2xl font-bold text-nexus-100">{{ $t('coupons.title') }}</h2><p class="text-nexus-500 text-sm mt-1">{{ $t('coupons.subtitle') }}</p></div>
+        <button @click="showModal = true; editing = null; resetForm()" class="btn-primary flex items-center gap-2 text-sm">{{ $t('coupons.new') }}</button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -18,35 +18,35 @@
           <div class="text-sm text-nexus-200">{{ c.name }}</div>
           <div class="text-2xl font-bold text-gradient mt-1">{{ c.type === 'percentage' ? c.value + '%' : '€' + c.value }}</div>
           <div class="mt-3 space-y-1 text-xs text-nexus-500">
-            <div class="flex justify-between"><span>Used</span><span>{{ c.usage_count || 0 }}{{ c.usage_limit ? ` / ${c.usage_limit}` : '' }}</span></div>
-            <div v-if="c.expires_at" class="flex justify-between"><span>Expires</span><span>{{ fmtDate(c.expires_at) }}</span></div>
+            <div class="flex justify-between"><span>{{ $t('coupons.used') }}</span><span>{{ c.usage_count || 0 }}{{ c.usage_limit ? ` / ${c.usage_limit}` : '' }}</span></div>
+            <div v-if="c.expires_at" class="flex justify-between"><span>{{ $t('coupons.expires') }}</span><span>{{ fmtDate(c.expires_at) }}</span></div>
           </div>
         </div>
       </div>
-      <div v-if="!coupons?.data?.length" class="p-16 text-center glass-glow rounded-2xl"><p class="text-nexus-600 text-sm">No coupons yet.</p></div>
+      <div v-if="!coupons?.data?.length" class="p-16 text-center glass-glow rounded-2xl"><p class="text-nexus-600 text-sm">{{ $t('coupons.noCoupons') }}</p></div>
 
       <!-- Modal -->
       <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div @click="showModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
-            <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editing ? 'Edit' : 'New' }} Coupon</h3>
+            <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editing ? $t('common.edit') : $t('common.new') }} {{ $t('coupons.title').split(' ')[0] }}</h3>
             <form @submit.prevent="save" class="space-y-4">
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Code</label><input v-model="form.code" class="input-premium font-mono uppercase" :disabled="!!editing" required /></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Name</label><input v-model="form.name" class="input-premium" required /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.code') }}</label><input v-model="form.code" class="input-premium font-mono uppercase" :disabled="!!editing" required /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.name') }}</label><input v-model="form.name" class="input-premium" required /></div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Type</label><select v-model="form.type" class="input-premium"><option value="percentage">Percentage (%)</option><option value="fixed">Fixed (€)</option></select></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Value</label><input v-model.number="form.value" type="number" step="0.01" min="0.01" class="input-premium" required /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.type') }}</label><select v-model="form.type" class="input-premium"><option value="percentage">{{ $t('coupons.percentage') }}</option><option value="fixed">{{ $t('coupons.fixed') }}</option></select></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.value') }}</label><input v-model.number="form.value" type="number" step="0.01" min="0.01" class="input-premium" required /></div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Min Order</label><input v-model.number="form.min_order_amount" type="number" step="0.01" class="input-premium" /></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">Expires</label><input v-model="form.expires_at" type="datetime-local" class="input-premium" /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.minOrder') }}</label><input v-model.number="form.min_order_amount" type="number" step="0.01" class="input-premium" /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.expires') }}</label><input v-model="form.expires_at" type="datetime-local" class="input-premium" /></div>
               </div>
               <div class="flex justify-end gap-2 pt-2">
-                <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">Cancel</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ editing ? 'Save' : 'Create' }}</button>
+                <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
+                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ editing ? $t('common.save') : $t('common.create') }}</button>
               </div>
             </form>
           </div>

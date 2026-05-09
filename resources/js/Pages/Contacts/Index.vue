@@ -1,11 +1,11 @@
 <template>
-  <AuthenticatedLayout title="Contacts">
+  <AuthenticatedLayout :title="$t('contacts.title')">
     <div class="space-y-5 animate-fade-in">
       <div class="flex items-center justify-between">
-        <div><h2 class="text-2xl font-bold text-nexus-100">Contacts</h2><p class="text-nexus-500 text-sm mt-1">Your customer database</p></div>
+        <div><h2 class="text-2xl font-bold text-nexus-100">{{ $t('contacts.title') }}</h2><p class="text-nexus-500 text-sm mt-1">{{ $t('contacts.subtitle') }}</p></div>
         <a href="/export/contacts" class="btn-secondary flex items-center gap-2 text-sm">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-          Export CSV
+          {{ $t('common.export') }}
         </a>
       </div>
 
@@ -13,12 +13,12 @@
       <div class="flex items-center gap-3 flex-wrap">
         <div class="relative group flex-1 max-w-md">
           <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-nexus-600 group-focus-within:text-nexus-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input v-model="search" type="text" placeholder="Search contacts..." class="input-premium pl-10" />
+          <input v-model="search" type="text" :placeholder="$t('contacts.search')" class="input-premium pl-10" />
         </div>
 
         <!-- Tag filter pills -->
         <div v-if="tags.length" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
-          <button @click="setTagFilter('')" :class="['px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap', !activeTag ? 'bg-nexus-500/15 text-nexus-300' : 'text-nexus-600 hover:text-nexus-400 bg-white/[0.02]']">All</button>
+          <button @click="setTagFilter('')" :class="['px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap', !activeTag ? 'bg-nexus-500/15 text-nexus-300' : 'text-nexus-600 hover:text-nexus-400 bg-white/[0.02]']">{{ $t('contacts.all') }}</button>
           <button v-for="tag in tags" :key="tag.id" @click="setTagFilter(tag.id)" :class="['px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap flex items-center gap-1.5', activeTag == tag.id ? 'ring-1 ring-white/20' : 'hover:opacity-80']" :style="{ backgroundColor: tag.color + '20', color: tag.color }">
             <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: tag.color }"></span>
             {{ tag.name }} <span class="opacity-60">({{ tag.contacts_count || 0 }})</span>
@@ -29,7 +29,7 @@
       <div class="glass-glow rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full table-premium min-w-[800px]">
-          <thead><tr><th>Contact</th><th>Platform</th><th>City</th><th>Tags</th><th>Orders</th><th class="text-right">Total Spent</th><th class="text-right">Last Contact</th></tr></thead>
+          <thead><tr><th>{{ $t('contacts.contact') }}</th><th>{{ $t('contacts.platform') }}</th><th>{{ $t('contacts.city') }}</th><th>{{ $t('contacts.tags') }}</th><th>{{ $t('contacts.orders') }}</th><th class="text-right">{{ $t('contacts.totalSpent') }}</th><th class="text-right">{{ $t('contacts.lastContact') }}</th></tr></thead>
           <tbody>
             <tr v-for="c in contacts?.data" :key="c.id" class="cursor-pointer group" @click="$inertia.visit(`/contacts/${c.id}`)">
               <td>
@@ -58,7 +58,7 @@
         </div>
         <div v-if="!contacts?.data?.length" class="p-16 text-center">
           <div class="w-16 h-16 rounded-2xl bg-nexus-500/5 flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-nexus-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg></div>
-          <p class="text-nexus-600 text-sm">No contacts found</p>
+          <p class="text-nexus-600 text-sm">{{ $t('contacts.noContacts') }}</p>
         </div>
       </div>
     </div>

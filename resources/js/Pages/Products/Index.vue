@@ -1,14 +1,14 @@
 <template>
-  <AuthenticatedLayout title="Products">
+  <AuthenticatedLayout :title="$t('products.title')">
     <div class="space-y-6 animate-fade-in">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-2xl font-bold text-nexus-100">Products</h2>
-          <p class="text-nexus-500 text-sm mt-1">Manage your inventory and product catalog</p>
+          <h2 class="text-2xl font-bold text-nexus-100">{{ $t('products.title') }}</h2>
+          <p class="text-nexus-500 text-sm mt-1">{{ $t('products.subtitle') }}</p>
         </div>
         <button @click="openCreateModal" class="px-4 py-2 bg-gradient-to-r from-nexus-500 to-accent-cyan text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
-          Add Product
+          {{ $t('products.addProduct') }}
         </button>
       </div>
 
@@ -18,12 +18,12 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="border-b border-white/[0.04] text-xs uppercase tracking-wider text-nexus-600 bg-white/[0.01]">
-                <th class="px-6 py-4 font-medium">Product</th>
-                <th class="px-6 py-4 font-medium">SKU</th>
-                <th class="px-6 py-4 font-medium">Price</th>
-                <th class="px-6 py-4 font-medium">Stock</th>
-                <th class="px-6 py-4 font-medium">Status</th>
-                <th class="px-6 py-4 font-medium text-right">Actions</th>
+                <th class="px-6 py-4 font-medium">{{ $t('products.product') }}</th>
+                <th class="px-6 py-4 font-medium">{{ $t('products.sku') }}</th>
+                <th class="px-6 py-4 font-medium">{{ $t('products.price') }}</th>
+                <th class="px-6 py-4 font-medium">{{ $t('products.stock') }}</th>
+                <th class="px-6 py-4 font-medium">{{ $t('products.status') }}</th>
+                <th class="px-6 py-4 font-medium text-right">{{ $t('common.actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/[0.04]">
@@ -49,7 +49,7 @@
                 </td>
                 <td class="px-6 py-4">
                   <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" :class="product.is_active ? 'bg-accent-emerald/10 text-accent-emerald' : 'bg-nexus-600/20 text-nexus-500'">
-                    {{ product.is_active ? 'Active' : 'Draft' }}
+                    {{ product.is_active ? $t('products.active') : $t('products.draft') }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-right">
@@ -65,7 +65,7 @@
               </tr>
               <tr v-if="products.data.length === 0">
                 <td colspan="6" class="px-6 py-12 text-center text-sm text-nexus-500">
-                  No products found. Create your first product!
+                  {{ $t('products.noProducts') }}
                 </td>
               </tr>
             </tbody>
@@ -84,46 +84,46 @@
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
       <div class="relative w-full max-w-md glass-strong border border-white/10 rounded-2xl shadow-2xl animate-scale-up overflow-hidden flex flex-col max-h-[90vh]">
         <div class="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
-          <h3 class="text-lg font-bold text-nexus-100">{{ isEditing ? 'Edit Product' : 'Add Product' }}</h3>
+          <h3 class="text-lg font-bold text-nexus-100">{{ isEditing ? $t('products.editProduct') : $t('products.addProduct') }}</h3>
           <button @click="closeModal" class="p-1.5 text-nexus-500 hover:text-nexus-300 rounded-lg"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
         </div>
         <div class="p-6 overflow-y-auto">
           <form @submit.prevent="submit" class="space-y-4">
             <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">Product Name <span class="text-accent-rose">*</span></label>
+              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.productName') }} <span class="text-accent-rose">*</span></label>
               <input v-model="form.name" type="text" required class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors" />
               <p v-if="form.errors.name" class="mt-1 text-xs text-accent-rose">{{ form.errors.name }}</p>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">SKU</label>
+                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.sku') }}</label>
                 <input v-model="form.sku" type="text" class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors" />
               </div>
               <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">Status</label>
+                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.status') }}</label>
                 <select v-model="form.is_active" class="w-full px-3 py-2.5 rounded-xl bg-nexus-800 border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 transition-colors">
-                  <option :value="true">Active</option>
-                  <option :value="false">Draft</option>
+                  <option :value="true">{{ $t('products.active') }}</option>
+                  <option :value="false">{{ $t('products.draft') }}</option>
                 </select>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">Price (€) <span class="text-accent-rose">*</span></label>
+                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.price') }} (€) <span class="text-accent-rose">*</span></label>
                 <input v-model="form.price" type="number" step="0.01" min="0" required class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors" />
                 <p v-if="form.errors.price" class="mt-1 text-xs text-accent-rose">{{ form.errors.price }}</p>
               </div>
               <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">Stock <span class="text-accent-rose">*</span></label>
+                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.stock') }} <span class="text-accent-rose">*</span></label>
                 <input v-model="form.stock" type="number" min="0" required class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors" />
                 <p v-if="form.errors.stock" class="mt-1 text-xs text-accent-rose">{{ form.errors.stock }}</p>
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">Product Image</label>
+              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.productImage') }}</label>
               <div class="flex items-center gap-4">
                 <div class="w-16 h-16 rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.06] flex items-center justify-center shrink-0">
                   <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
@@ -131,7 +131,7 @@
                 </div>
                 <div class="flex-1">
                   <label class="block cursor-pointer">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-nexus-300 hover:bg-white/[0.08] transition-colors">📷 Choose Image</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-nexus-300 hover:bg-white/[0.08] transition-colors">📷 {{ $t('products.chooseImage') }}</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" @change="onImageSelect" class="hidden" />
                   </label>
                   <p class="text-[10px] text-nexus-600 mt-1">JPG, PNG or WebP · Max 2MB</p>
@@ -140,14 +140,14 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">Description</label>
+              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.description') }}</label>
               <textarea v-model="form.description" rows="3" class="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 focus:bg-white/[0.05] transition-colors resize-none"></textarea>
             </div>
             
             <div class="pt-4 flex items-center justify-end gap-3 border-t border-white/[0.06]">
-              <button type="button" @click="closeModal" class="px-4 py-2 text-sm font-medium text-nexus-400 hover:text-nexus-200 transition-colors">Cancel</button>
+              <button type="button" @click="closeModal" class="px-4 py-2 text-sm font-medium text-nexus-400 hover:text-nexus-200 transition-colors">{{ $t('common.cancel') }}</button>
               <button type="submit" :disabled="form.processing" class="px-5 py-2 bg-gradient-to-r from-nexus-500 to-accent-cyan text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
-                {{ form.processing ? 'Saving...' : 'Save Product' }}
+                {{ form.processing ? $t('products.saving') : $t('products.saveProduct') }}
               </button>
             </div>
           </form>
@@ -157,8 +157,8 @@
 
     <ConfirmModal 
       :show="!!productToDelete" 
-      title="Delete Product?" 
-      :message="`Are you sure you want to permanently delete ${productToDelete?.name}? This action cannot be undone.`" 
+      :title="$t('products.deleteTitle')" 
+      :message="$t('products.deleteConfirm').replace('{name}', productToDelete?.name)" 
       @close="productToDelete = null" 
       @confirm="executeDeleteProduct" 
     />
