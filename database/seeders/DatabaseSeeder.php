@@ -34,7 +34,8 @@ class DatabaseSeeder extends Seeder
         $existingAdmin = User::where('email', 'admin@nexus.test')->first();
         $forceSeed = env('FORCE_SEED', false);
 
-        if ($existingAdmin && !$forceSeed) {
+        // If admin exists AND we have activity logs, skip (unless forced)
+        if ($existingAdmin && ActivityLog::count() > 0 && !$forceSeed) {
             return;
         }
 

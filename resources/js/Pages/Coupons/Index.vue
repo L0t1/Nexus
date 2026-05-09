@@ -42,7 +42,7 @@
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.minOrder') }}</label><input v-model.number="form.min_order_amount" type="number" step="0.01" class="input-premium" /></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.expires') }}</label><input v-model="form.expires_at" type="datetime-local" class="input-premium" /></div>
+                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.expires') }}</label><input v-model="form.expires_at" type="date" class="input-premium" /></div>
               </div>
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>

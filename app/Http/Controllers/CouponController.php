@@ -37,8 +37,16 @@ class CouponController extends Controller
             'usage_limit'        => 'nullable|integer|min:1',
             'per_customer_limit' => 'nullable|integer|min:1',
             'starts_at'          => 'nullable|date',
-            'expires_at'         => 'nullable|date|after:starts_at',
+            'expires_at'         => 'nullable|date|after:now',
         ]);
+
+        if (empty($validated['starts_at'])) {
+            $validated['starts_at'] = now();
+        }
+
+        if (!empty($validated['expires_at'])) {
+            $validated['expires_at'] = \Illuminate\Support\Carbon::parse($validated['expires_at'])->endOfDay();
+        }
 
         $validated['code'] = strtoupper($validated['code']);
         $coupon = $merchant->coupons()->create($validated);
@@ -63,6 +71,10 @@ class CouponController extends Controller
             'starts_at'          => 'nullable|date',
             'expires_at'         => 'nullable|date',
         ]);
+
+        if (!empty($validated['expires_at'])) {
+            $validated['expires_at'] = \Illuminate\Support\Carbon::parse($validated['expires_at'])->endOfDay();
+        }
 
         $coupon->update($validated);
         return back()->with('success', 'Coupon updated.');
