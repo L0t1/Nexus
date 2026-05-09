@@ -107,7 +107,7 @@
                   <div class="text-xs text-nexus-600">{{ auth?.user?.email }}</div>
                 </div>
                 <div class="py-1">
-                  <Link v-if="auth?.user?.roles?.includes('admin')" href="/settings" @click="showUserMenu = false" class="block px-4 py-2.5 text-sm text-nexus-400 hover:text-nexus-200 hover:bg-surface-hover transition-all">⚙️ {{ $t('common.settings') }}</Link>
+                  <Link v-if="auth?.user?.roles?.includes('admin')" href="/settings" @click="showUserMenu = false" class="block px-4 py-2.5 text-sm text-nexus-400 hover:text-nexus-200 hover:bg-surface-hover transition-all">{{ $t('common.settings') }}</Link>
                   <!-- Theme toggle -->
                   <button @click="toggleThemeMode" class="w-full text-left px-4 py-2.5 text-sm text-nexus-400 hover:text-nexus-200 hover:bg-surface-hover transition-all cursor-pointer flex items-center gap-2">
                     <span v-if="currentTheme === 'dark'">☀️ {{ $t('theme.light') }}</span>
@@ -227,12 +227,34 @@ watch(() => page.props.errors, (errors) => {
   }
 }, { deep: true });
 
-// Build notifications from real data
+// Build notifications
 const notifications = computed(() => {
   const items = [];
-  if (stats.value.unread_conversations) items.push({ id: 'inbox', title: `${stats.value.unread_conversations} unread conversation(s)`, time: 'Now', href: '/inbox' });
-  if (stats.value.pending_orders) items.push({ id: 'orders', title: `${stats.value.pending_orders} orders awaiting action`, time: 'Now', href: '/orders' });
-  if (stats.value.cod_pending) items.push({ id: 'cod', title: `€${Number(stats.value.cod_amount || 0).toFixed(2)} COD to collect`, time: 'Today', href: '/orders' });
+  const { t } = useI18n();
+  if (stats.value.unread_conversations) {
+    items.push({ 
+      id: 'inbox', 
+      title: t('nav.unreadConv', { count: stats.value.unread_conversations }), 
+      time: t('common.now'), 
+      href: '/inbox' 
+    });
+  }
+  if (stats.value.pending_orders) {
+    items.push({ 
+      id: 'orders', 
+      title: t('nav.pendingOrders', { count: stats.value.pending_orders }), 
+      time: t('common.now'), 
+      href: '/orders' 
+    });
+  }
+  if (stats.value.cod_pending) {
+    items.push({ 
+      id: 'cod', 
+      title: t('nav.codToCollect', { amount: Number(stats.value.cod_amount || 0).toFixed(2) }), 
+      time: t('common.today'), 
+      href: '/orders' 
+    });
+  }
   return items;
 });
 

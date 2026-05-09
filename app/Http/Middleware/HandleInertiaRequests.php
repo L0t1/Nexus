@@ -75,7 +75,9 @@ class HandleInertiaRequests extends Middleware
 
             'stats' => $merchant ? [
                 'unread_conversations' => fn () => $merchant->conversations()->unread()->count(),
-                'pending_orders' => fn () => $merchant->orders()->pending()->count(),
+                'pending_orders'       => fn () => $merchant->orders()->pending()->count(),
+                'cod_pending'          => fn () => $merchant->orders()->codPending()->count(),
+                'cod_amount'           => fn () => (float) $merchant->orders()->codPending()->sum('total'),
             ] : null,
         ];
     }
