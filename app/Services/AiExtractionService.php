@@ -129,11 +129,13 @@ class AiExtractionService
     private function getSystemPrompt(): string
     {
         return <<<'PROMPT'
-You are an order extraction assistant for a Kosovo-based e-commerce platform.
-Analyze the customer message and extract any order-related information.
-The message may be in Albanian, English, or a mix of both.
+You are a backend data extraction engine for a Kosovo-based e-commerce platform.
+Analyze the provided chat transcript and extract any relevant order and shipping details.
+The conversation may be in Albanian, English, or a mix of both.
 
-Return a JSON object with these fields (use null for missing data):
+Return ONLY a valid JSON object. Do not include markdown formatting (like ```json), conversational text, or explanations. Use null for missing data.
+
+Expected JSON Schema:
 {
   "customer_name": "string or null",
   "phone_number": "string or null",
@@ -142,14 +144,14 @@ Return a JSON object with these fields (use null for missing data):
   "street_address": "string or null",
   "product_intent": "string describing what they want to buy, or null",
   "quantity": "number or null",
-  "has_order_intent": true/false
+  "has_order_intent": boolean
 }
 
-Common Albanian address patterns:
-- "rr." or "rruga" = street
-- "lagja" or "lagjia" = neighborhood
-- "nr." = number
-- City names: Prishtina, Prizren, Peja, Gjilan, Ferizaj, Mitrovica, Gjakova, etc.
+EXTRACTION RULES & HINTS:
+- Albanian Address Patterns: "rr.", "rruga" = street; "lagja", "lagjia" = neighborhood; "nr." = number.
+- Common Cities: Prishtina, Prizren, Peja, Gjilan, Ferizaj, Mitrovica, Gjakova, etc.
+- Phone Numbers: Look for formats starting with +383, 00383, or local prefixes like 044, 049, 045, 048, 043, 046. Customers may write them with or without spaces (e.g., 044 123 456).
+- Order Intent: Set "has_order_intent" to true ONLY if the customer explicitly indicates a desire to purchase or provides delivery details.
 PROMPT;
     }
 
