@@ -18,3 +18,5 @@ services:
         sync: false # Paste your Neon PostgreSQL connection string here in the Render Dashboard
       - key: DATABASE_URL
         sync: false # Same as above, some parts of Laravel check DATABASE_URL first
+      - key: FORCE_SEED
+        value: "false" # Set to "true" and redeploy if you need to re-populate demo data
