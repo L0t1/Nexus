@@ -30,9 +30,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Drop existing demo data so the seeder can safely re-seed
+        // Drop existing demo data ONLY if it's an outdated version (missing the new features)
         $existingAdmin = User::where('email', 'admin@nexus.test')->first();
         if ($existingAdmin) {
+            // If we already have the new Forecast data, the DB is fully seeded. Skip.
+            if (DemandForecast::count() > 0) {
+                if (!$existingAdmin->email_verified_at) {
+                    $existingAdmin->update(['email_verified_at' => now()]);
+                }
+                return;
+            }
+
+            // Otherwise, drop the outdated demo data so we can re-seed with the new features
             if ($existingAdmin->merchant) {
                 $existingAdmin->merchant->delete(); // Cascades to all related data
             }
