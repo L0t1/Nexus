@@ -19,16 +19,6 @@ class OAuthController extends Controller
 
     public function redirectToMeta(Request $request): RedirectResponse
     {
-        // Enforce channel limit for Starter plan
-        $merchant = $request->user()->merchant;
-        if (!$merchant->hasFeature('all_channels')) {
-            $creds = $merchant->meta_credentials ?? [];
-            if (!empty($creds['whatsapp_phone_id'])) {
-                return redirect()->route('settings.index')
-                    ->with('error', 'Your Starter plan only allows 1 channel integration. Disconnect WhatsApp first or upgrade to Pro.');
-            }
-        }
-
         $state = Str::random(40);
         $request->session()->put('meta_oauth_state', $state);
 
@@ -72,7 +62,7 @@ class OAuthController extends Controller
 
         $userToken = $tokenResponse->json('access_token');
 
-        // Fetch all Pages this user manages (each page gets its own long-lived token)
+        // Fetch all Pages this user manages
         $pagesResponse = Http::withToken($userToken)
             ->get("{$this->graphUrl}/me/accounts", [
                 'fields' => 'id,name,access_token,instagram_business_account',
@@ -80,22 +70,21 @@ class OAuthController extends Controller
 
         if (!$pagesResponse->successful()) {
             Log::error('Meta pages fetch failed', ['response' => $pagesResponse->body()]);
-            return redirect()->route('settings.index')->with('error', 'Failed to fetch your Facebook Pages. Make sure you have admin access to a Page.');
+            return redirect()->route('settings.index')->with('error', 'Failed to fetch your Facebook Pages.');
         }
 
         $pages = $pagesResponse->json('data', []);
 
         if (empty($pages)) {
-            return redirect()->route('settings.index')
-                ->with('error', 'No Facebook Pages found on your account. Please create a Page first or make sure you have admin access.');
+            return redirect()->route('settings.index')->with('error', 'No Facebook Pages found on your account.');
         }
 
         if (count($pages) === 1) {
             $this->savePageCredentials($request->user(), $pages[0]);
-            return redirect()->route('settings.index')->with('success', 'Facebook & Instagram connected successfully!');
+            return redirect()->route('settings.index')->with('success', 'Facebook connected successfully!');
         }
 
-        // Multiple pages — let merchant choose which one to use
+        // Multiple pages — let merchant choose which one to connect
         $request->session()->put('meta_oauth_pages', $pages);
         return Inertia::render('Settings/SelectPage', ['pages' => $pages]);
     }
@@ -105,7 +94,6 @@ class OAuthController extends Controller
     public function selectPage(Request $request): RedirectResponse
     {
         $validated = $request->validate(['page_id' => 'required|string']);
-
         $pages = $request->session()->pull('meta_oauth_pages', []);
         $page  = collect($pages)->firstWhere('id', $validated['page_id']);
 
@@ -114,47 +102,24 @@ class OAuthController extends Controller
         }
 
         $this->savePageCredentials($request->user(), $page);
-
-        return redirect()->route('settings.index')->with('success', 'Facebook & Instagram connected successfully!');
+        return redirect()->route('settings.index')->with('success', 'Facebook connected successfully!');
     }
 
     // ─── Disconnect ───────────────────────────────────────────────────────────
 
     public function disconnectMeta(Request $request): RedirectResponse
     {
-        $merchant  = $request->user()->merchant;
-        $existing  = $merchant->meta_credentials ?? [];
-
-        $merchant->update([
-            'meta_credentials' => array_diff_key($existing, array_flip([
-                'facebook_page_id',
-                'facebook_token',
-                'instagram_page_id',
-                'instagram_token',
-            ])),
-        ]);
-
-        return back()->with('success', 'Facebook & Instagram disconnected.');
+        $request->validate(['channel_id' => 'required|exists:channels,id']);
+        $channel = $request->user()->merchant->channels()->findOrFail($request->channel_id);
+        
+        $channel->delete();
+        return back()->with('success', 'Channel disconnected.');
     }
 
-    // ─── WhatsApp Embedded Signup — receive token from JS SDK callback ────────
+    // ─── WhatsApp Embedded Signup ─────────────────────────────────────────────
 
-    /**
-     * After the merchant completes the WhatsApp Embedded Signup flow in the
-     * browser, the JS SDK gives us a short-lived code. We exchange it for a
-     * user token, then fetch the WABA phone numbers and store them.
-     */
     public function whatsappEmbeddedSignup(Request $request): \Illuminate\Http\JsonResponse
     {
-        // Enforce channel limit for Starter plan
-        $merchant = $request->user()->merchant;
-        if (!$merchant->hasFeature('all_channels')) {
-            $creds = $merchant->meta_credentials ?? [];
-            if (!empty($creds['facebook_page_id'])) {
-                return response()->json(['error' => 'Your Starter plan only allows 1 channel integration. Disconnect Facebook first or upgrade to Pro.'], 422);
-            }
-        }
-
         $validated = $request->validate([
             'code'            => 'nullable|string',
             'phone_number_id' => 'nullable|string',
@@ -164,110 +129,87 @@ class OAuthController extends Controller
         $phoneNumberId = $validated['phone_number_id'] ?? null;
         $userToken     = null;
 
-        if (!$phoneNumberId) {
-            // Path A: exchange code for token, then fetch phone numbers
-            if (empty($validated['code'])) {
-                return response()->json(['error' => 'No authorization code received.'], 422);
-            }
-
+        if (!$phoneNumberId && !empty($validated['code'])) {
             $tokenResponse = Http::get("{$this->graphUrl}/oauth/access_token", [
                 'client_id'     => config('services.meta.app_id'),
                 'client_secret' => config('services.meta.app_secret'),
                 'code'          => $validated['code'],
             ]);
 
-            if (!$tokenResponse->successful()) {
-                Log::error('WhatsApp Embedded Signup token exchange failed', ['response' => $tokenResponse->body()]);
-                return response()->json(['error' => 'Failed to connect WhatsApp. Please try again.'], 422);
-            }
-
-            $userToken = $tokenResponse->json('access_token');
-
-            $phonesResponse = Http::withToken($userToken)
-                ->get("{$this->graphUrl}/me/whatsapp_business_accounts", [
+            if ($tokenResponse->successful()) {
+                $userToken = $tokenResponse->json('access_token');
+                $phonesResponse = Http::withToken($userToken)->get("{$this->graphUrl}/me/whatsapp_business_accounts", [
                     'fields' => 'id,name,phone_numbers{id,display_phone_number,verified_name}',
                 ]);
 
-            if (!$phonesResponse->successful()) {
-                Log::error('WhatsApp phone numbers fetch failed', ['response' => $phonesResponse->body()]);
-                return response()->json(['error' => 'Could not fetch WhatsApp phone numbers.'], 422);
-            }
-
-            foreach ($phonesResponse->json('data', []) as $waba) {
-                $phones = $waba['phone_numbers']['data'] ?? [];
-                if (!empty($phones)) {
-                    $phoneNumberId = $phones[0]['id'];
-                    break;
+                if ($phonesResponse->successful()) {
+                    foreach ($phonesResponse->json('data', []) as $waba) {
+                        $phones = $waba['phone_numbers']['data'] ?? [];
+                        if (!empty($phones)) {
+                            $phoneNumberId = $phones[0]['id'];
+                            $phoneName = $phones[0]['verified_name'] ?? $phones[0]['display_phone_number'];
+                            break;
+                        }
+                    }
                 }
             }
         }
 
         if (!$phoneNumberId) {
-            return response()->json(['error' => 'No WhatsApp phone number found on this account.'], 422);
+            return response()->json(['error' => 'No WhatsApp phone number found.'], 422);
         }
 
         $merchant = $request->user()->merchant;
-        $existing = $merchant->meta_credentials ?? [];
-
-        $creds = ['whatsapp_phone_id' => $phoneNumberId];
-        if ($userToken) {
-            $creds['whatsapp_token'] = $userToken;
-        }
-
-        $merchant->update([
-            'meta_credentials' => array_merge($existing, $creds),
-        ]);
-
-        Log::info('WhatsApp Embedded Signup complete', [
-            'merchant_id'     => $merchant->id,
-            'phone_number_id' => $phoneNumberId,
-        ]);
+        
+        $merchant->channels()->updateOrCreate(
+            ['platform' => 'whatsapp', 'external_id' => $phoneNumberId],
+            [
+                'label' => $phoneName ?? 'WhatsApp Business',
+                'credentials' => [
+                    'whatsapp_token' => $userToken ?? config('services.whatsapp.token'),
+                ],
+                'is_active' => true
+            ]
+        );
 
         return response()->json(['success' => true]);
     }
 
-    // ─── WhatsApp disconnect ──────────────────────────────────────────────────
-
     public function disconnectWhatsapp(Request $request): RedirectResponse
     {
-        $merchant = $request->user()->merchant;
-        $existing = $merchant->meta_credentials ?? [];
-
-        $merchant->update([
-            'meta_credentials' => array_diff_key($existing, array_flip([
-                'whatsapp_phone_id',
-                'whatsapp_token',
-            ])),
-        ]);
-
+        $request->validate(['channel_id' => 'required|exists:channels,id']);
+        $channel = $request->user()->merchant->channels()->findOrFail($request->channel_id);
+        
+        $channel->delete();
         return back()->with('success', 'WhatsApp disconnected.');
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
-    private function savePageCredentials(User $user, array $page): void
+    private function savePageCredentials(\App\Models\User $user, array $page): void
     {
         $merchant = $user->merchant;
-        $existing = $merchant->meta_credentials ?? [];
 
-        $updates = [
-            'facebook_page_id' => $page['id'],
-            'facebook_token'   => $page['access_token'],
-        ];
+        // Save Facebook Page as a channel
+        $merchant->channels()->updateOrCreate(
+            ['platform' => 'facebook', 'external_id' => $page['id']],
+            [
+                'label' => $page['name'],
+                'credentials' => ['page_token' => $page['access_token']],
+                'is_active' => true
+            ]
+        );
 
-        // If this page has a linked Instagram Business account, store it too
+        // If this page has a linked Instagram Business account, save it as a separate channel
         if (!empty($page['instagram_business_account']['id'])) {
-            $updates['instagram_page_id'] = $page['instagram_business_account']['id'];
-            $updates['instagram_token']   = $page['access_token']; // IG uses the same page token
+            $merchant->channels()->updateOrCreate(
+                ['platform' => 'instagram', 'external_id' => $page['instagram_business_account']['id']],
+                [
+                    'label' => $page['name'] . ' (Instagram)',
+                    'credentials' => ['instagram_token' => $page['access_token']],
+                    'is_active' => true
+                ]
+            );
         }
-
-        $merchant->update([
-            'meta_credentials' => array_merge($existing, $updates),
-        ]);
-
-        Log::info('Meta credentials saved for merchant', [
-            'merchant_id' => $merchant->id,
-            'has_instagram' => isset($updates['instagram_page_id']),
-        ]);
     }
 }
