@@ -22,6 +22,13 @@ class AiExtractionService
             return;
         }
 
+        $merchant = $message->conversation?->merchant;
+        if ($merchant && !$merchant->canSendAiReply()) {
+            Log::info('AI extraction skipped: merchant quota exceeded', ['merchant_id' => $merchant->id]);
+            $this->extractWithRegex($message);
+            return;
+        }
+
         try {
             $response = Http::withToken($apiKey)
                 ->timeout(5)
@@ -46,6 +53,11 @@ class AiExtractionService
                 $data = json_decode($response->json('choices.0.message.content'), true);
 
                 if ($data && $this->hasUsefulData($data)) {
+                    $merchant = $message->conversation?->merchant;
+                    if ($merchant) {
+                        $merchant->incrementAiMessageCount();
+                    }
+
                     $message->update([
                         'ai_extraction' => $data,
                         'is_ai_processed' => true,

@@ -108,15 +108,17 @@ class MessageProcessor
     ): void {
         if (!$senderId || !$recipientId) return;
 
-        // Find the merchant by their connected platform credentials
-        $merchant = $this->findMerchant($platform, $recipientId);
-        if (!$merchant) {
-            Log::warning("No merchant found for {$platform} recipient: {$recipientId}");
+        // Find the specific channel connected to this recipient (Page ID / Phone ID)
+        $channel = $this->findChannel($platform, $recipientId);
+        if (!$channel || !$channel->merchant) {
+            Log::warning("No active channel found for {$platform} recipient: {$recipientId}");
             return;
         }
 
+        $merchant = $channel->merchant;
+
         if (!$contactName) {
-            $contactName = $this->fetchProfileName($senderId, $platform, $merchant);
+            $contactName = $this->fetchProfileName($senderId, $platform, $channel);
         }
 
         // Find or create the contact
@@ -137,6 +139,7 @@ class MessageProcessor
             ['merchant_id' => $merchant->id, 'external_thread_id' => $senderId],
             [
                 'contact_id' => $contact->id,
+                'channel_id' => $channel->id,
                 'platform' => $platform,
                 'status' => 'active',
             ]
@@ -144,7 +147,7 @@ class MessageProcessor
 
         if ($conversation->trashed()) {
             $conversation->restore();
-            $conversation->update(['status' => 'active']);
+            $conversation->update(['status' => 'active', 'channel_id' => $channel->id]);
         }
 
         // Detect message type
@@ -193,42 +196,20 @@ class MessageProcessor
         };
     }
 
-    private function findMerchant(string $platform, string $recipientId): ?Merchant
+    private function findChannel(string $platform, string $recipientId): ?\App\Models\Channel
     {
-        // Try to match by stored page ID or phone number ID in meta_credentials
-        $credentialKey = match ($platform) {
-            'instagram' => 'instagram_page_id',
-            'facebook' => 'facebook_page_id',
-            'whatsapp' => 'whatsapp_phone_id',
-            default => null,
-        };
-
-        if (!$credentialKey) {
-            Log::warning('Unknown platform in webhook', ['platform' => $platform]);
-            return null;
-        }
-
-        // Use cursor() to avoid loading all merchants into memory at once.
-        // meta_credentials is encrypted JSON so we can't query it in SQL.
-        $merchant = Merchant::where('is_active', true)
-            ->cursor()
-            ->first(function ($m) use ($credentialKey, $recipientId) {
-                $creds = $m->meta_credentials ?? [];
-                return ($creds[$credentialKey] ?? null) === $recipientId;
-            });
-
-        if (!$merchant) {
-            Log::warning("No merchant found for {$platform} recipient: {$recipientId}. Message dropped.");
-        }
-
-        return $merchant;
+        return \App\Models\Channel::where('platform', $platform)
+            ->where('external_id', $recipientId)
+            ->where('is_active', true)
+            ->with('merchant')
+            ->first();
     }
 
-    private function fetchProfileName(string $senderId, string $platform, Merchant $merchant): ?string
+    private function fetchProfileName(string $senderId, string $platform, \App\Models\Channel $channel): ?string
     {
         if (!in_array($platform, ['facebook', 'instagram'])) return null;
 
-        $token = $merchant->meta_credentials['facebook_token'] ?? config('services.meta.page_token');
+        $token = $channel->credentials['page_token'] ?? $channel->credentials['instagram_token'] ?? null;
         if (!$token) return null;
 
         try {

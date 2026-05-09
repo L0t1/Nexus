@@ -58,12 +58,15 @@ class SendOutboundMessage implements ShouldQueue
 
     private function sendViaMetaMessenger(Merchant $merchant, string $recipientId): void
     {
-        $token = $merchant->meta_credentials['page_token']
-            ?? $merchant->meta_credentials['instagram_token']
+        $channel = $this->conversation->channel;
+        
+        $token = $channel?->credentials['page_token']
+            ?? $channel?->credentials['instagram_token']
+            ?? $merchant->meta_credentials['page_token']
             ?? config('services.meta.page_token');
 
         if (!$token) {
-            throw new \RuntimeException('No Meta page token configured');
+            throw new \RuntimeException('No Meta page token configured for channel');
         }
 
         $response = Http::withToken($token)
@@ -85,13 +88,18 @@ class SendOutboundMessage implements ShouldQueue
 
     private function sendViaWhatsApp(Merchant $merchant, string $recipientPhone): void
     {
-        $token = $merchant->meta_credentials['whatsapp_token']
+        $channel = $this->conversation->channel;
+
+        $token = $channel?->credentials['whatsapp_token']
+            ?? $merchant->meta_credentials['whatsapp_token']
             ?? config('services.whatsapp.token');
-        $phoneId = $merchant->meta_credentials['whatsapp_phone_id']
+            
+        $phoneId = $channel?->external_id
+            ?? $merchant->meta_credentials['whatsapp_phone_id']
             ?? config('services.whatsapp.phone_id');
 
         if (!$token || !$phoneId) {
-            throw new \RuntimeException('No WhatsApp credentials configured');
+            throw new \RuntimeException('No WhatsApp credentials configured for channel');
         }
 
         $response = Http::withToken($token)
