@@ -35,7 +35,7 @@ class TeamActivityController extends Controller
 
             $activeDaysExpr = $isSqlite
                 ? "COUNT(DISTINCT strftime('%Y-%m-%d', created_at))"
-                : "COUNT(DISTINCT DATE(created_at))";
+                : "COUNT(DISTINCT CAST(created_at AS DATE))";
 
             $agentRows = ActivityLog::where('merchant_id', $merchant->id)
                 ->where('created_at', '>=', now()->subDays($days))
@@ -56,21 +56,20 @@ class TeamActivityController extends Controller
                 'active_days' => (int) $row->active_days,
             ]);
 
-            // Action type breakdown — fully SQLite-compatible
-            if ($isSqlite) {
-                $actionTypes = ActivityLog::where('merchant_id', $merchant->id)
-                    ->where('created_at', '>=', now()->subDays($days))
-                    ->selectRaw("action, COUNT(*) as count")
-                    ->groupBy('action')
-                    ->pluck('count', 'action')
-                    ->toArray();
-            } else {
-                $actionTypes = ActivityLog::where('merchant_id', $merchant->id)
-                    ->where('created_at', '>=', now()->subDays($days))
-                    ->selectRaw("SUBSTRING_INDEX(action, '.', 1) as category, COUNT(*) as count")
-                    ->groupBy('category')
-                    ->pluck('count', 'category')
-                    ->toArray();
+            // Action type breakdown — Cross-database compatible (grouped in PHP)
+            $rawActions = ActivityLog::where('merchant_id', $merchant->id)
+                ->where('created_at', '>=', now()->subDays($days))
+                ->selectRaw("action, COUNT(*) as count")
+                ->groupBy('action')
+                ->get();
+
+            $actionTypes = [];
+            foreach ($rawActions as $row) {
+                $category = str_contains($row->action, '.') 
+                    ? explode('.', $row->action)[0] 
+                    : $row->action;
+                
+                $actionTypes[$category] = ($actionTypes[$category] ?? 0) + $row->count;
             }
 
             return Inertia::render('TeamActivity/Index', [
