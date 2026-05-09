@@ -30,13 +30,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Prevent duplicate seeding on multiple deployments, but ensure the demo user is verified
+        // Drop existing demo data so the seeder can safely re-seed
         $existingAdmin = User::where('email', 'admin@nexus.test')->first();
         if ($existingAdmin) {
-            if (!$existingAdmin->email_verified_at) {
-                $existingAdmin->update(['email_verified_at' => now()]);
+            if ($existingAdmin->merchant) {
+                $existingAdmin->merchant->delete(); // Cascades to all related data
             }
-            return;
+            $existingAdmin->delete();
+            User::where('email', 'sara@nexus.test')->delete();
         }
 
         // Create roles

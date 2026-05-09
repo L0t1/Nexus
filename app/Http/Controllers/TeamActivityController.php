@@ -39,20 +39,21 @@ class TeamActivityController extends Controller
             ]);
 
         // Action type breakdown
-        $actionTypes = ActivityLog::where('merchant_id', $merchant->id)
-            ->where('created_at', '>=', now()->subDays($days))
-            ->selectRaw("SUBSTRING_INDEX(action, '.', 1) as category, COUNT(*) as count")
-            ->groupBy('category')
-            ->pluck('count', 'category')
-            ->toArray();
-
-        // Use simpler grouping for SQLite
         if (config('database.default') === 'sqlite') {
+            // Simple grouping for SQLite
             $actionTypes = ActivityLog::where('merchant_id', $merchant->id)
                 ->where('created_at', '>=', now()->subDays($days))
                 ->selectRaw("action, COUNT(*) as count")
                 ->groupBy('action')
                 ->pluck('count', 'action')
+                ->toArray();
+        } else {
+            // Group by primary action category for MySQL/PostgreSQL
+            $actionTypes = ActivityLog::where('merchant_id', $merchant->id)
+                ->where('created_at', '>=', now()->subDays($days))
+                ->selectRaw("SUBSTRING_INDEX(action, '.', 1) as category, COUNT(*) as count")
+                ->groupBy('category')
+                ->pluck('count', 'category')
                 ->toArray();
         }
 

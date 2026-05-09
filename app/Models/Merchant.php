@@ -136,17 +136,30 @@ class Merchant extends Model
         'ultimate' => null, // unlimited
     ];
 
+    public const FEATURES_MAP = [
+        'starter'  => [
+            'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
+            'orders', 'inbox', 'analytics'
+        ],
+        'pro'      => [
+            'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
+            'orders', 'inbox', 'analytics', 'advanced_analytics',
+            'broadcasts', 'invoices', 'coupons', 'csat', 'team_activity', 
+            'storefront', 'whatsapp_sync'
+        ],
+        'ultimate' => [
+            'products', 'contacts', 'tags', 'templates', 'followups', 'returns',
+            'orders', 'inbox', 'analytics', 'advanced_analytics',
+            'broadcasts', 'invoices', 'coupons', 'csat', 'team_activity', 
+            'storefront', 'whatsapp_sync', 'forecast', 'ai_chat', 
+            'ai_extraction', 'smart_order', 'priority_inbox'
+        ],
+    ];
+
     public function hasFeature(string $feature): bool
     {
         $tier = $this->subscription_tier ?? 'starter';
-
-        $features = [
-            'starter'  => ['basic_analytics', '1_channel'],
-            'pro'      => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders'],
-            'ultimate' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders', 'ai_chat', 'ai_extraction', 'priority_inbox', 'broadcasts'],
-        ];
-
-        return in_array($feature, $features[$tier] ?? []);
+        return in_array($feature, self::FEATURES_MAP[$tier] ?? []);
     }
 
     public function getAllowedFeaturesAttribute(): array
@@ -158,13 +171,7 @@ class Merchant extends Model
             $tier = 'starter';
         }
 
-        $features = [
-            'starter'  => ['basic_analytics', '1_channel'],
-            'pro'      => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders'],
-            'ultimate' => ['basic_analytics', 'all_channels', 'products', 'advanced_analytics', 'unlimited_orders', 'ai_chat', 'ai_extraction', 'priority_inbox', 'broadcasts'],
-        ];
-
-        return $features[$tier] ?? [];
+        return self::FEATURES_MAP[$tier] ?? [];
     }
 
     public function isSubscriptionActive(): bool

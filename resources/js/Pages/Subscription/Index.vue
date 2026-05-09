@@ -38,15 +38,15 @@
           <div class="mb-5">
             <h3 class="text-lg font-bold text-nexus-200">Starter</h3>
             <div class="mt-3 flex items-baseline gap-1">
-              <span class="text-3xl font-bold text-nexus-100">€29</span>
+              <span class="text-3xl font-bold text-nexus-100">€49</span>
               <span class="text-xs text-nexus-500">/mo</span>
             </div>
             <p class="text-xs text-nexus-600 mt-2">Perfect for new businesses.</p>
           </div>
           <ul class="space-y-3 mb-8 flex-1 text-sm text-nexus-400">
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Up to 500 orders/mo</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>1 Channel Integration</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Basic Analytics</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>1 Integration Channel</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Unified Inbox & Manual Orders</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>CRM Profiles & Basic Tags</li>
           </ul>
           <button class="w-full py-2.5 rounded-xl font-semibold text-sm transition-all" :class="currentTier === 'starter' && !isOnTrial ? 'bg-white/[0.04] text-nexus-400 cursor-default' : 'bg-white/[0.04] text-nexus-200 hover:bg-white/[0.08]'">
             {{ currentTier === 'starter' && !isOnTrial ? 'Current Plan' : 'Select Starter' }}
@@ -64,16 +64,16 @@
             </div>
             <h3 class="text-lg font-bold text-white">Pro</h3>
             <div class="mt-3 flex items-baseline gap-1">
-              <span class="text-3xl font-bold text-gradient">€49</span>
+              <span class="text-3xl font-bold text-gradient">€99</span>
               <span class="text-xs text-nexus-400">/mo</span>
             </div>
-            <p class="text-xs text-nexus-400 mt-2">Everything you need to scale.</p>
+            <p class="text-xs text-nexus-400 mt-2">Advanced command center for scaling.</p>
           </div>
           <ul class="space-y-3 mb-8 flex-1 text-sm text-nexus-200 relative">
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Unlimited orders</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>All Channel Integrations</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Product & Stock Management</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Advanced Analytics</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Unlimited Channels & Orders</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Storefront & WA Sync</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Invoices, Coupons & CSAT</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Team Logs & Broadcasts</li>
           </ul>
           <button class="w-full py-2.5 rounded-xl font-semibold text-sm transition-all relative" :class="currentTier === 'pro' ? 'bg-nexus-500/20 text-nexus-200 cursor-default' : 'bg-gradient-to-r from-nexus-500 to-accent-violet text-white hover:opacity-90 hover:shadow-lg'">
             {{ isOnTrial ? '✓ Currently on Trial' : (currentTier === 'pro' ? 'Current Plan' : 'Select Pro') }}
@@ -90,16 +90,15 @@
             </div>
             <h3 class="text-lg font-bold text-nexus-200">Ultimate</h3>
             <div class="mt-3 flex items-baseline gap-1">
-              <span class="text-3xl font-bold text-nexus-100">€99</span>
-              <span class="text-xs text-nexus-500">/mo</span>
+              <span class="text-3xl font-bold text-nexus-100">Custom</span>
             </div>
-            <p class="text-xs text-nexus-600 mt-2">Maximum power and AI assistance.</p>
+            <p class="text-xs text-nexus-600 mt-2">Bespoke architecture for global operations.</p>
           </div>
           <ul class="space-y-3 mb-5 flex-1 text-sm text-nexus-400 relative">
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>All Pro Features</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-cyan shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>✨ Smart Order — AI auto-fills orders from chat</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-amber shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>Priority Inbox Sorting</li>
-            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-violet shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014-5.395c-.318.55-.117 1.26.461 1.527l.38.657c.301.522.96.709 1.511.463a20.845 20.845 0 00-4.282-1.44m0 0a18.03 18.03 0 014.59-.59c1.586 0 3.124.205 4.59.59" /></svg>Marketing Broadcasts</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Everything in Pro</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-cyan shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>✨ Smart Order (AI Auto-fills)</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-cyan shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>Full AI Order Extraction</li>
+            <li class="flex items-start gap-2"><svg class="w-4 h-4 text-accent-violet shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014-5.395c-.318.55-.117 1.26.461 1.527l.38.657c.301.522.96.709 1.511.463a20.845 20.845 0 00-4.282-1.44m0 0a18.03 18.03 0 014.59-.59c1.586 0 3.124.205 4.59.59" /></svg>Demand Forecasting & AI Auto-Reply</li>
           </ul>
           <!-- AI callout inside card -->
           <div class="mb-5 rounded-2xl bg-gradient-to-br from-accent-cyan/10 to-accent-violet/10 border border-accent-cyan/20 p-3 relative">
@@ -112,7 +111,7 @@
             </div>
           </div>
           <button class="w-full py-2.5 rounded-xl font-semibold text-sm transition-all" :class="currentTier === 'ultimate' ? 'bg-white/[0.04] text-nexus-400 cursor-default' : 'bg-gradient-to-r from-accent-cyan/80 to-accent-violet text-white hover:opacity-90 hover:shadow-lg'">
-            {{ currentTier === 'ultimate' ? 'Current Plan' : 'Select Ultimate' }}
+            {{ currentTier === 'ultimate' ? 'Current Plan' : 'Contact Sales' }}
           </button>
         </div>
       </div>

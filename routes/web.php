@@ -109,35 +109,41 @@ Route::middleware(['auth'])->group(function () { // 'verified' removed temporari
     })->name('onboarding.complete');
 
     // Inbox
-    Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
-    Route::get('/inbox/{conversation}', [InboxController::class, 'show'])->name('inbox.show');
-    Route::post('/inbox/{conversation}/reply', [InboxController::class, 'reply'])
-        ->name('inbox.reply')
-        ->middleware('throttle:60,1');
+    Route::middleware('feature:inbox')->group(function () {
+        Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
+        Route::get('/inbox/{conversation}', [InboxController::class, 'show'])->name('inbox.show');
+        Route::post('/inbox/{conversation}/reply', [InboxController::class, 'reply'])
+            ->name('inbox.reply')
+            ->middleware('throttle:60,1');
+    });
 
     // Orders
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-    Route::post('/orders/{order}/dispatch', [OrderController::class, 'dispatch'])->name('orders.dispatch');
+    Route::middleware('feature:orders')->group(function () {
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('/orders/{order}/dispatch', [OrderController::class, 'dispatch'])->name('orders.dispatch');
+    });
 
     // Contacts
-    Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
-    Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
-    Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+    Route::middleware('feature:contacts')->group(function () {
+        Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
+        Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
+        Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+    });
 
     // Products
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-
-    // Broadcasts
-    Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
-    Route::post('/broadcasts', [BroadcastController::class, 'store'])->name('broadcasts.store');
+    Route::middleware('feature:products')->group(function () {
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    });
 
     // Analytics
-    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+    Route::middleware('feature:analytics')->group(function () {
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+    });
 
     // ── Tier 1 Features ──────────────────────────────────────────────────
 
@@ -147,65 +153,95 @@ Route::middleware(['auth'])->group(function () { // 'verified' removed temporari
     Route::get('/export/products', [ExportController::class, 'products'])->name('export.products');
 
     // Tags & Segmentation
-    Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
-    Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
-    Route::put('/tags/{tag}', [TagController::class, 'update'])->name('tags.update');
-    Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
-    Route::post('/contacts/{contact}/tag', [TagController::class, 'toggleContact'])->name('contacts.tag.toggle');
-    Route::post('/tags/rules', [TagController::class, 'storeRule'])->name('tags.rules.store');
-    Route::delete('/tags/rules/{rule}', [TagController::class, 'destroyRule'])->name('tags.rules.destroy');
-    Route::post('/tags/rules/run', [TagController::class, 'runRules'])->name('tags.rules.run');
+    Route::middleware('feature:tags')->group(function () {
+        Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
+        Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
+        Route::put('/tags/{tag}', [TagController::class, 'update'])->name('tags.update');
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+        Route::post('/contacts/{contact}/tag', [TagController::class, 'toggleContact'])->name('contacts.tag.toggle');
+        Route::post('/tags/rules', [TagController::class, 'storeRule'])->name('tags.rules.store');
+        Route::delete('/tags/rules/{rule}', [TagController::class, 'destroyRule'])->name('tags.rules.destroy');
+        Route::post('/tags/rules/run', [TagController::class, 'runRules'])->name('tags.rules.run');
+    });
 
     // Quick Reply Templates
-    Route::get('/templates', [ReplyTemplateController::class, 'index'])->name('templates.index');
-    Route::get('/templates/search', [ReplyTemplateController::class, 'search'])->name('templates.search');
-    Route::post('/templates', [ReplyTemplateController::class, 'store'])->name('templates.store');
-    Route::put('/templates/{template}', [ReplyTemplateController::class, 'update'])->name('templates.update');
-    Route::delete('/templates/{template}', [ReplyTemplateController::class, 'destroy'])->name('templates.destroy');
-    Route::post('/templates/{template}/use', [ReplyTemplateController::class, 'use'])->name('templates.use');
+    Route::middleware('feature:templates')->group(function () {
+        Route::get('/templates', [ReplyTemplateController::class, 'index'])->name('templates.index');
+        Route::get('/templates/search', [ReplyTemplateController::class, 'search'])->name('templates.search');
+        Route::post('/templates', [ReplyTemplateController::class, 'store'])->name('templates.store');
+        Route::put('/templates/{template}', [ReplyTemplateController::class, 'update'])->name('templates.update');
+        Route::delete('/templates/{template}', [ReplyTemplateController::class, 'destroy'])->name('templates.destroy');
+        Route::post('/templates/{template}/use', [ReplyTemplateController::class, 'use'])->name('templates.use');
+    });
 
     // Scheduled Messages & Follow-Up Sequences
-    Route::post('/scheduled-messages', [ScheduledMessageController::class, 'store'])->name('scheduled.store');
-    Route::delete('/scheduled-messages/{scheduledMessage}', [ScheduledMessageController::class, 'destroy'])->name('scheduled.destroy');
-    Route::get('/follow-ups', [ScheduledMessageController::class, 'followUps'])->name('followups.index');
-    Route::post('/follow-ups', [ScheduledMessageController::class, 'storeSequence'])->name('followups.store');
-    Route::post('/follow-ups/{sequence}/toggle', [ScheduledMessageController::class, 'toggleSequence'])->name('followups.toggle');
-    Route::delete('/follow-ups/{sequence}', [ScheduledMessageController::class, 'destroySequence'])->name('followups.destroy');
-
-    // Invoices
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
-    Route::post('/orders/{order}/invoice', [InvoiceController::class, 'generate'])->name('invoices.generate');
-    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
-
-    // Coupons
-    Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
-    Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
-    Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
-    Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
-    Route::post('/coupons/validate', [CouponController::class, 'validate_code'])->name('coupons.validate');
-
-    // CSAT
-    Route::get('/csat', [CsatController::class, 'index'])->name('csat.index');
-    Route::post('/orders/{order}/survey', [CsatController::class, 'send'])->name('csat.send');
+    Route::middleware('feature:followups')->group(function () {
+        Route::post('/scheduled-messages', [ScheduledMessageController::class, 'store'])->name('scheduled.store');
+        Route::delete('/scheduled-messages/{scheduledMessage}', [ScheduledMessageController::class, 'destroy'])->name('scheduled.destroy');
+        Route::get('/follow-ups', [ScheduledMessageController::class, 'followUps'])->name('followups.index');
+        Route::post('/follow-ups', [ScheduledMessageController::class, 'storeSequence'])->name('followups.store');
+        Route::post('/follow-ups/{sequence}/toggle', [ScheduledMessageController::class, 'toggleSequence'])->name('followups.toggle');
+        Route::delete('/follow-ups/{sequence}', [ScheduledMessageController::class, 'destroySequence'])->name('followups.destroy');
+    });
 
     // Returns & Refunds
-    Route::get('/returns', [ReturnController::class, 'index'])->name('returns.index');
-    Route::post('/orders/{order}/return', [ReturnController::class, 'store'])->name('returns.store');
-    Route::patch('/returns/{return}/status', [ReturnController::class, 'updateStatus'])->name('returns.update-status');
+    Route::middleware('feature:returns')->group(function () {
+        Route::get('/returns', [ReturnController::class, 'index'])->name('returns.index');
+        Route::post('/orders/{order}/return', [ReturnController::class, 'store'])->name('returns.store');
+        Route::patch('/returns/{return}/status', [ReturnController::class, 'updateStatus'])->name('returns.update-status');
+    });
+
+    // ── Tier: PRO & ULTIMATE Features ────────────────────────────────────
+
+    // Broadcasts
+    Route::middleware('feature:broadcasts')->group(function () {
+        Route::get('/broadcasts', [BroadcastController::class, 'index'])->name('broadcasts.index');
+        Route::post('/broadcasts', [BroadcastController::class, 'store'])->name('broadcasts.store');
+    });
+
+    // Invoices
+    Route::middleware('feature:invoices')->group(function () {
+        Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::post('/orders/{order}/invoice', [InvoiceController::class, 'generate'])->name('invoices.generate');
+        Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    });
+
+    // Coupons
+    Route::middleware('feature:coupons')->group(function () {
+        Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
+        Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
+        Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+        Route::post('/coupons/validate', [CouponController::class, 'validate_code'])->name('coupons.validate');
+    });
+
+    // CSAT
+    Route::middleware('feature:csat')->group(function () {
+        Route::get('/csat', [CsatController::class, 'index'])->name('csat.index');
+        Route::post('/orders/{order}/survey', [CsatController::class, 'send'])->name('csat.send');
+    });
 
     // Team Activity
-    Route::get('/team-activity', [TeamActivityController::class, 'index'])->name('team-activity.index');
-
-    // Demand Forecast
-    Route::get('/forecast', [ForecastController::class, 'index'])->name('forecast.index');
+    Route::middleware('feature:team_activity')->group(function () {
+        Route::get('/team-activity', [TeamActivityController::class, 'index'])->name('team-activity.index');
+    });
 
     // Storefront
-    Route::get('/storefront', [StorefrontController::class, 'settings'])->name('storefront.settings');
+    Route::middleware('feature:storefront')->group(function () {
+        Route::get('/storefront', [StorefrontController::class, 'settings'])->name('storefront.settings');
+    });
 
     // WhatsApp Catalog
-    Route::get('/whatsapp-catalog', [WhatsAppCatalogController::class, 'index'])->name('wa-catalog.index');
-    Route::post('/whatsapp-catalog/sync', [WhatsAppCatalogController::class, 'sync'])->name('wa-catalog.sync');
-    Route::post('/whatsapp-catalog/settings', [WhatsAppCatalogController::class, 'saveCatalogId'])->name('wa-catalog.settings');
+    Route::middleware('feature:whatsapp_sync')->group(function () {
+        Route::get('/whatsapp-catalog', [WhatsAppCatalogController::class, 'index'])->name('wa-catalog.index');
+        Route::post('/whatsapp-catalog/sync', [WhatsAppCatalogController::class, 'sync'])->name('wa-catalog.sync');
+        Route::post('/whatsapp-catalog/settings', [WhatsAppCatalogController::class, 'saveCatalogId'])->name('wa-catalog.settings');
+    });
+
+    // Demand Forecast
+    Route::middleware('feature:forecast')->group(function () {
+        Route::get('/forecast', [ForecastController::class, 'index'])->name('forecast.index');
+    });
 
     // Admin-only routes (requires the 'admin' role)
     Route::middleware('role:admin')->group(function () {
@@ -218,14 +254,20 @@ Route::middleware(['auth'])->group(function () { // 'verified' removed temporari
         Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
         Route::put('/settings/account', [SettingsController::class, 'updateAccount'])->name('settings.account');
         Route::put('/settings/channels', [SettingsController::class, 'updateChannels'])->name('settings.channels');
-        Route::post('/settings/agents', [SettingsController::class, 'storeAgent'])->name('settings.agents.store');
-        Route::delete('/settings/agents/{agent}', [SettingsController::class, 'destroyAgent'])->name('settings.agents.destroy');
+        
+        Route::middleware('feature:priority_inbox')->group(function () {
+            Route::post('/settings/agents', [SettingsController::class, 'storeAgent'])->name('settings.agents.store');
+            Route::delete('/settings/agents/{agent}', [SettingsController::class, 'destroyAgent'])->name('settings.agents.destroy');
+        });
+
         Route::get('/subscription', [SettingsController::class, 'subscription'])->name('subscription.index');
 
-        // AI settings — available to Pro and Ultimate plans
-        Route::get('/settings/ai', [AiSettingsController::class, 'show'])->name('settings.ai');
-        Route::put('/settings/ai', [AiSettingsController::class, 'update'])->name('settings.ai.update');
-        Route::post('/settings/ai/toggle', [AiSettingsController::class, 'toggle'])->name('settings.ai.toggle');
+        // AI settings — available to Ultimate plan
+        Route::middleware('feature:ai_chat')->group(function () {
+            Route::get('/settings/ai', [AiSettingsController::class, 'show'])->name('settings.ai');
+            Route::put('/settings/ai', [AiSettingsController::class, 'update'])->name('settings.ai.update');
+            Route::post('/settings/ai/toggle', [AiSettingsController::class, 'toggle'])->name('settings.ai.toggle');
+        });
 
         // Meta OAuth — connect Facebook Pages & Instagram automatically
         Route::get('/auth/meta', [OAuthController::class, 'redirectToMeta'])->name('oauth.meta.redirect');

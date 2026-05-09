@@ -122,7 +122,7 @@ class ForecastController extends Controller
 
             // Generate 14-day forecast
             for ($d = 0; $d < 14; $d++) {
-                $forecastDate = now()->addDays($d)->format('Y-m-d');
+                $forecastDate = now()->startOfDay()->addDays($d)->format('Y-m-d 00:00:00');
                 $dayOfWeek = now()->addDays($d)->dayOfWeek;
 
                 // Weekend adjustment (usually lower)

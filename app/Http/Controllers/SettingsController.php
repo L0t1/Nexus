@@ -27,7 +27,6 @@ class SettingsController extends Controller
     public function storeAgent(Request $request): RedirectResponse
     {
         $merchant = $request->user()->merchant;
-        abort_unless($merchant->hasFeature('priority_inbox'), 403, 'Multi-agent routing requires the Ultimate plan.');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

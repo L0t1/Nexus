@@ -16,8 +16,6 @@ class AiSettingsController extends Controller
     {
         $merchant = $request->user()->merchant;
 
-        abort_unless($merchant->hasFeature('ai_chat'), 403, 'AI Chat is not available on your current plan.');
-
         $settings = $merchant->settings ?? [];
         $aiInfo   = $settings['ai_business_info'] ?? [];
 
@@ -50,8 +48,6 @@ class AiSettingsController extends Controller
     {
         $merchant = $request->user()->merchant;
 
-        abort_unless($merchant->hasFeature('ai_chat'), 403);
-
         $validated = $request->validate([
             'description'    => 'nullable|string|max:2000',
             'language'       => 'required|in:auto,en,sq',
@@ -78,8 +74,6 @@ class AiSettingsController extends Controller
     public function toggle(Request $request): RedirectResponse
     {
         $merchant = $request->user()->merchant;
-
-        abort_unless($merchant->hasFeature('ai_chat'), 403);
 
         $merchant->update(['ai_enabled' => !$merchant->ai_enabled]);
 
