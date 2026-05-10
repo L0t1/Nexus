@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\CsatSurvey;
 use App\Models\Order;
+use App\Models\Message;
 use App\Models\ActivityLog;
+use App\Jobs\SendOutboundMessage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -70,26 +73,52 @@ class CsatController extends Controller
 
         $existing = CsatSurvey::where('order_id', $order->id)->first();
         if ($existing) {
-            return back()->with([
-                'success' => 'Survey already exists for this order.',
-                'csat_link' => $existing->public_url
+            $survey = $existing;
+        } else {
+            $survey = CsatSurvey::create([
+                'merchant_id'     => $merchant->id,
+                'order_id'        => $order->id,
+                'contact_id'      => $order->contact_id,
+                'conversation_id' => $order->conversation_id,
+                'sent_at'         => now(),
+                'token'           => Str::random(32),
+                'status'          => 'pending',
             ]);
         }
 
-        $survey = CsatSurvey::create([
-            'merchant_id'     => $merchant->id,
-            'order_id'        => $order->id,
-            'contact_id'      => $order->contact_id,
-            'conversation_id' => $order->conversation_id,
-            'sent_at'         => now(),
-        ]);
+        $link = config('app.public_url', config('app.url')) . "/feedback/{$survey->token}";
+
+        // AUTOMATION: Send link to customer if conversation exists
+        if ($order->conversation_id) {
+            $conversation = $order->conversation;
+            
+            // Determine language (default to Albanian if merchant city/country suggests it, or from settings)
+            $locale = $merchant->settings['language'] ?? ($merchant->country === 'Albania' ? 'sq' : 'en');
+            
+            $body = $locale === 'sq' 
+                ? "Faleminderit që zgjodhët {$merchant->business_name}! Do të vlerësonim shumë reagimin tuaj për porosinë tuaj të fundit: {$link}"
+                : "Thank you for choosing {$merchant->business_name}! We would greatly appreciate your feedback on your recent order: {$link}";
+
+            $message = Message::create([
+                'merchant_id' => $merchant->id,
+                'conversation_id' => $conversation->id,
+                'contact_id' => $conversation->contact_id,
+                'direction' => 'outbound',
+                'body' => $body,
+                'type' => 'text',
+                'status' => 'queued',
+            ]);
+
+            \App\Jobs\SendOutboundMessage::dispatch($message, $conversation);
+        }
 
         ActivityLog::record($merchant->id, 'csat.sent', "CSAT survey sent for order {$order->order_number}.", 'CsatSurvey', $survey->id, [
             'order' => $order->order_number
         ]);
+        
         return back()->with([
-            'success' => "Survey generated for order {$order->order_number}.",
-            'csat_link' => $survey->public_url
+            'success' => 'CSAT survey generated and sent to customer.',
+            'csat_link' => $link
         ]);
     }
 

@@ -89,22 +89,23 @@
         </div>
         <div class="p-6 overflow-y-auto">
           <form @submit.prevent="submit" novalidate class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.productName') }} <span class="text-accent-rose">*</span></label>
-              <input v-model="form.name" type="text" :class="['w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-nexus-200 focus:outline-none transition-colors', form.errors.name ? 'border-accent-rose/50 focus:border-accent-rose' : 'border-white/[0.06] focus:border-nexus-500/50 focus:bg-white/[0.05]']" />
-              <p v-if="form.errors.name" class="mt-1 text-xs text-accent-rose animate-shake">{{ form.errors.name }}</p>
-            </div>
-            
+            <NexusInput
+              v-model="form.name"
+              :label="$t('products.productName') + ' *'"
+              :error="form.errors.name"
+              :placeholder="$t('products.namePlaceholder')"
+            />
+
             <div class="grid grid-cols-2 gap-4">
+              <NexusInput
+                v-model="form.sku"
+                :label="$t('products.sku')"
+                :error="form.errors.sku"
+                placeholder="PROD-001"
+              />
               <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.sku') }}</label>
-                <input v-model="form.sku" type="text" :class="['w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-nexus-200 focus:outline-none transition-colors', form.errors.sku ? 'border-accent-rose/50 focus:border-accent-rose' : 'border-white/[0.06] focus:border-nexus-500/50 focus:bg-white/[0.05]']" />
-                <p v-if="form.errors.sku" class="mt-1 text-xs text-accent-rose">{{ form.errors.sku }}</p>
-                <p v-else class="mt-1 text-[10px] text-nexus-600">{{ $t('products.skuHint') }}</p>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.status') }}</label>
-                <select v-model="form.is_active" class="w-full px-3 py-2.5 rounded-xl bg-nexus-800 border border-white/[0.06] text-sm text-nexus-200 focus:outline-none focus:border-nexus-500/50 transition-colors">
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('products.status') }}</label>
+                <select v-model="form.is_active" class="input-premium cursor-pointer">
                   <option :value="true">{{ $t('products.active') }}</option>
                   <option :value="false">{{ $t('products.draft') }}</option>
                 </select>
@@ -112,20 +113,25 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.price') }} (€) <span class="text-accent-rose">*</span></label>
-                <input v-model="form.price" type="number" step="0.01" min="0.01" :class="['w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-nexus-200 focus:outline-none transition-colors', form.errors.price ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : 'border-white/[0.06] focus:border-nexus-500/50 focus:bg-white/[0.05]']" />
-                <p v-if="form.errors.price" class="mt-1 text-xs text-accent-rose">{{ form.errors.price }}</p>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.stock') }} <span class="text-accent-rose">*</span></label>
-                <input v-model="form.stock" type="number" :min="isEditing ? 0 : 1" :class="['w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-nexus-200 focus:outline-none transition-colors', form.errors.stock ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : 'border-white/[0.06] focus:border-nexus-500/50 focus:bg-white/[0.05]']" />
-                <p v-if="form.errors.stock" class="mt-1 text-xs text-accent-rose">{{ form.errors.stock }}</p>
-              </div>
+              <NexusInput
+                v-model="form.price"
+                type="number"
+                step="0.01"
+                min="0.01"
+                :label="$t('products.price') + ' (€) *'"
+                :error="form.errors.price"
+              />
+              <NexusInput
+                v-model="form.stock"
+                type="number"
+                :min="isEditing ? 0 : 1"
+                :label="$t('products.stock') + ' *'"
+                :error="form.errors.stock"
+              />
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.productImage') }}</label>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('products.productImage') }}</label>
               <div class="flex items-center gap-4">
                 <div class="w-16 h-16 rounded-xl overflow-hidden bg-white/[0.03] border border-white/[0.06] flex items-center justify-center shrink-0">
                   <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
@@ -136,23 +142,26 @@
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs text-nexus-300 hover:bg-white/[0.08] transition-colors">📷 {{ $t('products.chooseImage') }}</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" @change="onImageSelect" class="hidden" />
                   </label>
-                  <p v-if="form.errors.image" class="mt-1 text-xs text-accent-rose">{{ form.errors.image }}</p>
+                  <p v-if="form.errors.image" class="mt-1 text-[10px] font-bold text-accent-rose uppercase tracking-tight">{{ form.errors.image }}</p>
                   <p v-else class="text-[10px] text-nexus-600 mt-1">JPG, PNG or WebP · Max 2MB</p>
                 </div>
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-medium text-nexus-400 mb-1.5">{{ $t('products.description') }}</label>
-              <textarea v-model="form.description" rows="3" :class="['w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border text-sm text-nexus-200 focus:outline-none transition-colors resize-none', form.errors.description ? 'border-accent-rose/50 focus:border-accent-rose' : 'border-white/[0.06] focus:border-nexus-500/50 focus:bg-white/[0.05]']"></textarea>
-              <p v-if="form.errors.description" class="mt-1 text-xs text-accent-rose">{{ form.errors.description }}</p>
-            </div>
+            <NexusInput
+              v-model="form.description"
+              textarea
+              :rows="3"
+              :label="$t('products.description')"
+              :error="form.errors.description"
+              :placeholder="$t('products.detailsPlaceholder')"
+            />
             
-            <div class="pt-4 flex items-center justify-end gap-3 border-t border-white/[0.06]">
-              <button type="button" @click="closeModal" class="px-4 py-2 text-sm font-medium text-nexus-400 hover:text-nexus-200 transition-colors">{{ $t('common.cancel') }}</button>
-              <button type="submit" :disabled="form.processing" class="px-5 py-2 bg-gradient-to-r from-nexus-500 to-accent-cyan text-white text-sm font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50">
-                {{ form.processing ? $t('products.saving') : $t('products.saveProduct') }}
-              </button>
+            <div class="pt-6 flex items-center justify-end gap-3 border-t border-white/[0.06]">
+              <NexusButton variant="ghost" @click="closeModal">{{ $t('common.cancel') }}</NexusButton>
+              <NexusButton type="submit" variant="primary" :loading="form.processing">
+                {{ $t('products.saveProduct') }}
+              </NexusButton>
             </div>
           </form>
         </div>

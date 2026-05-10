@@ -567,6 +567,7 @@ export default {
     csatOnlyDelivered: 'CSAT surveys can only be sent for delivered orders.',
     copyLink: 'Copy Survey Link',
     copied: 'Copied!',
+    csatMessage: 'Thank you for choosing Nexus! We would greatly appreciate your feedback on your recent order: {link}',
   },
 
   // ─── Products ───────────────────────────────────────

@@ -567,6 +567,7 @@ export default {
     csatOnlyDelivered: 'Anketat CSAT mund të dërgohen vetëm për porositë e dorëzuara.',
     copyLink: 'Kopjo Linkun e Anketës',
     copied: 'U Kopjua!',
+    csatMessage: 'Faleminderit që zgjodhët Nexus! Do të vlerësonim shumë reagimin tuaj për porosinë tuaj të fundit: {link}',
   },
 
   // ─── Products ───────────────────────────────────────
