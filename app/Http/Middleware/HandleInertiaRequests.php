@@ -71,6 +71,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
                 'info' => fn () => $request->session()->get('info'),
+                'csat_link' => fn () => $request->session()->get('csat_link'),
             ],
 
             'stats' => $merchant ? [

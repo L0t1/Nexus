@@ -41,6 +41,11 @@ class ReturnController extends Controller
         $merchant = $request->user()->merchant;
         abort_unless($order->merchant_id === $merchant->id, 403);
 
+        // Prevent duplicate returns for same order
+        if (OrderReturn::where('order_id', $order->id)->exists()) {
+            return back()->withErrors(['order' => 'A return request already exists for this order.']);
+        }
+
         $validated = $request->validate([
             'reason'      => 'required|in:defective,wrong_item,not_as_described,changed_mind,late_delivery,other',
             'description' => 'nullable|string|max:2000',
@@ -58,7 +63,9 @@ class ReturnController extends Controller
         ]);
 
         OrderEvent::log($order, 'return_requested', "Return {$return->return_number} requested: {$validated['reason']}.", ['return_id' => $return->id]);
-        ActivityLog::record($merchant->id, 'return.created', "Return {$return->return_number} created for order {$order->order_number}.", 'OrderReturn', $return->id);
+        ActivityLog::record($merchant->id, 'return.created', "Return {$return->return_number} created for order {$order->order_number}.", 'OrderReturn', $return->id, [
+            'order' => $order->order_number
+        ]);
 
         return back()->with('success', "Return {$return->return_number} created.");
     }
@@ -70,7 +77,7 @@ class ReturnController extends Controller
         $validated = $request->validate([
             'status'        => 'required|in:approved,rejected,received,refunded,exchanged',
             'refund_method' => 'nullable|in:original,store_credit,bank_transfer,cash',
-            'refund_amount' => 'nullable|numeric|min:0',
+            'refund_amount' => 'nullable|numeric|min:0.01',
             'admin_notes'   => 'nullable|string|max:2000',
         ]);
 
@@ -90,7 +97,10 @@ class ReturnController extends Controller
 
         $return->update($updates);
 
-        ActivityLog::record($return->merchant_id, 'return.status_changed', "Return {$return->return_number} status changed to {$validated['status']}.", 'OrderReturn', $return->id);
+        ActivityLog::record($return->merchant_id, 'return.status_changed', "Return {$return->return_number} status changed to {$validated['status']}.", 'OrderReturn', $return->id, [
+            'order' => $return->order->order_number,
+            'status' => $validated['status']
+        ]);
         return back()->with('success', "Return status updated to {$validated['status']}.");
     }
 }

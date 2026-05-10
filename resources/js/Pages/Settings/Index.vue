@@ -6,12 +6,28 @@
       <!-- Business Profile -->
       <div class="glass-glow rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">{{ $t('settings.businessProfile') }}</h3></div>
-        <form @submit.prevent="saveProfile" class="p-6 space-y-4">
+        <form @submit.prevent="saveProfile" novalidate class="p-6 space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.businessName') }}</label><input v-model="profileForm.business_name" class="input-premium" /></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.phone') }}</label><input v-model="profileForm.phone" class="input-premium" /></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.country') }}</label><input v-model="profileForm.country" class="input-premium" /></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.city') }}</label><input v-model="profileForm.city" class="input-premium" /></div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.businessName') }}</label>
+              <input v-model="profileForm.business_name" :class="['input-premium', profileForm.errors.business_name ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="profileForm.errors.business_name" class="mt-1 text-xs text-accent-rose">{{ profileForm.errors.business_name }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.phone') }}</label>
+              <input v-model="profileForm.phone" :class="['input-premium', profileForm.errors.phone ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="profileForm.errors.phone" class="mt-1 text-xs text-accent-rose">{{ profileForm.errors.phone }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.country') }}</label>
+              <input v-model="profileForm.country" :class="['input-premium', profileForm.errors.country ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="profileForm.errors.country" class="mt-1 text-xs text-accent-rose">{{ profileForm.errors.country }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.city') }}</label>
+              <input v-model="profileForm.city" :class="['input-premium', profileForm.errors.city ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="profileForm.errors.city" class="mt-1 text-xs text-accent-rose">{{ profileForm.errors.city }}</p>
+            </div>
           </div>
           <div class="pt-2"><button type="submit" :disabled="profileForm.processing" class="btn-primary">{{ $t('settings.saveProfile') }}</button></div>
         </form>
@@ -20,14 +36,29 @@
       <!-- Account -->
       <div class="glass rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/[0.04]"><h3 class="text-sm font-semibold text-nexus-200">{{ $t('settings.account') }}</h3></div>
-        <form @submit.prevent="saveAccount" class="p-6 space-y-4">
+        <form @submit.prevent="saveAccount" novalidate class="p-6 space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.name') }}</label><input v-model="accountForm.name" class="input-premium" /></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.email') }}</label><input v-model="accountForm.email" type="email" class="input-premium" /></div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.name') }}</label>
+              <input v-model="accountForm.name" :class="['input-premium', accountForm.errors.name ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="accountForm.errors.name" class="mt-1 text-xs text-accent-rose">{{ accountForm.errors.name }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.email') }}</label>
+              <input v-model="accountForm.email" type="email" :class="['input-premium', accountForm.errors.email ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="accountForm.errors.email" class="mt-1 text-xs text-accent-rose">{{ accountForm.errors.email }}</p>
+            </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.newPassword') }}</label><input v-model="accountForm.password" type="password" :placeholder="$t('settings.passwordPlaceholder')" class="input-premium" /></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.confirmPassword') }}</label><input v-model="accountForm.password_confirmation" type="password" class="input-premium" /></div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.newPassword') }}</label>
+              <input v-model="accountForm.password" type="password" :placeholder="$t('settings.passwordPlaceholder')" :class="['input-premium', accountForm.errors.password ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+              <p v-if="accountForm.errors.password" class="mt-1 text-xs text-accent-rose">{{ accountForm.errors.password }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('settings.confirmPassword') }}</label>
+              <input v-model="accountForm.password_confirmation" type="password" :class="['input-premium', accountForm.errors.password_confirmation ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+            </div>
           </div>
           <div class="pt-2"><button type="submit" :disabled="accountForm.processing" class="btn-primary">{{ $t('settings.updateAccount') }}</button></div>
         </form>
@@ -47,11 +78,22 @@
             <div><h3 class="text-sm font-semibold text-nexus-200">{{ $t('settings.teamManagement') }}</h3><p class="text-xs text-nexus-500 mt-0.5">{{ $t('settings.inviteAgents') }}</p></div>
           </div>
           <div class="p-6">
-            <form @submit.prevent="inviteAgent" class="flex gap-3 mb-6">
-              <input v-model="agentForm.name" :placeholder="$t('settings.namePlaceholder')" class="input-premium flex-1" required />
-              <input v-model="agentForm.email" type="email" :placeholder="$t('settings.emailPlaceholder')" class="input-premium flex-1" required />
-              <input v-model="agentForm.password" type="password" :placeholder="$t('settings.passwordFieldPlaceholder')" class="input-premium flex-1" required minlength="8" />
-              <button type="submit" :disabled="agentForm.processing" class="btn-primary whitespace-nowrap">{{ $t('settings.inviteAgent') }}</button>
+            <form @submit.prevent="inviteAgent" novalidate class="space-y-4 mb-6">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <input v-model="agentForm.name" :placeholder="$t('settings.namePlaceholder')" :class="['input-premium w-full', agentForm.errors.name ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="agentForm.errors.name" class="mt-1 text-[10px] text-accent-rose">{{ agentForm.errors.name }}</p>
+                </div>
+                <div>
+                  <input v-model="agentForm.email" type="email" :placeholder="$t('settings.emailPlaceholder')" :class="['input-premium w-full', agentForm.errors.email ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="agentForm.errors.email" class="mt-1 text-[10px] text-accent-rose">{{ agentForm.errors.email }}</p>
+                </div>
+                <div>
+                  <input v-model="agentForm.password" type="password" :placeholder="$t('settings.passwordFieldPlaceholder')" :class="['input-premium w-full', agentForm.errors.password ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="agentForm.errors.password" class="mt-1 text-[10px] text-accent-rose">{{ agentForm.errors.password }}</p>
+                </div>
+              </div>
+              <div class="flex justify-end"><button type="submit" :disabled="agentForm.processing" class="btn-primary whitespace-nowrap">{{ $t('settings.inviteAgent') }}</button></div>
             </form>
 
             <div class="space-y-3">

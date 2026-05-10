@@ -135,8 +135,8 @@
     <div v-if="showNotifs || showUserMenu || searchResults.length" @click="closeAll" class="fixed inset-0 z-20" style="pointer-events: auto;"></div>
 
     <!-- Toasts -->
-    <div class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none">
-      <TransitionGroup enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+    <div class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none">
+      <TransitionGroup enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
         <div v-for="toast in toasts" :key="toast.id" :class="['pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-2xl glass-strong border border-white/10 w-80', toast.type === 'error' ? 'bg-accent-rose/10 border-accent-rose/20' : 'bg-accent-emerald/10 border-accent-emerald/20']">
           <div :class="['w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-inner', toast.type === 'error' ? 'bg-gradient-to-br from-accent-rose/30 to-accent-rose/10 text-accent-rose' : 'bg-gradient-to-br from-accent-emerald/30 to-accent-emerald/10 text-accent-emerald']">
             <svg v-if="toast.type === 'success'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -216,14 +216,55 @@ function removeToast(id) {
   toasts.value = toasts.value.filter(t => t.id !== id);
 }
 
+function tryTranslateError(message) {
+  const { t, locale } = useI18n();
+  if (!message || typeof message !== 'string' || locale.value === 'en') return message;
+  
+  const msg = message.toLowerCase();
+
+  // Manual mappings for specific business rules
+  if (msg.includes('delivered orders')) return t('orderDetail.csatOnlyDelivered');
+  if (msg.includes('return request already exists')) return t('returns.alreadyExists');
+  
+  // Try to find the field name (usually between 'The' and the next word)
+  const fieldMatch = message.match(/^The (.*?) (field|has|must|may)/i);
+  let fieldName = fieldMatch ? fieldMatch[1] : 'fusha';
+  
+  // Basic field name translation map
+  const fieldMap = {
+    'sku': 'SKU',
+    'name': 'emri',
+    'price': 'çmimi',
+    'stock': 'stoku',
+    'email': 'email-i',
+    'password': 'fjalëkalimi'
+  };
+  fieldName = fieldMap[fieldName.toLowerCase()] || fieldName;
+
+  if (msg.includes('required')) return t('validation.required', { field: fieldName });
+  if (msg.includes('already been taken')) return t('validation.unique', { field: fieldName });
+  if (msg.includes('must be a number')) return t('validation.numeric', { field: fieldName });
+  if (msg.includes('must be an image')) return t('validation.image', { field: fieldName });
+  if (msg.includes('may not be greater than')) {
+    const maxMatch = message.match(/greater than (\d+)/);
+    return t('validation.max', { field: fieldName, max: maxMatch ? maxMatch[1] : '?' });
+  }
+  
+  return message;
+}
+
 watch(() => page.props.flash, (flash) => {
-  if (flash?.success) addToast('Success', flash.success, 'success');
-  if (flash?.error) addToast('Error', flash.error, 'error');
+  const { t } = useI18n();
+  if (flash?.success) addToast(t('common.success'), flash.success, 'success');
+  if (flash?.error) addToast(t('common.error'), flash.error, 'error');
 }, { deep: true, immediate: true });
 
 watch(() => page.props.errors, (errors) => {
   if (Object.keys(errors || {}).length > 0) {
-    addToast('Validation Error', 'Please check the form for errors.', 'error');
+    const { t } = useI18n();
+    const firstError = Object.values(errors)[0];
+    const translatedMessage = tryTranslateError(firstError);
+    addToast(t('common.validationError'), translatedMessage || t('common.checkForm'), 'error');
   }
 }, { deep: true });
 

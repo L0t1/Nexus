@@ -49,7 +49,9 @@ class InvoiceController extends Controller
             'due_at'    => now()->addDays(30),
         ]);
 
-        ActivityLog::record($merchant->id, 'invoice.generated', "Invoice {$invoice->invoice_number} generated for order {$order->order_number}.", 'Invoice', $invoice->id);
+        ActivityLog::record($merchant->id, 'invoice.generated', "Invoice {$invoice->invoice_number} generated for order {$order->order_number}.", 'Invoice', $invoice->id, [
+            'order' => $order->order_number
+        ]);
 
         return back()->with('success', "Invoice {$invoice->invoice_number} generated.");
     }

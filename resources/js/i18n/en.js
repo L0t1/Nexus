@@ -15,6 +15,7 @@ export default {
     back: 'Back',
     next: 'Next',
     loading: 'Loading...',
+    processing: 'Processing...',
     noData: 'No data available',
     viewAll: 'View all →',
     actions: 'Actions',
@@ -38,6 +39,7 @@ export default {
     featureLocked: 'is locked on this plan. Please ask your administrator to upgrade.',
     adminOnly: 'is restricted to administrators.',
     upgradeMessage: 'is locked. Upgrade your plan to unlock this feature.',
+    rateExperience: 'Select a rating',
   },
 
   // ─── Status Labels (StatusBadge) ───────────────────
@@ -325,6 +327,7 @@ export default {
     cash: 'Cash',
     notes: 'Notes',
     refundBtn: 'Refund',
+    alreadyExists: 'A return request already exists for this order.',
   },
 
   // ─── CSAT ─────────────────────────────────────────
@@ -559,6 +562,11 @@ export default {
     detailsPlaceholder: 'Details about the return...',
     submitReturn: 'Submit Return',
     noDescription: 'No description',
+    csatReady: 'Survey Ready!',
+    csatHint: 'Copy the link below and share it with your customer to get their feedback.',
+    csatOnlyDelivered: 'CSAT surveys can only be sent for delivered orders.',
+    copyLink: 'Copy Survey Link',
+    copied: 'Copied!',
   },
 
   // ─── Products ───────────────────────────────────────
@@ -583,6 +591,7 @@ export default {
     saving: 'Saving...',
     deleteTitle: 'Delete Product?',
     deleteConfirm: 'Are you sure you want to permanently delete {name}? This action cannot be undone.',
+    skuHint: 'Leave empty to auto-generate',
   },
 
   // ─── Contacts ───────────────────────────────────────
@@ -722,5 +731,31 @@ export default {
     'catalog.synced': 'WhatsApp catalog synced: {count} products',
     'coupon.created': 'Created coupon: {code}',
     'invoice.generated': 'Generated invoice for order #{order}',
+    'contact.updated': 'Updated contact: {name}',
+    'return.created': 'Processed return for order #{order}',
+    'return.status_changed': 'Changed return status for order #{order} to {status}',
+    'csat.sent': 'Sent CSAT survey for order #{order}',
   },
+  
+  validation: {
+    required: 'The {field} field is required.',
+    unique: 'This {field} has already been taken.',
+    numeric: 'The {field} must be a number.',
+    max: 'The {field} may not be greater than {max} characters.',
+    image: 'The {field} must be an image.',
+    mimes: 'The {field} must be a file of type: {types}.',
+  },
+  csatFeedback: {
+    veryPoor: '😡 Very Poor',
+    poor: '😕 Poor',
+    average: '😐 Average',
+    good: '😊 Good',
+    excellent: '🤩 Excellent!',
+    submitting: 'Submitting...',
+    submit: 'Submit Feedback',
+    placeholder: 'Any comments or suggestions for us? (optional)',
+    thankYou: 'Thank You!',
+    thankYouMessage: 'Your feedback has been recorded. We appreciate you helping us improve!',
+    howWasExperience: 'How was your experience?',
+  }
 };

@@ -51,7 +51,9 @@ class CouponController extends Controller
         $validated['code'] = strtoupper($validated['code']);
         $coupon = $merchant->coupons()->create($validated);
 
-        ActivityLog::record($merchant->id, 'coupon.created', "Coupon {$coupon->code} created.", 'Coupon', $coupon->id);
+        ActivityLog::record($merchant->id, 'coupon.created', "Coupon {$coupon->code} created.", 'Coupon', $coupon->id, [
+            'code' => $coupon->code
+        ]);
         return back()->with('success', "Coupon \"{$coupon->code}\" created.");
     }
 

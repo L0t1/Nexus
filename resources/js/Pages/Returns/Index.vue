@@ -45,9 +45,14 @@
           <div @click="showRefundModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ $t('returns.processRefund') }}</h3>
-            <form @submit.prevent="processRefund" class="space-y-4">
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.refundAmount') }} (€)</label><input v-model.number="refundForm.refund_amount" type="number" step="0.01" class="input-premium" required /></div>
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.refundMethod') }}</label>
+            <form @submit.prevent="processRefund" novalidate class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.refundAmount') }} (€)</label>
+                <input v-model.number="refundForm.refund_amount" type="number" step="0.01" min="0.01" :class="['input-premium', refundForm.errors.refund_amount ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <p v-if="refundForm.errors.refund_amount" class="mt-1 text-xs text-accent-rose">{{ refundForm.errors.refund_amount }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.refundMethod') }}</label>
                 <select v-model="refundForm.refund_method" class="input-premium">
                   <option value="original">{{ $t('returns.originalMethod') }}</option>
                   <option value="store_credit">{{ $t('returns.storeCredit') }}</option>
@@ -55,10 +60,15 @@
                   <option value="cash">{{ $t('returns.cash') }}</option>
                 </select>
               </div>
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.notes') }}</label><textarea v-model="refundForm.admin_notes" rows="2" class="input-premium resize-none"></textarea></div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('returns.notes') }}</label>
+                <textarea v-model="refundForm.admin_notes" rows="2" class="input-premium resize-none"></textarea>
+              </div>
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showRefundModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ $t('returns.refundBtn') }}</button>
+                <button type="submit" :disabled="refundForm.processing" class="btn-primary text-sm px-4 py-2">
+                  {{ refundForm.processing ? $t('common.processing') || '...' : $t('returns.refundBtn') }}
+                </button>
               </div>
             </form>
           </div>
@@ -69,18 +79,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const props = defineProps({ returns: Object, statusCounts: Object, filters: Object });
 const activeFilter = ref(props.filters?.status || '');
 const statusFilters = [{ label: 'All', value: '' }, { label: 'Requested', value: 'requested' }, { label: 'Approved', value: 'approved' }, { label: 'Received', value: 'received' }, { label: 'Refunded', value: 'refunded' }];
 const showRefundModal = ref(false);
 const refundReturnId = ref(null);
-const refundForm = reactive({ refund_amount: 0, refund_method: 'original', admin_notes: '', status: 'refunded' });
+const refundForm = useForm({ refund_amount: 0, refund_method: 'original', admin_notes: '', status: 'refunded' });
 function setFilter(v) { activeFilter.value = v; router.get('/returns', { status: v }, { preserveState: true }); }
 function updateReturn(id, status) { router.patch(`/returns/${id}/status`, { status }); }
 function openRefund(r) { refundReturnId.value = r.id; refundForm.refund_amount = Number(r.order?.total || 0); showRefundModal.value = true; }
-function processRefund() { router.patch(`/returns/${refundReturnId.value}/status`, { ...refundForm }, { onSuccess: () => showRefundModal.value = false }); }
+function processRefund() { refundForm.patch(`/returns/${refundReturnId.value}/status`, { onSuccess: () => showRefundModal.value = false }); }
 function statusClass(s) { return { requested: 'bg-accent-amber/10 text-accent-amber', approved: 'bg-accent-cyan/10 text-accent-cyan', rejected: 'bg-accent-rose/10 text-accent-rose', received: 'bg-accent-violet/10 text-accent-violet', refunded: 'bg-accent-emerald/10 text-accent-emerald', exchanged: 'bg-nexus-500/10 text-nexus-400' }[s] || ''; }
 </script>

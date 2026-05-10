@@ -31,22 +31,50 @@
           <div @click="showModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editing ? $t('common.edit') : $t('common.new') }} {{ $t('coupons.title').split(' ')[0] }}</h3>
-            <form @submit.prevent="save" class="space-y-4">
+            <form @submit.prevent="save" novalidate class="space-y-4">
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.code') }}</label><input v-model="form.code" class="input-premium font-mono uppercase" :disabled="!!editing" required /></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.name') }}</label><input v-model="form.name" class="input-premium" required /></div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.code') }}</label>
+                  <input v-model="form.code" :class="['input-premium font-mono uppercase', form.errors.code ? 'border-accent-rose/50 focus:border-accent-rose' : '']" :disabled="!!editing" />
+                  <p v-if="form.errors.code" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.code }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.name') }}</label>
+                  <input v-model="form.name" :class="['input-premium', form.errors.name ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="form.errors.name" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.name }}</p>
+                </div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.type') }}</label><select v-model="form.type" class="input-premium"><option value="percentage">{{ $t('coupons.percentage') }}</option><option value="fixed">{{ $t('coupons.fixed') }}</option></select></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.value') }}</label><input v-model.number="form.value" type="number" step="0.01" min="0.01" class="input-premium" required /></div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.type') }}</label>
+                  <select v-model="form.type" class="input-premium">
+                    <option value="percentage">{{ $t('coupons.percentage') }}</option>
+                    <option value="fixed">{{ $t('coupons.fixed') }}</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.value') }}</label>
+                  <input v-model.number="form.value" type="number" step="0.01" min="0.01" :class="['input-premium', form.errors.value ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="form.errors.value" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.value }}</p>
+                </div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.minOrder') }}</label><input v-model.number="form.min_order_amount" type="number" step="0.01" class="input-premium" /></div>
-                <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.expires') }}</label><input v-model="form.expires_at" type="date" class="input-premium" /></div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.minOrder') }}</label>
+                  <input v-model.number="form.min_order_amount" type="number" step="0.01" :class="['input-premium', form.errors.min_order_amount ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="form.errors.min_order_amount" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.min_order_amount }}</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.expires') }}</label>
+                  <input v-model="form.expires_at" type="date" :class="['input-premium', form.errors.expires_at ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />
+                  <p v-if="form.errors.expires_at" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.expires_at }}</p>
+                </div>
               </div>
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ editing ? $t('common.save') : $t('common.create') }}</button>
+                <button type="submit" :disabled="form.processing" class="btn-primary text-sm px-4 py-2">
+                  {{ form.processing ? $t('common.saving') || '...' : (editing ? $t('common.save') : $t('common.create')) }}
+                </button>
               </div>
             </form>
           </div>
@@ -57,16 +85,22 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 defineProps({ coupons: { type: Object, default: () => ({ data: [] }) } });
 const showModal = ref(false);
 const editing = ref(null);
-const form = reactive({ code: '', name: '', type: 'percentage', value: 10, min_order_amount: null, max_discount_amount: null, usage_limit: null, expires_at: '' });
-function resetForm() { Object.assign(form, { code: '', name: '', type: 'percentage', value: 10, min_order_amount: null, max_discount_amount: null, usage_limit: null, expires_at: '' }); }
-function edit(c) { editing.value = c; Object.assign(form, c); showModal.value = true; }
-function save() { editing.value ? router.put(`/coupons/${editing.value.id}`, { ...form }, { onSuccess: () => showModal.value = false }) : router.post('/coupons', { ...form }, { onSuccess: () => { showModal.value = false; resetForm(); } }); }
-function del(id) { router.delete(`/coupons/${id}`); }
+const form = useForm({ code: '', name: '', type: 'percentage', value: 10, min_order_amount: null, max_discount_amount: null, usage_limit: null, expires_at: '' });
+function resetForm() { form.reset(); form.clearErrors(); }
+function edit(c) { editing.value = c; form.defaults(c); form.reset(); showModal.value = true; }
+function save() { 
+  if (editing.value) {
+    form.put(`/coupons/${editing.value.id}`, { onSuccess: () => showModal.value = false });
+  } else {
+    form.post('/coupons', { onSuccess: () => { showModal.value = false; resetForm(); } });
+  }
+}
+function del(id) { if(confirm('Are you sure?')) router.delete(`/coupons/${id}`); }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''; }
 </script>

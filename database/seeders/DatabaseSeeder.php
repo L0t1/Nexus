@@ -411,16 +411,16 @@ class DatabaseSeeder extends Seeder
 
         // ── Activity Logs ─────────────────────────────────
         $activities = [
-            ['user' => $admin, 'action' => 'order.created', 'desc' => 'Created order NX-20260505-ABC12D'],
-            ['user' => $agent, 'action' => 'message.sent', 'desc' => 'Sent message to Arbnora Krasniqi'],
-            ['user' => $admin, 'action' => 'order.status_changed', 'desc' => 'Changed order status to dispatched'],
-            ['user' => $agent, 'action' => 'message.sent', 'desc' => 'Replied to Besart Hoxha'],
-            ['user' => $admin, 'action' => 'coupon.created', 'desc' => 'Created coupon WELCOME15'],
-            ['user' => $admin, 'action' => 'invoice.generated', 'desc' => 'Generated invoice for order NX-20260508-XYZ'],
-            ['user' => $agent, 'action' => 'contact.updated', 'desc' => 'Updated contact Drita Berisha'],
-            ['user' => $admin, 'action' => 'return.created', 'desc' => 'Processed return for order NX-20260501-DEF'],
-            ['user' => $agent, 'action' => 'csat.sent', 'desc' => 'Sent CSAT survey to Arbnora Krasniqi'],
-            ['user' => $admin, 'action' => 'catalog.synced', 'desc' => 'WhatsApp catalog synced: 7 products'],
+            ['user' => $admin, 'action' => 'order.created', 'desc' => 'Created order NX-20260505-ABC12D', 'meta' => ['order' => 'NX-20260505-ABC12D', 'customer' => 'Arbnora Krasniqi']],
+            ['user' => $agent, 'action' => 'message.sent', 'desc' => 'Sent message to Arbnora Krasniqi', 'meta' => ['customer' => 'Arbnora Krasniqi']],
+            ['user' => $admin, 'action' => 'order.status_changed', 'desc' => 'Changed order status to dispatched', 'meta' => ['order' => 'NX-20260505-ABC12D', 'status' => 'dispatched']],
+            ['user' => $agent, 'action' => 'message.sent', 'desc' => 'Replied to Besart Hoxha', 'meta' => ['customer' => 'Besart Hoxha']],
+            ['user' => $admin, 'action' => 'coupon.created', 'desc' => 'Created coupon WELCOME15', 'meta' => ['code' => 'WELCOME15']],
+            ['user' => $admin, 'action' => 'invoice.generated', 'desc' => 'Generated invoice for order NX-20260508-XYZ', 'meta' => ['order' => 'NX-20260508-XYZ']],
+            ['user' => $agent, 'action' => 'contact.updated', 'desc' => 'Updated contact Drita Berisha', 'meta' => ['name' => 'Drita Berisha']],
+            ['user' => $admin, 'action' => 'return.created', 'desc' => 'Processed return for order NX-20260501-DEF', 'meta' => ['order' => 'NX-20260501-DEF']],
+            ['user' => $agent, 'action' => 'csat.sent', 'desc' => 'Sent CSAT survey to Arbnora Krasniqi', 'meta' => ['customer' => 'Arbnora Krasniqi']],
+            ['user' => $admin, 'action' => 'catalog.synced', 'desc' => 'WhatsApp catalog synced: 7 products', 'meta' => ['count' => 7]],
         ];
         foreach ($activities as $i => $a) {
             ActivityLog::create([
@@ -428,6 +428,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $a['user']->id,
                 'action' => $a['action'],
                 'description' => $a['desc'],
+                'metadata' => $a['meta'] ?? null,
                 'ip_address' => '127.0.0.1',
                 'created_at' => now()->subHours(count($activities) - $i),
             ]);

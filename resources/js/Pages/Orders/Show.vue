@@ -29,9 +29,9 @@
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
             {{ $t('orderDetail.generateInvoice') }}
           </button>
-          <button @click="sendSurvey" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+          <button v-if="order.fulfillment_status === 'delivered'" @click="sendSurvey" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            CSAT
+            {{ $t('orderDetail.csat') }}
           </button>
           <button @click="showReturnModal = true" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-accent-rose hover:bg-accent-rose/10">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" /></svg>
@@ -208,16 +208,66 @@
           <div @click="showReturnModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ $t('orderDetail.requestReturn') }}</h3>
-            <form @submit.prevent="submitReturn" class="space-y-4">
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('orderDetail.reason') }}</label>
-                <select v-model="returnForm.reason" class="input-premium"><option value="defective">{{ $t('orderDetail.defective') }}</option><option value="wrong_item">{{ $t('orderDetail.wrongItem') }}</option><option value="not_as_described">{{ $t('orderDetail.notAsDescribed') }}</option><option value="changed_mind">{{ $t('orderDetail.changedMind') }}</option><option value="late_delivery">{{ $t('orderDetail.lateDelivery') }}</option><option value="other">{{ $t('orderDetail.other') }}</option></select>
+            <form @submit.prevent="submitReturn" novalidate class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('orderDetail.reason') }}</label>
+                <select v-model="returnForm.reason" :class="['input-premium cursor-pointer', returnForm.errors.reason ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']">
+                  <option value="defective">{{ $t('orderDetail.defective') }}</option>
+                  <option value="wrong_item">{{ $t('orderDetail.wrongItem') }}</option>
+                  <option value="not_as_described">{{ $t('orderDetail.notAsDescribed') }}</option>
+                  <option value="changed_mind">{{ $t('orderDetail.changedMind') }}</option>
+                  <option value="late_delivery">{{ $t('orderDetail.lateDelivery') }}</option>
+                  <option value="other">{{ $t('orderDetail.other') }}</option>
+                </select>
+                <p v-if="returnForm.errors.reason" class="mt-1 text-xs text-accent-rose">{{ returnForm.errors.reason }}</p>
               </div>
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('orderDetail.description') }}</label><textarea v-model="returnForm.description" rows="3" class="input-premium resize-none" :placeholder="$t('orderDetail.detailsPlaceholder')"></textarea></div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('orderDetail.description') }}</label>
+                <textarea v-model="returnForm.description" rows="3" :class="['input-premium resize-none', returnForm.errors.description ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" :placeholder="$t('orderDetail.detailsPlaceholder')"></textarea>
+                <p v-if="returnForm.errors.description" class="mt-1 text-xs text-accent-rose">{{ returnForm.errors.description }}</p>
+              </div>
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showReturnModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>
-                <button type="submit" class="btn-primary text-sm px-4 py-2">{{ $t('orderDetail.submitReturn') }}</button>
+                <button type="submit" :disabled="returnForm.processing" class="btn-primary text-sm px-4 py-2">
+                  {{ returnForm.processing ? $t('common.processing') || '...' : $t('orderDetail.submitReturn') }}
+                </button>
               </div>
             </form>
+          </div>
+        </div>
+      </Transition>
+
+      <!-- CSAT Survey Modal -->
+      <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+        <div v-if="showCsatModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div @click="showCsatModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+          <div class="relative glass-strong rounded-[2rem] p-8 w-full max-w-sm border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
+            <!-- Decorative glow -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-accent-violet/10 blur-3xl rounded-full"></div>
+
+            <div class="p-2 text-center relative z-10">
+              <div class="w-20 h-20 bg-accent-violet/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-accent-violet/20 shadow-inner">
+                <svg class="w-10 h-10 text-accent-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <h3 class="text-2xl font-bold text-nexus-100 mb-2 tracking-tight">{{ $t('orderDetail.csatReady') || 'Survey Ready!' }}</h3>
+              <p class="text-sm text-nexus-500 mb-8 leading-relaxed opacity-80">{{ $t('orderDetail.csatHint') || 'Copy the link below and share it with your customer to get their feedback.' }}</p>
+              
+              <div class="space-y-4 mb-8">
+                <div class="relative group">
+                  <div class="absolute inset-0 bg-accent-violet/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <input type="text" readonly :value="csatLink" class="relative input-premium text-[10px] font-mono bg-white/[0.03] border-white/10 h-12 text-center" />
+                </div>
+                
+                <button @click="copyCsatLink" :class="['w-full py-3.5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 border font-bold text-sm', 
+                  linkCopied ? 'bg-accent-emerald/20 border-accent-emerald/40 text-accent-emerald shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-accent-violet border-accent-violet/50 text-white shadow-[0_0_25px_rgba(139,92,246,0.3)] hover:scale-[1.02] active:scale-95']">
+                  <svg v-if="linkCopied" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  <svg v-else class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                  {{ linkCopied ? $t('orderDetail.copied') || 'Copied!' : $t('orderDetail.copyLink') || 'Copy Survey Link' }}
+                </button>
+              </div>
+
+              <button @click="showCsatModal = false" class="w-full py-3 text-xs font-semibold text-nexus-500 hover:text-nexus-300 transition-colors uppercase tracking-widest">{{ $t('common.close') }}</button>
+            </div>
           </div>
         </div>
       </Transition>
@@ -227,7 +277,7 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 import ConfirmModal from '@/Components/ConfirmModal.vue';
@@ -239,10 +289,20 @@ const showStatusMenu = ref(false);
 const showPaymentMenu = ref(false);
 const showDeleteModal = ref(false);
 const showReturnModal = ref(false);
+const showCsatModal = ref(false);
+const csatLink = ref('');
+const linkCopied = ref(false);
 const copied = ref(false);
-const returnForm = reactive({ reason: 'other', description: '' });
+const returnForm = useForm({ reason: 'other', description: '' });
 
 const auditEvents = computed(() => props.order.events || []);
+
+function copyCsatLink() {
+  if (!csatLink.value) return;
+  navigator.clipboard.writeText(csatLink.value);
+  linkCopied.value = true;
+  setTimeout(() => linkCopied.value = false, 2000);
+}
 
 function eventDotClass(event) {
   const type = event.type;
@@ -303,12 +363,24 @@ function generateInvoice() {
 }
 
 function sendSurvey() {
-  router.post(`/orders/${props.order.id}/survey`);
+  router.post(`/orders/${props.order.id}/survey`, {}, {
+    preserveScroll: true,
+    onSuccess: (page) => {
+      if (page.props.flash?.csat_link) {
+        csatLink.value = page.props.flash.csat_link;
+        showCsatModal.value = true;
+      }
+    }
+  });
 }
 
 function submitReturn() {
-  router.post(`/orders/${props.order.id}/return`, { ...returnForm }, {
-    onSuccess: () => { showReturnModal.value = false; returnForm.reason = 'other'; returnForm.description = ''; }
+  returnForm.post(`/orders/${props.order.id}/return`, {
+    preserveScroll: true,
+    onSuccess: () => { 
+      showReturnModal.value = false; 
+      returnForm.reset(); 
+    }
   });
 }
 </script>

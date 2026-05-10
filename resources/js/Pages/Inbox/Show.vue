@@ -132,18 +132,43 @@
             <h3 class="text-sm font-semibold text-nexus-200 flex items-center gap-2"><span>📦</span> {{ $t('chat.orderDetails') }}</h3>
             <button @click="showOrderPanel = false" class="text-nexus-600 hover:text-nexus-300 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
           </div>
-          <form @submit.prevent="submitOrder" class="flex-1 overflow-y-auto p-5 space-y-4">
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.customerName') }} *</label><input v-model="orderForm.customer_name" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_name}]" /><div v-if="orderForm.errors.customer_name" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_name }}</div></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.phone') }} *</label><input v-model="orderForm.customer_phone" type="tel" oninput="this.value = this.value.replace(/[^0-9\s\+\-\(\)]/g, '')" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.customer_phone}]" /><div v-if="orderForm.errors.customer_phone" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_phone }}</div></div>
-            <div class="grid grid-cols-2 gap-3">
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.city') }} *</label><CitySelect v-model="orderForm.shipping_city" :input-class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_city}]" /><div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div></div>
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.neighborhood') }}</label><input v-model="orderForm.shipping_neighborhood" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_neighborhood}]" /><div v-if="orderForm.errors.shipping_neighborhood" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_neighborhood }}</div></div>
+          <form @submit.prevent="submitOrder" novalidate class="flex-1 overflow-y-auto p-5 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.customerName') }} *</label>
+              <input v-model="orderForm.customer_name" type="text" :class="['input-premium', orderForm.errors.customer_name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.customer_name" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_name }}</div>
             </div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.address') }} *</label><input v-model="orderForm.shipping_street" type="text" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_street}]" /><div v-if="orderForm.errors.shipping_street" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_street }}</div></div>
-            <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.shippingNotes') }}</label><textarea v-model="orderForm.shipping_notes" rows="2" :placeholder="$t('chat.shippingPlaceholder')" :class="['input-premium py-2 text-sm', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_notes}]"></textarea><div v-if="orderForm.errors.shipping_notes" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_notes }}</div></div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.phone') }} *</label>
+              <input v-model="orderForm.customer_phone" type="tel" oninput="this.value = this.value.replace(/[^0-9\s\+\-\(\)]/g, '')" :class="['input-premium', orderForm.errors.customer_phone ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.customer_phone" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_phone }}</div>
+            </div>
             <div class="grid grid-cols-2 gap-3">
-              <div><label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.payment') }} *</label>
-                <select v-model="orderForm.payment_method" :class="['input-premium cursor-pointer', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.payment_method}]">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.city') }} *</label>
+                <CitySelect v-model="orderForm.shipping_city" :input-class="['input-premium', orderForm.errors.shipping_city ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.neighborhood') }}</label>
+                <input v-model="orderForm.shipping_neighborhood" type="text" :class="['input-premium', orderForm.errors.shipping_neighborhood ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="orderForm.errors.shipping_neighborhood" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_neighborhood }}</div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.address') }} *</label>
+              <input v-model="orderForm.shipping_street" type="text" :class="['input-premium', orderForm.errors.shipping_street ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.shipping_street" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_street }}</div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.shippingNotes') }}</label>
+              <textarea v-model="orderForm.shipping_notes" rows="2" :placeholder="$t('chat.shippingPlaceholder')" :class="['input-premium py-2 text-sm resize-none', orderForm.errors.shipping_notes ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']"></textarea>
+              <div v-if="orderForm.errors.shipping_notes" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_notes }}</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.payment') }} *</label>
+                <select v-model="orderForm.payment_method" :class="['input-premium cursor-pointer', orderForm.errors.payment_method ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']">
                   <option value="cod">{{ $t('chat.cashOnDelivery') }}</option>
                   <option value="bank_transfer">{{ $t('chat.bankTransfer') }}</option>
                   <option value="online">{{ $t('chat.onlinePayment') }}</option>
@@ -152,34 +177,36 @@
               </div>
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.product') }} *</label>
-                <select v-if="products.length" v-model="selectedProductId" @change="onProductSelect" :class="['input-premium cursor-pointer', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}]">
+                <select v-if="products.length" v-model="selectedProductId" @change="onProductSelect" :class="['input-premium cursor-pointer', itemErrors.name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']">
                   <option value="">{{ $t('chat.customProduct') }}</option>
                   <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }} (€{{ Number(p.price).toFixed(2) }}) — {{ p.stock }} {{ $t('chat.inStock') }}</option>
                 </select>
-                <input v-if="!products.length || selectedProductId === ''" v-model="itemName" type="text" :placeholder="$t('chat.productName')" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.name}, products.length ? 'mt-2' : '']" />
+                <input v-if="!products.length || selectedProductId === ''" v-model="itemName" type="text" :placeholder="$t('chat.productName')" :class="['input-premium', itemErrors.name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '', products.length ? 'mt-2' : '']" />
                 <div v-if="itemErrors.name" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.name }}</div>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-3">
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.qty') }} *</label>
-                <input v-model.number="itemQty" type="number" min="1" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.qty}]" />
+                <input v-model.number="itemQty" type="number" min="1" :class="['input-premium', itemErrors.qty ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
                 <div v-if="itemErrors.qty" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.qty }}</div>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.price') }} *</label>
-                <input v-model.number="itemPrice" type="number" min="0" step="0.01" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': itemErrors.price}]" />
+                <input v-model.number="itemPrice" type="number" min="0.01" step="0.01" :class="['input-premium', itemErrors.price ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
                 <div v-if="itemErrors.price" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.price }}</div>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.shipping') }}</label>
-                <input v-model.number="orderForm.shipping_cost" type="number" min="0" step="0.01" :class="['input-premium', {'border-accent-rose/50 focus:border-accent-rose': orderForm.errors.shipping_cost}]" />
+                <input v-model.number="orderForm.shipping_cost" type="number" min="0" step="0.01" :class="['input-premium', orderForm.errors.shipping_cost ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
                 <div v-if="orderForm.errors.shipping_cost" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ orderForm.errors.shipping_cost }}</div>
               </div>
             </div>
             <div class="pt-3 border-t border-white/[0.04]">
               <div class="flex justify-between text-sm mb-4"><span class="text-nexus-500">{{ $t('chat.total') }}</span><span class="font-bold text-xl text-gradient">€{{ ((itemQty * itemPrice) + (orderForm.shipping_cost || 0)).toFixed(2) }}</span></div>
-              <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-accent-emerald to-accent-cyan text-white text-sm font-semibold transition-all hover:shadow-lg hover:shadow-accent-emerald/20">{{ $t('chat.confirmOrder') }}</button>
+              <button type="submit" :disabled="orderForm.processing" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-accent-emerald to-accent-cyan text-white text-sm font-semibold transition-all hover:shadow-lg hover:shadow-accent-emerald/20 disabled:opacity-50">
+                {{ orderForm.processing ? $t('common.processing') || '...' : $t('chat.confirmOrder') }}
+              </button>
             </div>
           </form>
         </div>
@@ -199,14 +226,14 @@
           <div @click="showScheduleModal = false" class="absolute inset-0 bg-black/60"></div>
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-md border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ $t('chat.scheduleMessage') }}</h3>
-            <form @submit.prevent="scheduleMessage" class="space-y-4">
+            <form @submit.prevent="scheduleMessage" novalidate class="space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.message') }}</label>
-                <textarea v-model="scheduleForm.body" rows="3" class="input-premium py-2.5 text-sm resize-none" :placeholder="$t('chat.messagePlaceholder')" required></textarea>
+                <textarea v-model="scheduleForm.body" rows="3" class="input-premium py-2.5 text-sm resize-none" :placeholder="$t('chat.messagePlaceholder')"></textarea>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.sendAt') }}</label>
-                <input v-model="scheduleForm.scheduled_at" type="datetime-local" class="input-premium" required />
+                <input v-model="scheduleForm.scheduled_at" type="datetime-local" class="input-premium" />
               </div>
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showScheduleModal = false" class="btn-secondary text-sm px-4 py-2">{{ $t('common.cancel') }}</button>

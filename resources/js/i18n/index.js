@@ -12,35 +12,52 @@ const currentLocale = ref(
 
 /**
  * Deep-get a nested translation key using dot notation.
- * Falls back to English if the key is not found in the current locale.
- * Falls back to the key itself if not found in any locale.
+ * Supports variable replacement: t('key', { name: 'Sara' })
  */
-function t(key) {
-  const keys = key.split('.');
-  let val = locales[currentLocale.value];
-  for (const k of keys) {
-    if (val && typeof val === 'object' && k in val) {
-      val = val[k];
-    } else {
-      val = undefined;
-      break;
-    }
-  }
+function t(key, params = {}, fallback = null) {
+  const [section, ...rest] = key.split('.');
+  const subKey = rest.join('.');
+  
+  let val = locales[currentLocale.value]?.[section]?.[subKey];
 
   // Fallback to English
   if (val === undefined && currentLocale.value !== 'en') {
-    val = locales.en;
-    for (const k of keys) {
-      if (val && typeof val === 'object' && k in val) {
-        val = val[k];
-      } else {
-        val = undefined;
-        break;
-      }
-    }
+    val = locales.en?.[section]?.[subKey];
   }
 
-  return val ?? key;
+  if (val === undefined) return fallback ?? key;
+
+  // Simple string interpolation for {variable}
+  if (typeof val === 'string') {
+    let replaced = val;
+    Object.keys(params).forEach(p => {
+      replaced = replaced.replace(new RegExp(`{${p}}`, 'g'), params[p]);
+    });
+    
+    // If we still have {brackets} in the string, it means we missed some variables.
+    // In this case, if we have a fallback description, use that instead of a broken template.
+    if (fallback && /{[a-zA-Z0-9_]+}/.test(replaced)) {
+      return fallback;
+    }
+    
+    return replaced;
+  }
+
+  return val;
+}
+
+function te(key) {
+  const [section, ...rest] = key.split('.');
+  const subKey = rest.join('.');
+  
+  const val = locales[currentLocale.value]?.[section]?.[subKey];
+  if (val !== undefined) return true;
+
+  if (currentLocale.value !== 'en') {
+    return locales.en?.[section]?.[subKey] !== undefined;
+  }
+
+  return false;
 }
 
 function setLocale(locale) {
@@ -63,6 +80,7 @@ function getAvailableLocales() {
 export function useI18n() {
   return {
     t,
+    te,
     locale: currentLocale,
     setLocale,
     localeNames,

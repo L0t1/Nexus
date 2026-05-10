@@ -12,7 +12,7 @@ createInertiaApp({
     },
     setup({ el, App, props, plugin }) {
         const pinia = createPinia();
-        const { t, locale } = useI18n();
+        const { t, te, locale } = useI18n();
 
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
@@ -20,6 +20,7 @@ createInertiaApp({
 
         // Make i18n available globally in templates
         app.config.globalProperties.$t = t;
+        app.config.globalProperties.$te = te;
         app.config.globalProperties.$locale = locale;
 
         app.mount(el);

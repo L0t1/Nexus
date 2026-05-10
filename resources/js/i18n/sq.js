@@ -18,6 +18,7 @@ export default {
     noData: 'Nuk ka të dhëna',
     viewAll: 'Shiko të gjitha →',
     actions: 'Veprime',
+    processing: 'Duke u procesuar...',
     today: 'Sot',
     now: 'Tani',
     success: 'Sukses',
@@ -38,6 +39,7 @@ export default {
     featureLocked: 'është e bllokuar në këtë plan. Ju lutemi kërkoni administratorit tuaj të përmirësojë.',
     adminOnly: 'është e kufizuar vetëm për administratorët.',
     upgradeMessage: 'është e bllokuar. Përmirësoni planin tuaj për ta zhbllokuar.',
+    rateExperience: 'Zgjidhni një vlerësim',
   },
 
   // ─── Status Labels (StatusBadge) ───────────────────
@@ -325,6 +327,7 @@ export default {
     cash: 'Kesh',
     notes: 'Shënime',
     refundBtn: 'Rimburso',
+    alreadyExists: 'Kjo porosi ka një kërkesë kthimi aktiv.',
   },
 
   // ─── CSAT ─────────────────────────────────────────
@@ -559,6 +562,11 @@ export default {
     detailsPlaceholder: 'Detaje rreth kthimit...',
     submitReturn: 'Dërgo Kthimin',
     noDescription: 'Pa përshkrim',
+    csatReady: 'Anketa është Gati!',
+    csatHint: 'Kopjoni linkun e mëposhtëm dhe shpërndajeni me klientin tuaj për të marrë reagimet e tyre.',
+    csatOnlyDelivered: 'Anketat CSAT mund të dërgohen vetëm për porositë e dorëzuara.',
+    copyLink: 'Kopjo Linkun e Anketës',
+    copied: 'U Kopjua!',
   },
 
   // ─── Products ───────────────────────────────────────
@@ -583,6 +591,7 @@ export default {
     saving: 'Duke u ruajtur...',
     deleteTitle: 'Fshi Produktin?',
     deleteConfirm: 'Jeni i sigurt që doni të fshini {name}? Ky veprim nuk mund të kthehet mbrapsht.',
+    skuHint: 'Lini bosh për gjenerim automatik',
   },
 
   // ─── Contacts ───────────────────────────────────────
@@ -722,5 +731,31 @@ export default {
     'catalog.synced': 'Katalogu i WhatsApp u sinkronizua: {count} produkte',
     'coupon.created': 'Krijoi kuponin: {code}',
     'invoice.generated': 'Gjeneroi faturën për porosinë #{order}',
+    'contact.updated': 'Përditësoi kontaktin: {name}',
+    'return.created': 'Procesoi kthimin për porosinë #{order}',
+    'return.status_changed': 'Ndryshoi statusin e kthimit për porosinë #{order} në {status}',
+    'csat.sent': 'Dërgoi anketën CSAT për porosinë #{order}',
   },
+
+  validation: {
+    required: 'Fusha {field} është e detyrueshme.',
+    unique: 'Ky {field} është përdorur më parë.',
+    numeric: 'Fusha {field} duhet të jetë një numër.',
+    max: 'Fusha {field} nuk mund të jetë më e madhe se {max} karaktere.',
+    image: 'Fusha {field} duhet të jetë një imazh.',
+    mimes: 'Fusha {field} duhet të jetë një skedar i tipit: {types}.',
+  },
+  csatFeedback: {
+    veryPoor: '😡 Shumë Dobët',
+    poor: '😕 Dobët',
+    average: '😐 Mesatare',
+    good: '😊 Mirë',
+    excellent: '🤩 Shkëlqyeshëm!',
+    submitting: 'Duke u dërguar...',
+    submit: 'Dërgo Reagimin',
+    placeholder: 'Keni ndonjë koment apo sugjerim për ne? (opsionale)',
+    thankYou: 'Faleminderit!',
+    thankYouMessage: 'Reagimi juaj u regjistrua. Ne vlerësojmë që na ndihmoni të përmirësohemi!',
+    howWasExperience: 'Si ishte përvoja juaj?',
+  }
 };

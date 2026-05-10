@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -28,11 +29,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'sku' => 'nullable|string|max:255',
+            'sku' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products')->where(fn ($q) => $q->where('merchant_id', $request->user()->merchant_id))
+            ],
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0.01',
+            'stock' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ]);
 
@@ -53,10 +59,15 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'sku' => 'nullable|string|max:255',
+            'sku' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products')->where(fn ($q) => $q->where('merchant_id', $request->user()->merchant_id))->ignore($product->id)
+            ],
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'price' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0.01',
             'stock' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);

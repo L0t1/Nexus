@@ -63,8 +63,18 @@ class CsatController extends Controller
         $merchant = $request->user()->merchant;
         abort_unless($order->merchant_id === $merchant->id, 403);
 
+        // Ensure order is delivered before sending CSAT
+        if ($order->fulfillment_status !== 'delivered') {
+            return back()->with('error', 'CSAT surveys can only be sent for delivered orders.');
+        }
+
         $existing = CsatSurvey::where('order_id', $order->id)->first();
-        if ($existing) return back()->with('error', 'Survey already sent for this order.');
+        if ($existing) {
+            return back()->with([
+                'success' => 'Survey already exists for this order.',
+                'csat_link' => $existing->public_url
+            ]);
+        }
 
         $survey = CsatSurvey::create([
             'merchant_id'     => $merchant->id,
@@ -74,8 +84,13 @@ class CsatController extends Controller
             'sent_at'         => now(),
         ]);
 
-        ActivityLog::record($merchant->id, 'csat.sent', "CSAT survey sent for order {$order->order_number}.", 'CsatSurvey', $survey->id);
-        return back()->with('success', "Survey sent. Share link: {$survey->public_url}");
+        ActivityLog::record($merchant->id, 'csat.sent', "CSAT survey sent for order {$order->order_number}.", 'CsatSurvey', $survey->id, [
+            'order' => $order->order_number
+        ]);
+        return back()->with([
+            'success' => "Survey generated for order {$order->order_number}.",
+            'csat_link' => $survey->public_url
+        ]);
     }
 
     /**
@@ -83,7 +98,7 @@ class CsatController extends Controller
      */
     public function feedback(string $token)
     {
-        $survey = CsatSurvey::where('token', $token)->where('status', 'pending')->firstOrFail();
+        $survey = CsatSurvey::where('token', $token)->firstOrFail();
         $survey->load('order:id,order_number', 'merchant:id,business_name');
 
         return Inertia::render('Csat/Feedback', [
