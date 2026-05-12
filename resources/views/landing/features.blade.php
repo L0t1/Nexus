@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="dark" lang="{{ app()->getLocale() }}"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nexus CRM - Features</title>
+<title>Nexus CRM - {{ app()->getLocale() === 'sq' ? 'Veçoritë' : 'Features' }}</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -122,27 +122,27 @@
 <!-- TopNavBar (Generated from JSON) -->
 @include("landing.partials.nav")
 <!-- Main Content Canvas -->
-<main class="pt-[100px] pb-2xl max-w-7xl mx-auto px-lg flex flex-col gap-2xl">
+<main class="pt-[80px] sm:pt-[100px] pb-2xl max-w-7xl mx-auto px-4 sm:px-lg flex flex-col gap-2xl">
 <!-- Hero Header -->
 <header class="text-center pt-xl pb-lg flex flex-col items-center gap-md max-w-3xl mx-auto">
 <div class="inline-flex items-center gap-xs px-sm py-unit rounded-full bg-primary/10 border border-primary/20 font-label-sm text-label-sm text-primary uppercase tracking-widest mb-md">
 <span class="material-symbols-outlined text-[16px]">bolt</span>
-                Elite Automation Arsenal
+                {{ app()->getLocale() === 'sq' ? 'Çfarë Mund Të Bëni' : 'What You Can Do' }}
             </div>
 <h1 class="font-h1 text-h1 text-on-surface leading-tight">
-                Command Your Workflows with <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary-fixed">Surgical Precision</span>.
+                {{ app()->getLocale() === 'sq' ? 'Kontrolloni Punën Tuaj me' : 'Manage Your Work with' }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary-fixed">{{ app()->getLocale() === 'sq' ? 'Lehtësi Të Plotë' : 'Total Ease' }}</span>.
             </h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-sm">
-                Nexus CRM transforms chaotic multi-channel communication into streamlined, high-conversion pipelines. Experience the ultimate control center designed for elite teams.
+                {{ app()->getLocale() === 'sq' ? 'Nexus CRM ktheu mesazhet kaotike nga shumë platforma në një sistem të organizuar që ju ndihmon të shisni më shumë. I duhur për çdo ekip.' : 'Nexus CRM turns messy messages from multiple platforms into an organized system that helps you sell more. Built for every team.' }}
             </p>
 </header>
 <!-- Section 1: AI Order Extraction -->
 <section class="flex flex-col gap-lg">
 <div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
-<h2 class="font-h2 text-h2 text-on-surface">AI Order Extraction</h2>
+<h2 class="font-h2 text-h2 text-on-surface">{{ app()->getLocale() === 'sq' ? 'AI Lexon Porositë' : 'AI Reads Orders' }}</h2>
 </div>
-<div class="relative w-full h-[400px] rounded-3xl bg-white/[0.03] backdrop-blur-xl border border-white/10 overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] group">
+<div class="relative w-full h-[250px] sm:h-[400px] rounded-2xl sm:rounded-3xl bg-white/[0.03] backdrop-blur-xl border border-white/10 overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] group">
 <!-- Refractive Top Edge -->
 <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/20 via-primary/30 to-transparent"></div>
 <!-- Graphic Visualization Placeholder -->
@@ -151,9 +151,9 @@
 <!-- Overlay Content -->
 <div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent flex flex-col justify-end p-xl">
 <div class="max-w-2xl backdrop-blur-md bg-surface/40 p-lg rounded-2xl border border-white/5">
-<h3 class="font-h3 text-h3 text-primary mb-xs">Seamless DM-to-Order Conversion</h3>
+<h3 class="font-h3 text-h3 text-primary mb-xs">{{ app()->getLocale() === 'sq' ? 'Nga Mesazh në Porosi Automatikisht' : 'From Message to Order Automatically' }}</h3>
 <p class="font-body-md text-body-md text-on-surface-variant">
-                            Our proprietary neural engine continuously scans incoming messages across all connected platforms. It autonomously identifies purchase intent, extracts structured data (items, sizes, addresses), and populates secure transaction ledgers before your agents even read the thread.
+                            {{ app()->getLocale() === 'sq' ? 'Sistemi ynë skanon të gjitha mesazhet që merrni. Kur një klient dëshiron të blejë, AI nxjerr automatikisht produktet, sasinë, adresën, dhe krijon një porosi të gatshme për ju.' : 'Our system scans all your incoming messages. When a customer wants to buy, AI automatically pulls out the products, quantity, address, and creates a ready-made order for you.' }}
                         </p>
 </div>
 </div>
@@ -163,14 +163,14 @@
 <section class="flex flex-col gap-lg mt-xl">
 <div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-secondary text-[28px]" style="font-variation-settings: 'FILL' 1;">all_inbox</span>
-<h2 class="font-h2 text-h2 text-on-surface">Unified Omni-Channel Inbox</h2>
+<h2 class="font-h2 text-h2 text-on-surface">{{ app()->getLocale() === 'sq' ? 'Një Inbox Për Të Gjitha Mesazhet' : 'One Inbox For All Messages' }}</h2>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-lg">
 <!-- Main Feed UI Mockup -->
 <div class="md:col-span-8 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-lg flex flex-col gap-md relative overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
 <div class="absolute top-0 right-0 w-[200px] h-[200px] bg-secondary/10 blur-[60px] rounded-full pointer-events-none"></div>
 <div class="flex justify-between items-center pb-sm border-b border-white/5">
-<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Live Command Feed</span>
+<span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">{{ app()->getLocale() === 'sq' ? 'Mesazhet në Kohë Reale' : 'Live Messages' }}</span>
 <div class="flex gap-sm">
 <span class="w-3 h-3 rounded-full bg-error/80 shadow-[0_0_10px_rgba(255,180,171,0.5)]"></span>
 <span class="w-3 h-3 rounded-full bg-secondary shadow-[0_0_10px_rgba(78,222,163,0.5)]"></span>
@@ -184,8 +184,8 @@
 <span class="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
 </div>
 <div class="bg-surface-container-low border border-white/5 rounded-2xl rounded-tl-sm p-md backdrop-blur-md">
-<p class="font-body-md text-body-md text-on-surface">Hey, looking to upgrade my enterprise tier next month. Can we schedule a demo?</p>
-<span class="font-label-sm text-label-sm text-on-surface-variant mt-sm block opacity-50">Instagram • 2m ago</span>
+<p class="font-body-md text-body-md text-on-surface">{{ app()->getLocale() === 'sq' ? 'Përshëndetje, dua të përmirësoj planin tim muajin tjetër. A mund të planifikojmë një demonstrim?' : 'Hey, looking to upgrade my plan next month. Can we schedule a demo?' }}</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-sm block opacity-50">Instagram • 2m {{ app()->getLocale() === 'sq' ? 'më parë' : 'ago' }}</span>
 </div>
 </div>
 <!-- Message 2: Internal Note (More opaque glass) -->
@@ -195,8 +195,8 @@
 </div>
 <div class="bg-primary/10 border border-primary/20 rounded-2xl rounded-tr-sm p-md backdrop-blur-xl shadow-[0_4px_24px_rgba(6,182,212,0.15)] relative">
 <div class="absolute -left-2 top-3 w-4 h-4 bg-primary/20 blur-sm rounded-full"></div>
-<p class="font-body-md text-body-md text-on-primary-container">Got it. Pre-qualifying parameters met. AI has already drafted the calendly link and pricing sheet. Ready to dispatch.</p>
-<span class="font-label-sm text-label-sm text-primary mt-sm block opacity-70">Internal • 1m ago</span>
+<p class="font-body-md text-body-md text-primary-fixed">{{ app()->getLocale() === 'sq' ? 'E kuptova. AI ka përgatitur linkun e takimit dhe fletën e çmimeve. Gati për dërgim.' : 'Got it. AI has already drafted the meeting link and pricing sheet. Ready to dispatch.' }}</p>
+<span class="font-label-sm text-label-sm text-primary mt-sm block opacity-70">{{ app()->getLocale() === 'sq' ? 'Brendshëm' : 'Internal' }} • 1m {{ app()->getLocale() === 'sq' ? 'më parë' : 'ago' }}</span>
 </div>
 </div>
 </div>
@@ -205,8 +205,8 @@
 <div class="md:col-span-4 flex flex-col gap-lg">
 <!-- Integrations Card -->
 <div class="flex-1 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] flex flex-col justify-center gap-md">
-<h4 class="font-h3 text-h3 text-on-surface">Universal Ingestion</h4>
-<p class="font-body-md text-body-md text-on-surface-variant">Bind disparate platforms into a singular, prioritized stream. Never lose a lead in the noise.</p>
+<h4 class="font-h3 text-h3 text-on-surface">{{ app()->getLocale() === 'sq' ? 'Të Gjitha Në Një Vend' : 'All In One Place' }}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Lidhni Instagram, Facebook dhe WhatsApp në një inbox. Asnjë mesazh nuk humbet.' : 'Connect Instagram, Facebook and WhatsApp in one inbox. No message gets lost.' }}</p>
 <div class="flex gap-sm mt-sm">
 <div class="w-12 h-12 rounded-xl bg-surface-container border border-white/10 flex items-center justify-center shadow-lg">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">photo_camera</span> <!-- Proxy for IG -->
@@ -221,7 +221,7 @@
 </div>
 <!-- Stats Card -->
 <div class="bg-gradient-to-br from-surface-container-high to-surface border border-white/10 rounded-3xl p-lg flex flex-col justify-center">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Average Response Drop</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">{{ app()->getLocale() === 'sq' ? 'Koha Mesatare e Përgjigjes' : 'Average Reply Time Drop' }}</span>
 <div class="font-h1 text-h1 text-secondary mt-xs">-84%</div>
 </div>
 </div>
@@ -232,17 +232,17 @@
 <section class="flex flex-col gap-lg mt-xl mb-xl">
 <div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-secondary text-[28px]" style="font-variation-settings: 'FILL' 1;">campaign</span>
-<h2 class="font-h2 text-h2 text-on-surface">CRM & Marketing Suite</h2>
+<h2 class="font-h2 text-h2 text-on-surface">{{ app()->getLocale() === 'sq' ? 'Klientët & Marketingu' : 'Customers & Marketing' }}</h2>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-lg">
     <!-- Profiles -->
     <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
         <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
             <span class="material-symbols-outlined text-secondary text-[20px]">contacts</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">CRM Profiles</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Centralized customer records tracking total spent, lifetime orders, and contact history.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Profilet e Klientëve' : 'Customer Profiles' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Të gjitha të dhënat e klientit në një vend — blerjet, shpenzimet, historiku.' : 'All customer info in one place — purchases, spending, history.' }}</p>
         </div>
     </div>
     <!-- Tags -->
@@ -251,8 +251,8 @@
             <span class="material-symbols-outlined text-primary text-[20px]">sell</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Auto-Tagging</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Create behavioral rules that automatically assign tags when criteria like 'Total Spent > $500' are met.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Etiketim Automatik' : 'Auto-Tagging' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Vendosni rregulla që etiketojnë klientët automatikisht, p.sh. kur shpenzojnë mbi 500€.' : 'Set rules that tag customers automatically, like when they spend over €500.' }}</p>
         </div>
     </div>
     <!-- Broadcasts -->
@@ -261,8 +261,8 @@
             <span class="material-symbols-outlined text-secondary text-[20px]">schedule</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Follow-Up Sequences</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Recover abandoned carts or send post-delivery check-ins with automated scheduled messaging.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Ndjekje Automatike' : 'Automatic Follow-ups' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Dërgoni mesazhe automatike pas blerjes ose kur klienti harron porrosinë.' : 'Send automatic messages after purchase or when a customer forgets their order.' }}</p>
         </div>
     </div>
     <!-- Templates -->
@@ -271,8 +271,8 @@
             <span class="material-symbols-outlined text-primary text-[20px]">quick_phrases</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Slash-Command Replies</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Save hours with dynamic templates (e.g., "Hi {name}") accessible instantly via the '/' command.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Përgjigje të Shpejta' : 'Quick Replies' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Kurseni kohë me shabllone (p.sh. "Përshëndetje {emri}") që futen me komandën "/".' : 'Save time with templates (e.g. "Hi {name}") that you insert with the "/" command.' }}</p>
         </div>
     </div>
 </div>
@@ -282,17 +282,17 @@
 <section class="flex flex-col gap-lg mt-xl mb-xl">
 <div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">insights</span>
-<h2 class="font-h2 text-h2 text-on-surface">Commerce & Analytics Suite</h2>
+<h2 class="font-h2 text-h2 text-on-surface">{{ app()->getLocale() === 'sq' ? 'Dyqani & Analitika' : 'Shop & Analytics' }}</h2>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-lg">
     <!-- Storefront -->
     <div class="bg-surface-container-low border border-white/5 rounded-2xl p-lg flex flex-col gap-md">
         <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Public Storefront</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">A branded, public-facing product catalog. Customers browse and order directly via WhatsApp.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Dyqani Publik' : 'Public Storefront' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Një katalog produktesh me markën tuaj. Klientët shfletojnë dhe porosisin direkt përmes WhatsApp.' : 'A branded product catalog. Customers browse and order directly via WhatsApp.' }}</p>
         </div>
     </div>
     <!-- WA Sync -->
@@ -301,8 +301,8 @@
             <span class="material-symbols-outlined text-secondary text-[20px]">sync</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">WhatsApp Sync</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Keep your Meta WhatsApp Business catalog in perfect sync with your Nexus inventory.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Sinkronizimi WhatsApp' : 'WhatsApp Sync' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Mbani katalogun tuaj të WhatsApp Business në sinkronizim të plotë me inventarin Nexus.' : 'Keep your WhatsApp Business catalog in perfect sync with your Nexus inventory.' }}</p>
         </div>
     </div>
     <!-- Forecasting -->
@@ -311,8 +311,8 @@
             <span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">Demand Forecasting</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">AI-powered 14-day predictions, alerting you before top-selling products go out of stock.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Parashikimi i Kërkesës' : 'Demand Forecasting' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Parashikime 14-ditore me AI, që ju njoftojnë para se produktet më të shitura të mbarojnë.' : 'AI-powered 14-day predictions, alerting you before top-selling products go out of stock.' }}</p>
         </div>
     </div>
     <!-- CSAT -->
@@ -321,8 +321,8 @@
             <span class="material-symbols-outlined text-secondary text-[20px]">sentiment_satisfied</span>
         </div>
         <div>
-            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">CSAT & Returns</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">Automated satisfaction surveys, NPS scoring, and a full lifecycle for returns and refunds.</p>
+            <h3 class="font-h3 text-[18px] text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Kënaqësia & Kthimet' : 'CSAT & Returns' }}</h3>
+            <p class="font-body-md text-sm text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Anketa automatike kënaqësie, vlerësimi NPS, dhe menaxhim i plotë për kthime dhe rimbursime.' : 'Automated satisfaction surveys, NPS scoring, and a full lifecycle for returns and refunds.' }}</p>
         </div>
     </div>
 </div>
@@ -330,20 +330,20 @@
 </main>
 <!-- Footer (Generated from JSON) -->
 <footer class="w-full bg-surface-container-lowest border-t border-white/5 mt-2xl">
-<div class="flex flex-col md:flex-row justify-between items-center px-lg py-xl gap-md max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-4 sm:px-lg py-xl gap-md max-w-7xl mx-auto">
 <!-- Brand & Copyright -->
 <div class="flex flex-col gap-sm">
 <div class="text-h3 font-h3 font-bold text-primary">
                     Nexus CRM
                 </div>
 <div class="font-body-md text-body-md text-on-surface-variant">
-                    © 2024 Nexus CRM. Elite Craftsmanship for High-Growth Enterprise.
+                    ©2026 Nexus CRM. {{ app()->getLocale() === 'sq' ? 'Të gjitha të drejtat e rezervuara.' : 'All rights reserved.' }}
                 </div>
 </div>
 <!-- Links -->
 <div class="flex flex-wrap gap-md font-body-md text-body-md">
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80 transition-opacity" href="{{ route('privacy') }}">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80 transition-opacity" href="{{ route('terms') }}">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80 transition-opacity" href="{{ route('privacy') }}">{{ app()->getLocale() === 'sq' ? 'Politika e Privatësisë' : 'Privacy Policy' }}</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80 transition-opacity" href="{{ route('terms') }}">{{ app()->getLocale() === 'sq' ? 'Kushtet e Shërbimit' : 'Terms of Service' }}</a>
 </div>
 </div>
 </footer>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="dark" lang="{{ app()->getLocale() }}"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nexus CRM - Solutions</title>
+<title>Nexus CRM - {{ app()->getLocale() === 'sq' ? 'Zgjidhjet' : 'Solutions' }}</title>
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -129,23 +129,28 @@
 <!-- TopNavBar -->
 @include("landing.partials.nav")
 <!-- Main Content Canvas -->
-<main class="flex-grow pt-[100px] pb-2xl flex flex-col gap-2xl px-lg max-w-7xl mx-auto w-full">
+<main class="flex-grow pt-[80px] sm:pt-[100px] pb-2xl flex flex-col gap-2xl px-4 sm:px-lg max-w-7xl mx-auto w-full">
 <!-- Hero Section -->
 <section class="flex flex-col items-center text-center py-xl mt-margin">
 <div class="inline-flex items-center gap-sm bg-primary/10 border border-primary/20 rounded-full px-md py-xs mb-lg">
 <span class="material-symbols-outlined text-primary text-[16px]">architecture</span>
-<span class="text-primary font-label-sm text-label-sm">Engineered for Scale</span>
+<span class="text-primary font-label-sm text-label-sm">{{ app()->getLocale() === 'sq' ? 'Ndertuar Për Rritje' : 'Built To Grow' }}</span>
 </div>
 <h1 class="font-h1 text-h1 max-w-4xl mb-lg leading-tight">
-                Tailored workflows that <br/>
-<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">evolve with your volume.</span>
+@if(app()->getLocale() === 'sq')
+                Zgjidhje që <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">rriten me biznesin tuaj.</span>
+@else
+                Solutions that <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">grow with your business.</span>
+@endif
 </h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-xl">
-                From solo social commerce sellers to multi-brand enterprise agencies, Nexus provides a highly specific, low-latency command center customized to your operational complexity.
+                {{ app()->getLocale() === 'sq' ? 'Pavarësisht nëse sapo keni filluar ose keni një ekip të madh, Nexus përshtatet me nevojat tuaja. I thjeshtë për fillestarët, i fuqishëm për bizneset e mëdha.' : 'Whether you\'re just starting out or have a big team, Nexus fits your needs. Simple for beginners, powerful for big businesses.' }}
             </p>
 </section>
 <!-- Solutions Bento Grid -->
-<section class="grid grid-cols-1 md:grid-cols-12 gap-lg auto-rows-[minmax(300px,auto)]">
+<section class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-lg auto-rows-[minmax(250px,auto)] sm:auto-rows-[minmax(300px,auto)]">
 <!-- Solution 1: Social Commerce (Spans 4 columns) -->
 <div class="md:col-span-4 glass-panel rounded-xl p-xl flex flex-col relative overflow-hidden group">
 <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -153,9 +158,9 @@
 <div class="w-12 h-12 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center mb-lg">
 <span class="material-symbols-outlined text-secondary text-[24px]">storefront</span>
 </div>
-<h3 class="font-h3 text-h3 mb-sm">Social Commerce</h3>
+<h3 class="font-h3 text-h3 mb-sm">{{ app()->getLocale() === 'sq' ? 'Shitës në Rrjete Sociale' : 'Social Selling' }}</h3>
 <p class="font-body-md text-body-md text-on-surface-variant">
-                        For individual sellers and boutique creators. High-speed, unified DM management and frictionless checkout links integrated directly into your social feeds.
+                        {{ app()->getLocale() === 'sq' ? 'Për shitës individualë që menaxhojnë porosi nga mesazhet. Inbox i bashkuar, përgjigje të shpejta, dhe katalog online.' : 'For individual sellers managing orders from messages. Unified inbox, quick replies, and online catalog.' }}
                     </p>
 </div>
 <ul class="mt-lg z-10 flex flex-col gap-sm border-t border-white/5 pt-md">
@@ -177,14 +182,14 @@
 <div class="w-12 h-12 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center mb-lg">
 <span class="material-symbols-outlined text-primary text-[24px]">query_stats</span>
 </div>
-<h3 class="font-h3 text-h3 mb-sm text-primary">High-Volume E-com</h3>
+<h3 class="font-h3 text-h3 mb-sm text-primary">{{ app()->getLocale() === 'sq' ? 'Biznese Me Volum Të Lartë' : 'High-Volume Businesses' }}</h3>
 <p class="font-body-md text-body-md text-on-surface-variant">
-                            Built for established brands processing thousands of orders daily. Deploy complex automation logic, AI demand forecasting, CSAT surveys, and deep-dive cohort analytics without database lag.
+                            {{ app()->getLocale() === 'sq' ? 'Për biznese që procesojnë qindra porosi në ditë. Automatizoni proceset, parashikoni kërkesën, dhe shikoni analitikën e biznesit.' : 'For businesses processing hundreds of orders daily. Automate processes, predict demand, and view business analytics.' }}
                         </p>
 </div>
 <div class="mt-lg flex items-center gap-md">
 <button class="bg-surface-container-high border border-outline-variant px-md py-sm rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors flex items-center gap-sm">
-                            Explore Brand Features <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            {{ app()->getLocale() === 'sq' ? 'Shiko Veçoritë' : 'See Features' }} <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
 </button>
 </div>
 </div>
@@ -200,35 +205,35 @@
 <div class="w-12 h-12 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center mb-lg">
 <span class="material-symbols-outlined text-on-surface text-[24px]">account_tree</span>
 </div>
-<h2 class="font-h2 text-h2 mb-md">Multi-Brand Agencies</h2>
+<h2 class="font-h2 text-h2 mb-md">{{ app()->getLocale() === 'sq' ? 'Agjenci Me Shumë Brande' : 'Multi-Brand Agencies' }}</h2>
 <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">
-                        The ultimate command center. Manage distinct clients, partitioned datasets, and granular RBAC (Role-Based Access Control) from a single, unified executive dashboard.
+                        {{ app()->getLocale() === 'sq' ? 'Menaxhoni klientë të ndryshëm, të dhëna të ndara, dhe role të ndryshme për secilin, të gjitha nga një vend.' : 'Manage different clients, separated data, and different roles for each, all from one place.' }}
                     </p>
 </div>
 <div class="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-md z-10 w-full">
 <!-- Feature Card -->
 <div class="bg-surface-container border border-white/5 rounded-lg p-md flex flex-col gap-sm hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-tertiary text-[20px]">hub</span>
-<h4 class="font-label-sm text-label-sm text-on-surface">Tenant Isolation</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Securely separate client data while maintaining overarching administrative control.</p>
+<h4 class="font-label-sm text-label-sm text-on-surface">{{ app()->getLocale() === 'sq' ? 'Ndarje e Të Dhënave' : 'Data Separation' }}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ app()->getLocale() === 'sq' ? 'Të dhënat e secilit klient janë të ndara dhe të sigurta, ndërsa ju keni kontroll të plotë.' : 'Each client\'s data is separate and secure, while you have full control.' }}</p>
 </div>
 <!-- Feature Card -->
 <div class="bg-surface-container border border-white/5 rounded-lg p-md flex flex-col gap-sm hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-tertiary text-[20px]">admin_panel_settings</span>
-<h4 class="font-label-sm text-label-sm text-on-surface">Granular RBAC</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Custom permission matrices for internal teams and external client stakeholders.</p>
+<h4 class="font-label-sm text-label-sm text-on-surface">{{ app()->getLocale() === 'sq' ? 'Rolet & Lejet' : 'Roles & Permissions' }}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ app()->getLocale() === 'sq' ? 'Vendosni kush ka akses në çfarë — për ekipin tuaj dhe klientët e jashtëm.' : 'Control who has access to what — for your team and external clients.' }}</p>
 </div>
 <!-- Feature Card -->
 <div class="bg-surface-container border border-white/5 rounded-lg p-md flex flex-col gap-sm hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-tertiary text-[20px]">insights</span>
-<h4 class="font-label-sm text-label-sm text-on-surface">Aggregated Reporting</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Roll up analytics across all managed properties into executive summaries.</p>
+<h4 class="font-label-sm text-label-sm text-on-surface">{{ app()->getLocale() === 'sq' ? 'Raporte Të Bashkuara' : 'Combined Reports' }}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ app()->getLocale() === 'sq' ? 'Bashkoni analitikën nga të gjithë klientët në raporte të thjeshta.' : 'Combine analytics from all clients into simple reports.' }}</p>
 </div>
 <!-- Feature Card -->
 <div class="bg-surface-container border border-white/5 rounded-lg p-md flex flex-col gap-sm hover:bg-surface-container-high transition-colors">
 <span class="material-symbols-outlined text-tertiary text-[20px]">palette</span>
-<h4 class="font-label-sm text-label-sm text-on-surface">White-Labeling</h4>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Present custom-branded portals for your clients to access their specific CRM data.</p>
+<h4 class="font-label-sm text-label-sm text-on-surface">{{ app()->getLocale() === 'sq' ? 'Branding i Personalizuar' : 'Custom Branding' }}</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ app()->getLocale() === 'sq' ? 'Paraqisni portale me brandin tuaj për klientët.' : 'Show custom-branded portals for your clients.' }}</p>
 </div>
 </div>
 </div>
@@ -237,16 +242,16 @@
 <section class="mt-xl glass-panel rounded-2xl p-2xl text-center relative overflow-hidden border border-primary/30">
 <div class="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10"></div>
 <div class="relative z-10 flex flex-col items-center">
-<h2 class="font-h2 text-h2 mb-md text-on-surface">Ready to upgrade your infrastructure?</h2>
+<h2 class="font-h2 text-h2 mb-md text-on-surface">{{ app()->getLocale() === 'sq' ? 'Gati për të filluar?' : 'Ready to get started?' }}</h2>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mb-xl">
-                    Deploy Nexus in minutes for smaller setups, or consult with our enterprise architects for complex migrations.
+                    {{ app()->getLocale() === 'sq' ? 'Filloni me Nexus në pak minuta, ose na kontaktoni për një plan të personalizuar.' : 'Start with Nexus in minutes, or contact us for a custom plan.' }}
                 </p>
 <div class="flex flex-col sm:flex-row gap-md">
 <button class="bg-gradient-to-r from-primary-container to-secondary-container text-white px-xl py-md rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-opacity shadow-[0_4px_24px_rgba(6,182,212,0.4)]">
-                        Start Free Trial
+                        {{ app()->getLocale() === 'sq' ? 'Fillo Provimin Falas' : 'Start Free Trial' }}
                     </button>
 <button class="bg-surface-container-lowest border border-outline-variant text-on-surface px-xl py-md rounded-lg font-label-sm text-label-sm hover:border-primary transition-colors">
-                        Contact Enterprise Sales
+                        {{ app()->getLocale() === 'sq' ? 'Na Kontaktoni' : 'Contact Sales' }}
                     </button>
 </div>
 </div>
@@ -256,12 +261,12 @@
 <footer class="bg-surface-container-lowest text-secondary font-body-md text-body-md w-full border-t border-white/5 flex flex-col md:flex-row justify-between items-center px-lg py-xl gap-md mt-auto">
 <!-- Copyright -->
 <div class="text-on-surface-variant">
-            © 2024 Nexus CRM. Elite Craftsmanship for High-Growth Enterprise.
+            ©2026 Nexus CRM. {{ app()->getLocale() === 'sq' ? 'Të gjitha të drejtat e rezervuara.' : 'All rights reserved.' }}
         </div>
 <!-- Links -->
 <div class="flex gap-lg flex-wrap justify-center">
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('privacy') }}">Privacy Policy</a>
-<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('terms') }}">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('privacy') }}">{{ app()->getLocale() === 'sq' ? 'Politika e Privatësisë' : 'Privacy Policy' }}</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors hover:opacity-80" href="{{ route('terms') }}">{{ app()->getLocale() === 'sq' ? 'Kushtet e Shërbimit' : 'Terms of Service' }}</a>
 </div>
 </footer>
 </body></html>

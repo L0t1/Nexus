@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="dark" lang="{{ app()->getLocale() }}"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nexus CRM - Resources</title>
+<title>Nexus CRM - {{ app()->getLocale() === 'sq' ? 'Burimet' : 'Resources' }}</title>
 <!-- Google Fonts: Plus Jakarta Sans -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -194,14 +194,14 @@
 <!-- Shared Component: TopNavBar -->
 @include("landing.partials.nav")
 <!-- Main Content -->
-<main class="flex-grow pt-[104px] pb-2xl px-gutter max-w-7xl mx-auto w-full flex flex-col gap-2xl">
+<main class="flex-grow pt-[80px] sm:pt-[104px] pb-2xl px-4 sm:px-gutter max-w-7xl mx-auto w-full flex flex-col gap-2xl">
 <!-- Hero Section -->
 <header class="text-center max-w-3xl mx-auto mt-xl mb-md">
-<h1 class="font-h1 text-h1 text-on-surface mb-md">Knowledge Hub</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant">Master social selling, explore deep technical integrations, and empower your enterprise with elite strategies.</p>
+<h1 class="font-h1 text-h1 text-on-surface mb-md">{{ app()->getLocale() === 'sq' ? 'Qendra e Njohurive' : 'Learning Center' }}</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Mësoni si të shisni më shumë, eksploroni integrimet, dhe forconi biznesin tuaj.' : 'Learn how to sell more, explore integrations, and strengthen your business.' }}</p>
 </header>
 <!-- Bento Grid Layout -->
-<section class="grid grid-cols-1 md:grid-cols-12 auto-rows-[320px] gap-gutter">
+<section class="grid grid-cols-1 md:grid-cols-12 auto-rows-[250px] sm:auto-rows-[320px] gap-4 sm:gap-gutter">
 <!-- Featured Blog (Spans 8 cols) -->
 <article class="md:col-span-8 rounded-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 glass-edge overflow-hidden relative group cursor-pointer hover:border-primary/50 transition-colors duration-500">
 <!-- Background Image -->
@@ -211,8 +211,8 @@
 <!-- Content -->
 <div class="absolute bottom-0 left-0 p-xl w-full">
 <span class="inline-block px-sm py-xs rounded-full bg-primary/10 text-primary font-label-sm text-label-sm mb-md border border-primary/20">Social Selling</span>
-<h2 class="font-h2 text-h2 text-on-surface mb-sm">The 2024 Guide to High-Conversion Social Touchpoints</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Discover how top-tier enterprises are leveraging transparent communication and multi-channel orchestration to drive unprecedented growth.</p>
+<h2 class="font-h2 text-h2 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Udhëzuesi2026 për Shitje në Rrjete Sociale' : 'The2026 Guide to Social Selling' }}</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">{{ app()->getLocale() === 'sq' ? 'Zbuloni si bizneset më të mira përdorin komunikimin transparent dhe shumë kanale për të rritur shitjet.' : 'Discover how top businesses use transparent communication and multiple channels to grow sales.' }}</p>
 </div>
 </article>
 <!-- API Docs (Spans 4 cols) -->
@@ -222,11 +222,11 @@
 <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center border border-white/5 mb-lg group-hover:scale-110 transition-transform">
 <span class="material-symbols-outlined text-secondary text-[28px]">code_blocks</span>
 </div>
-<h3 class="font-h3 text-h3 text-on-surface mb-sm">API Documentation</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Seamlessly integrate Nexus CRM with your existing enterprise stack. Version 2.0 endpoints now available.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Dokumentimi i API' : 'API Documentation' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Lidhni Nexus CRM me sistemet tuaja ekzistuese. Versioni 2.0 tani i disponueshëm.' : 'Connect Nexus CRM with your existing systems. Version 2.0 now available.' }}</p>
 </div>
 <div class="flex items-center gap-sm text-secondary font-label-sm text-label-sm mt-lg">
-<span>View Endpoints</span>
+<span>{{ app()->getLocale() === 'sq' ? 'Shiko Dokumentimin' : 'View Docs' }}</span>
 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
 </div>
 </article>
@@ -234,13 +234,13 @@
 <article class="md:col-span-5 rounded-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 glass-edge p-xl flex flex-col group cursor-pointer hover:border-primary/30 transition-colors duration-500">
 <div class="flex items-center gap-md mb-lg">
 <span class="material-symbols-outlined text-primary text-[32px]">support_agent</span>
-<h3 class="font-h3 text-h3 text-on-surface">Help Center</h3>
+<h3 class="font-h3 text-h3 text-on-surface">{{ app()->getLocale() === 'sq' ? 'Qendra e Ndihmës' : 'Help Center' }}</h3>
 </div>
-<p class="font-body-md text-body-md text-on-surface-variant mb-xl flex-grow">Find detailed walkthroughs, troubleshooting guides, and configuration settings for your command center.</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-xl flex-grow">{{ app()->getLocale() === 'sq' ? 'Gjeni udhëzues të detajuara, zgjidhje problemesh, dhe konfigurime për Nexus.' : 'Find detailed guides, troubleshooting, and settings for Nexus.' }}</p>
 <!-- Mock Search -->
 <div class="w-full bg-black/20 border border-outline-variant rounded-lg p-sm flex items-center gap-sm text-on-surface-variant">
 <span class="material-symbols-outlined text-[20px]">search</span>
-<span class="font-body-md text-body-md opacity-70">Search knowledge base...</span>
+<span class="font-body-md text-body-md opacity-70">{{ app()->getLocale() === 'sq' ? 'Kërko në bazën e njohurive...' : 'Search help articles...' }}</span>
 </div>
 </article>
 <!-- Secondary Blog/Case Study (Spans 7 cols) -->
@@ -250,10 +250,10 @@
 </div>
 <div class="w-full md:w-3/5 p-xl flex flex-col justify-center">
 <span class="inline-block px-sm py-xs rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm w-max mb-md border border-white/5">Case Study</span>
-<h3 class="font-h3 text-h3 text-on-surface mb-sm">GlobalTech's 300% Pipeline Growth</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-lg">How centralizing client data within Nexus transformed a fragmented sales force into a cohesive, high-performing unit.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Rritja 300% e GlobalTech' : 'GlobalTech\'s 300% Growth' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">{{ app()->getLocale() === 'sq' ? 'Si centralizimi i të dhënave të klientëve në Nexus e transformoi një ekip shitjesh të fragmentuar në një ekip të bashkuar e të suksesshëm.' : 'How centralizing customer data in Nexus transformed a scattered sales team into a united, successful one.' }}</p>
 <div class="flex items-center gap-sm text-on-surface font-label-sm text-label-sm">
-<span>Read full study</span>
+<span>{{ app()->getLocale() === 'sq' ? 'Lexo studimin e plotë' : 'Read full study' }}</span>
 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
 </div>
 </div>
@@ -265,12 +265,12 @@
 <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10 rounded-full opacity-50"></div>
 <div class="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-xl p-xl md:p-2xl text-center glass-edge flex flex-col items-center">
 <span class="material-symbols-outlined text-primary text-[40px] mb-md">mark_email_unread</span>
-<h2 class="font-h2 text-h2 text-on-surface mb-sm">Stay at the Forefront</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-lg mb-xl">Join elite revenue leaders. Get actionable insights on enterprise CRM strategy and social selling delivered weekly.</p>
+<h2 class="font-h2 text-h2 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Qendroni të Informuar' : 'Stay Updated' }}</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg mb-xl">{{ app()->getLocale() === 'sq' ? 'Merrni këshilla për CRM dhe shitje në rrjete sociale çdo javë, direkt në emailin tuaj.' : 'Get CRM and social selling tips every week, straight to your email.' }}</p>
 <form class="w-full max-w-md flex flex-col sm:flex-row gap-sm">
-<input class="flex-grow bg-black/30 border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg px-md py-sm text-on-surface font-body-md text-body-md placeholder-on-surface-variant/50 outline-none transition-all" placeholder="Enter your business email" type="email"/>
+<input class="flex-grow bg-black/30 border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg px-md py-sm text-on-surface font-body-md text-body-md placeholder-on-surface-variant/50 outline-none transition-all" placeholder="{{ app()->getLocale() === 'sq' ? 'Email-i juaj i biznesit' : 'Enter your business email' }}" type="email"/>
 <button class="bg-gradient-to-r from-primary to-secondary text-on-primary font-label-sm text-label-sm px-lg py-sm rounded-lg hover:shadow-[0_0_20px_rgba(76,215,246,0.4)] transition-all whitespace-nowrap" type="submit">
-                        Subscribe Now
+                        {{ app()->getLocale() === 'sq' ? 'Abonohu Tani' : 'Subscribe Now' }}
                     </button>
 </form>
 </div>
@@ -282,12 +282,12 @@
 <!-- Brand & Copyright -->
 <div class="flex flex-col items-center md:items-start gap-xs">
 <span class="text-h3 font-h3 font-bold text-primary">Nexus CRM</span>
-<p class="font-body-md text-body-md text-secondary">© 2024 Nexus CRM. Elite Craftsmanship for High-Growth Enterprise.</p>
+<p class="font-body-md text-body-md text-secondary">©2026 Nexus CRM. {{ app()->getLocale() === 'sq' ? 'Të gjitha të drejtat e rezervuara.' : 'All rights reserved.' }}</p>
 </div>
 <!-- Links -->
 <div class="flex flex-wrap justify-center gap-md">
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('privacy') }}">Privacy Policy</a>
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('terms') }}">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('privacy') }}">{{ app()->getLocale() === 'sq' ? 'Politika e Privatësisë' : 'Privacy Policy' }}</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:opacity-80 transition-all" href="{{ route('terms') }}">{{ app()->getLocale() === 'sq' ? 'Kushtet e Shërbimit' : 'Terms of Service' }}</a>
 </div>
 </div>
 </footer>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="dark" lang="{{ app()->getLocale() }}"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nexus CRM - Elite AI Command Center</title>
+<title>Nexus CRM - {{ app()->getLocale() === 'sq' ? 'Menaxho Biznesin Tënd nga Mesazhet' : 'Manage Your Business From Messages' }}</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -93,9 +93,9 @@
                         "h2": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
                         "label-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
                         "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
-                        "h1": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "h3": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                        "h1": ["clamp(28px, 5vw, 48px)", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h3": ["clamp(18px, 3vw, 24px)", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["clamp(14px, 2vw, 16px)", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
                     }
                 }
             }
@@ -152,31 +152,40 @@
         }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body-md min-h-screen mesh-bg selection:bg-primary-container selection:text-white">
+<body class="bg-background text-on-surface font-body-md min-h-screen mesh-bg selection:bg-primary-container selection:text-white overflow-x-hidden">
 <!-- TopNavBar Shared Component -->
 @include("landing.partials.nav")
-<main class="pt-[100px] pb-margin">
+<main class="pt-[80px] sm:pt-[100px] pb-margin">
 <!-- Hero Section -->
-<section class="min-h-[819px] flex items-center px-margin max-w-7xl mx-auto relative overflow-hidden">
+<section class="min-h-[60vh] sm:min-h-[819px] flex items-center px-4 sm:px-margin max-w-7xl mx-auto relative overflow-hidden py-8 sm:py-0">
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-2xl items-center relative z-10">
 <div class="space-y-lg">
 <div class="inline-block px-sm py-xs rounded-full border border-primary-container/30 bg-primary-container/10 text-primary font-label-sm text-label-sm mb-sm">
-<span class="material-symbols-outlined text-[16px] align-middle mr-xs">auto_awesome</span> Elite AI Command Center
+<span class="material-symbols-outlined text-[16px] align-middle mr-xs">auto_awesome</span> {{ app()->getLocale() === 'sq' ? 'Automatizo Shitjet me AI' : 'AI-Powered Sales Tool' }}
                     </div>
 <h1 class="font-h1 text-h1 text-on-surface">
-                        Turn Instagram DMs into <br/>
-<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Automated Sales</span>
+@if(app()->getLocale() === 'sq')
+                        Kthe Mesazhet në <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Shitje Automatike</span>
+@else
+                        Turn Messages into <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Automatic Sales</span>
+@endif
 </h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
-                        Nexus AI extracts order details and tracks logistics across IG, FB, and WhatsApp. Centralize your high-growth enterprise operations in one sleek, cinematic interface.
+@if(app()->getLocale() === 'sq')
+                        Nexus lexon mesazhet tuaja në Instagram, Facebook dhe WhatsApp, nxjerr detajet e porosive automatikisht, dhe i mban të gjitha në një vend. Thjesht.
+@else
+                        Nexus reads your Instagram, Facebook and WhatsApp messages, pulls out order details automatically, and keeps everything in one place. Simple.
+@endif
                     </p>
 <div class="flex flex-col sm:flex-row gap-md pt-md">
 <a class="btn-gradient text-white px-lg py-md rounded-lg font-label-sm text-label-sm uppercase tracking-wider inline-flex justify-center items-center gap-sm" href="/register">
-                            Start Your 30-Day Free Pro Trial
+                            {{ app()->getLocale() === 'sq' ? 'Provo 30 Ditë Falas' : 'Try 30 Days Free' }}
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
 </a>
-<a class="btn-glass text-on-surface px-lg py-md rounded-lg font-label-sm text-label-sm uppercase tracking-wider inline-flex justify-center items-center gap-sm" href="#how-it-works">
-                            See How It Works
+<a class="btn-glass text-on-surface px-lg py-md rounded-lg font-label-sm text-label-sm uppercase tracking-wider inline-flex justify-center items-center gap-sm" href="#features">
+                            {{ app()->getLocale() === 'sq' ? 'Shiko Si Funksionon' : 'See How It Works' }}
                         </a>
 </div>
 </div>
@@ -208,12 +217,12 @@
 </div>
 </section>
 <!-- Features Bento Grid -->
-<section class="py-2xl px-margin max-w-7xl mx-auto" id="features">
+<section class="py-2xl px-4 sm:px-margin max-w-7xl mx-auto" id="features">
 <div class="text-center mb-xl">
-<h2 class="font-h2 text-h2 text-on-surface mb-sm">Elite Automation Arsenal</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Deploy AI-driven precision across your entire communication stack.</p>
+<h2 class="font-h2 text-h2 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Çfarë Mund Të Bëni Me Nexus' : 'What You Can Do With Nexus' }}</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">{{ app()->getLocale() === 'sq' ? 'Të gjitha mjetet që ju duhen për të menaxhuar porosite dhe klientët nga mesazhet.' : 'All the tools you need to manage orders and customers from messages.' }}</p>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-gutter">
 <!-- Large Feature -->
 <div class="glass-card rounded-xl p-lg md:col-span-2 flex flex-col justify-end min-h-[300px] relative overflow-hidden group">
 <div class="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10"></div>
@@ -222,8 +231,8 @@
 <div class="w-12 h-12 rounded-lg bg-primary-container/20 border border-primary/30 flex items-center justify-center mb-md">
 <span class="material-symbols-outlined text-[24px] text-primary" data-weight="fill">robot</span>
 </div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">AI Order Extraction</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Automated address and intent detection instantly converts casual DMs into structured fulfillment tasks.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'AI Nxjerrje Porosish' : 'AI Order Reading' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'AI lexon mesazhet e klientëve dhe nxjerr automatikisht detajet e porosisë — emrin, adresën, produktet.' : 'AI reads customer messages and automatically pulls out order details — name, address, products.' }}</p>
 </div>
 </div>
 <!-- Small Feature 1 -->
@@ -232,8 +241,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">inbox</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Unified Inbox</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">One pristine screen commanding Instagram, Facebook, and WhatsApp.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Një Inbox Për Të Gjitha' : 'One Inbox For Everything' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Shikoni të gjitha mesazhet nga Instagram, Facebook dhe WhatsApp në një ekran.' : 'See all your Instagram, Facebook and WhatsApp messages on one screen.' }}</p>
 </div>
 </div>
 <!-- Small Feature 2 -->
@@ -242,8 +251,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">group</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Team Collaboration</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Granular admin and agent roles for synchronized squad deployment.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Puno Me Ekipin' : 'Work With Your Team' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Shto punonjës me role të ndryshme — admin ose agjent — dhe punoni së bashku.' : 'Add team members with different roles — admin or agent — and work together.' }}</p>
 </div>
 </div>
 <!-- Medium Feature -->
@@ -253,8 +262,8 @@
 <span class="material-symbols-outlined text-[24px] text-secondary">local_shipping</span>
 </div>
 <div class="relative z-10 max-w-lg">
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">End-to-End Fulfillment</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Flawless tracking pipeline from 'Pending Review' to 'Successfully Delivered'. Monitor logistics without leaving the command center.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Ndiqni Porosinë Nga Fillimi Deri Në Fund' : 'Track Orders From Start to Finish' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Ndiqni çdo porosi nga "Në Pritje" deri te "Dorëzuar" — pa dalë nga Nexus.' : 'Follow every order from "Pending" to "Delivered" — without leaving Nexus.' }}</p>
 </div>
 </div>
 <!-- Small Feature 3 -->
@@ -263,8 +272,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">storefront</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Public Storefront</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">A branded catalog where customers browse and order directly via WhatsApp.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Dyqani Juaj Online' : 'Your Online Shop' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Një katalog online ku klientët shikojnë dhe porosisin direkt nga WhatsApp.' : 'An online catalog where customers browse and order directly via WhatsApp.' }}</p>
 </div>
 </div>
 <!-- Small Feature 4 -->
@@ -273,8 +282,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">sync</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">WhatsApp Sync</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Automatically push your inventory to WhatsApp Business API native catalogs.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Sinkronizo Me WhatsApp' : 'Sync With WhatsApp' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Produktet tuaja shfaqen automatikisht në katalogun e WhatsApp Business.' : 'Your products automatically show up in your WhatsApp Business catalog.' }}</p>
 </div>
 </div>
 <!-- Small Feature 5 -->
@@ -283,8 +292,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">monitoring</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Demand Forecast</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">AI-powered 14-day predictions, restock alerts, and team activity logs.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Parashiko Kërkesën' : 'Predict Demand' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'AI parashikon çfarë produktesh do të shiten në 14 ditët e ardhshme dhe ju njofton kur ti shtoni stokun.' : 'AI predicts which products will sell in the next 14 days and alerts you when to restock.' }}</p>
 </div>
 </div>
 <!-- Small Feature 6 -->
@@ -293,8 +302,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">receipt_long</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Invoices & Coupons</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">One-click PDFs, tax handling, and robust discount validation rules.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Fatura & Kupona' : 'Invoices & Coupons' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Krijo fatura PDF me një klikim dhe menaxho zbritjet me kupona.' : 'Create PDF invoices with one click and manage discounts with coupons.' }}</p>
 </div>
 </div>
 <!-- Medium Feature 2 -->
@@ -303,8 +312,8 @@
 <span class="material-symbols-outlined text-[24px] text-primary">sentiment_satisfied</span>
 </div>
 <div class="relative z-10 max-w-lg">
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">CSAT & Returns</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Automated satisfaction surveys with NPS scoring, and a complete lifecycle workflow for order returns and refunds.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Kënaqësia & Kthimet' : 'Satisfaction & Returns' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Dërgoni sondazhe kënaqësie automatikisht dhe menaxhoni kthimet e porosive lehtësisht.' : 'Send satisfaction surveys automatically and manage order returns easily.' }}</p>
 </div>
 </div>
 <!-- Small Feature 7 -->
@@ -313,8 +322,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">contacts</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">CRM Profiles</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Unified customer records tracking total spent, order history, and platform origins.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Profilet e Klientëve' : 'Customer Profiles' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Shikoni historinë e blerjeve, totalin e shpenzuar, dhe nga cila platformë erdhi klienti.' : 'See purchase history, total spent, and which platform each customer came from.' }}</p>
 </div>
 </div>
 <!-- Small Feature 8 -->
@@ -323,8 +332,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">sell</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Tags & Segments</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Auto-tag customers based on behavioral rules like order count or geographic location.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Etiketat & Grupet' : 'Tags & Groups' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Etiketoni klientët automatikisht sipas rregullave — p.sh. numri i porosive ose qyteti.' : 'Tag customers automatically by rules — like order count or city.' }}</p>
 </div>
 </div>
 <!-- Small Feature 9 -->
@@ -333,8 +342,8 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">campaign</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Broadcasts</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Send mass updates, scheduled messages, and automated follow-up sequences.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Mesazhe Masive' : 'Mass Messages' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Dërgoni njoftime, mesazhe të programuara, dhe ndjekje automatike pas blerjes.' : 'Send announcements, scheduled messages, and automatic follow-ups after purchase.' }}</p>
 </div>
 </div>
 <!-- Medium Feature 3 -->
@@ -343,8 +352,8 @@
 <span class="material-symbols-outlined text-[24px] text-secondary">quick_phrases</span>
 </div>
 <div class="relative z-10 max-w-lg">
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Quick Reply Templates</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">Type '/' to instantly insert pre-written replies with dynamic customer variables. Save hours on repetitive questions.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Përgjigje Të Shpejta' : 'Quick Replies' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Shkruani "/" për të futur përgjigje të gatshme me emrin e klientit. Kurseni orë çdo ditë.' : 'Type "/" to insert ready-made replies with the customer\'s name. Save hours every day.' }}</p>
 </div>
 </div>
 <!-- Small Feature 10 -->
@@ -353,23 +362,23 @@
 <span class="material-symbols-outlined text-[24px] text-on-surface">format_list_bulleted</span>
 </div>
 <div>
-<h3 class="font-h3 text-h3 text-on-surface mb-xs">Activity Logs</h3>
-<p class="font-body-md text-body-md text-on-surface-variant">A comprehensive, immutable audit trail tracking all agent actions across the workspace.</p>
+<h3 class="font-h3 text-h3 text-on-surface mb-xs">{{ app()->getLocale() === 'sq' ? 'Regjistri i Veprimeve' : 'Activity Log' }}</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Shikoni çdo veprim që ka bërë çdo anëtar i ekipit — kush bëri çfarë dhe kur.' : 'See every action each team member has taken — who did what and when.' }}</p>
 </div>
 </div>
 </div>
 </section>
 <!-- Pricing -->
-<section class="py-2xl px-margin max-w-7xl mx-auto relative" id="pricing">
+<section class="py-2xl px-4 sm:px-margin max-w-7xl mx-auto relative" id="pricing">
 <div class="absolute left-1/2 top-0 -translate-x-1/2 w-full max-w-3xl h-64 bg-primary/5 rounded-full blur-[100px] -z-10"></div>
 <div class="text-center mb-xl">
-<h2 class="font-h2 text-h2 text-on-surface mb-sm">Transparent Tiering</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant">Scale your operations with uncompromised power.</p>
+<h2 class="font-h2 text-h2 text-on-surface mb-sm">{{ app()->getLocale() === 'sq' ? 'Çmimet e Thjeshta' : 'Simple Pricing' }}</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">{{ app()->getLocale() === 'sq' ? 'Zgjidhni planin që përshtatet me biznesin tuaj. Pa kosto të fshehura.' : 'Pick the plan that fits your business. No hidden fees.' }}</p>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-lg items-center">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-lg items-center">
 <!-- Starter -->
 <div class="glass-card rounded-xl p-xl">
-<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-sm">Starter</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-sm">{{ app()->getLocale() === 'sq' ? 'Fillestar' : 'Starter' }}</div>
 <div class="font-h1 text-h1 text-on-surface mb-md">$49<span class="text-h3 text-on-surface-variant">/mo</span></div>
 <ul class="space-y-sm mb-lg border-t border-white/5 pt-md">
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> 1 Channel Integration</li>
@@ -377,26 +386,26 @@
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Unified Inbox</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> CRM Profiles & Tags</li>
 </ul>
-<button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">Select Starter</button>
+<button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">{{ app()->getLocale() === 'sq' ? 'Zgjidh Fillestar' : 'Select Starter' }}</button>
 </div>
 <!-- Pro (Highlighted) -->
 <div class="glass-layer-2 rounded-xl p-xl border-primary/30 relative transform md:scale-105 z-10">
-<div class="absolute top-0 right-0 bg-gradient-to-r from-primary to-secondary text-surface-container-lowest font-label-sm text-[10px] px-sm py-xs rounded-bl-lg rounded-tr-lg uppercase tracking-widest font-bold">Recommended</div>
+<div class="absolute top-0 right-0 bg-gradient-to-r from-primary to-secondary text-surface-container-lowest font-label-sm text-[10px] px-sm py-xs rounded-bl-lg rounded-tr-lg uppercase tracking-widest font-bold">{{ app()->getLocale() === 'sq' ? 'Rekomanduar' : 'Recommended' }}</div>
 <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-sm">Pro</div>
 <div class="font-h1 text-h1 text-on-surface mb-md">$99<span class="text-h3 text-on-surface-variant">/mo</span></div>
-<div class="text-sm text-secondary mb-md font-bold">30-Day Free Trial</div>
+<div class="text-sm text-secondary mb-md font-bold">{{ app()->getLocale() === 'sq' ? '30 Ditë Provim Falas' : '30-Day Free Trial' }}</div>
 <ul class="space-y-sm mb-lg border-t border-white/10 pt-md">
 <li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Unlimited Channels & Orders</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Storefront & WA Sync</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Invoices, Coupons & CSAT</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface"><span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span> Team Logs & Broadcasts</li>
 </ul>
-<button class="w-full btn-gradient text-white py-sm rounded-lg font-label-sm text-label-sm uppercase">Start Pro Trial</button>
+<button class="w-full btn-gradient text-white py-sm rounded-lg font-label-sm text-label-sm uppercase">{{ app()->getLocale() === 'sq' ? 'Fillo Provimin Pro' : 'Start Pro Trial' }}</button>
 </div>
 <!-- Ultimate -->
 <div class="glass-card rounded-xl p-xl">
-<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-sm">Ultimate</div>
-<div class="font-h3 text-h3 text-on-surface mb-md flex items-center h-[57px]">Custom Pricing</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-sm">{{ app()->getLocale() === 'sq' ? 'Premium' : 'Ultimate' }}</div>
+<div class="font-h3 text-h3 text-on-surface mb-md flex items-center h-[57px]">{{ app()->getLocale() === 'sq' ? 'Çmim Sipas Nevojës' : 'Custom Pricing' }}</div>
 <ul class="space-y-sm mb-lg border-t border-white/5 pt-md">
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Everything in Pro</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Full AI Order Extraction</li>
@@ -404,21 +413,21 @@
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> AI Demand Forecasting</li>
 <li class="flex items-center gap-sm text-body-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-primary">check</span> Dedicated Priority API</li>
 </ul>
-<button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">Contact Sales</button>
+<button class="w-full btn-glass text-on-surface py-sm rounded-lg font-label-sm text-label-sm uppercase">{{ app()->getLocale() === 'sq' ? 'Na Kontaktoni' : 'Contact Sales' }}</button>
 </div>
 </div>
 </section>
 </main>
 <!-- Footer Shared Component -->
 <footer class="w-full py-xl bg-surface-container-lowest dark:bg-surface-dim border-t border-white/5">
-<div class="flex flex-col md:flex-row justify-between items-center px-margin max-w-7xl mx-auto gap-lg">
+<div class="flex flex-col md:flex-row justify-between items-center px-4 sm:px-margin max-w-7xl mx-auto gap-lg">
 <div class="font-h3 text-h3 font-bold text-on-surface">Nexus CRM</div>
 <div class="flex flex-wrap justify-center gap-md">
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('privacy') }}">Privacy Policy</a>
-<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('terms') }}">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('privacy') }}">{{ app()->getLocale() === 'sq' ? 'Politika e Privatësisë' : 'Privacy Policy' }}</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:text-primary-fixed hover:translate-x-1 transition-transform" href="{{ route('terms') }}">{{ app()->getLocale() === 'sq' ? 'Kushtet e Shërbimit' : 'Terms of Service' }}</a>
 </div>
 <div class="font-label-sm text-label-sm text-secondary text-center md:text-right">
-                © 2024 Nexus CRM. Elite command center for high-growth enterprises.
+                ©2026 Nexus CRM. {{ app()->getLocale() === 'sq' ? 'Të gjitha të drejtat e rezervuara.' : 'All rights reserved.' }}
             </div>
 </div>
 </footer>
