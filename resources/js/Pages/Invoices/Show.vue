@@ -32,7 +32,7 @@
         </div>
 
         <!-- Info row -->
-        <div class="grid grid-cols-3 gap-6 mb-8 text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 text-sm">
           <div>
             <div class="font-semibold text-gray-400 uppercase text-[10px] tracking-wider mb-1">{{ $t('invoices.billTo') }}</div>
             <div class="font-semibold text-gray-900">{{ invoice.customer_details?.name }}</div>

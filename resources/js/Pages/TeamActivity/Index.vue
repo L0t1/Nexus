@@ -15,7 +15,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-violet/20 to-accent-cyan/20 flex items-center justify-center text-sm font-bold text-nexus-200">{{ agent.name?.[0] }}</div>
             <div><div class="text-sm font-semibold text-nexus-100">{{ agent.name }}</div><div class="text-[10px] text-nexus-500">{{ agent.active_days }} {{ $t('teamActivity.activeDays') }}</div></div>
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="text-center p-2 rounded-lg bg-nexus-900/30"><div class="text-lg font-bold text-nexus-200">{{ agent.actions }}</div><div class="text-[10px] text-nexus-600 uppercase">{{ $t('teamActivity.actions') }}</div></div>
             <div class="text-center p-2 rounded-lg bg-nexus-900/30"><div class="text-lg font-bold text-accent-cyan">{{ Math.round(agent.actions / Math.max(agent.active_days, 1)) }}</div><div class="text-[10px] text-nexus-600 uppercase">{{ $t('teamActivity.perDay') }}</div></div>
           </div>

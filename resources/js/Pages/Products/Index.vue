@@ -96,7 +96,7 @@
               :placeholder="$t('products.namePlaceholder')"
             />
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <NexusInput
                 v-model="form.sku"
                 :label="$t('products.sku')"
@@ -112,7 +112,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <NexusInput
                 v-model="form.price"
                 type="number"

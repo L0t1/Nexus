@@ -6,7 +6,7 @@
       </div>
       <div class="glass-glow rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full table-premium">
+          <table class="w-full table-premium min-w-[600px]">
             <thead><tr><th>{{ $t('invoices.invoice') }}</th><th>{{ $t('invoices.order') }}</th><th>{{ $t('invoices.customer') }}</th><th>{{ $t('invoices.date') }}</th><th class="text-right">{{ $t('invoices.total') }}</th><th class="text-right">{{ $t('invoices.actions') }}</th></tr></thead>
             <tbody>
               <tr v-for="inv in invoices?.data" :key="inv.id" class="cursor-pointer group" @click="$inertia.visit(`/invoices/${inv.id}`)">

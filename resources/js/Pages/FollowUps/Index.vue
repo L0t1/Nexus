@@ -108,7 +108,7 @@
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.name') }}</label>
                 <input v-model="seqForm.name" type="text" :placeholder="$t('followUps.namePlaceholder')" class="input-premium" required />
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                 <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('followUps.delayLabel') }}</label>
                 <input v-model.number="seqForm.delay_hours" type="number" min="1" max="168" class="input-premium" required />

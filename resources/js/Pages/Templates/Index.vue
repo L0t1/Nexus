@@ -62,7 +62,7 @@
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editingTemplate ? $t('templates.edit') : $t('templates.newTitle') }}</h3>
             <form @submit.prevent="saveTemplate" class="space-y-4">
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('templates.shortcut') }}</label>
                   <input v-model="form.shortcut" type="text" placeholder="/price" class="input-premium font-mono" required />

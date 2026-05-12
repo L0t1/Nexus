@@ -32,7 +32,7 @@
           <div class="relative glass-strong rounded-2xl p-6 w-full max-w-lg border border-white/10 shadow-2xl">
             <h3 class="text-base font-bold text-nexus-100 mb-4">{{ editing ? $t('common.edit') : $t('common.new') }} {{ $t('coupons.title').split(' ')[0] }}</h3>
             <form @submit.prevent="save" novalidate class="space-y-4">
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.code') }}</label>
                   <input v-model="form.code" :class="['input-premium font-mono uppercase', form.errors.code ? 'border-accent-rose/50 focus:border-accent-rose' : '']" :disabled="!!editing" />
@@ -44,7 +44,7 @@
                   <p v-if="form.errors.name" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.name }}</p>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.type') }}</label>
                   <select v-model="form.type" class="input-premium">
@@ -58,7 +58,7 @@
                   <p v-if="form.errors.value" class="mt-1 text-[10px] text-accent-rose">{{ form.errors.value }}</p>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase">{{ $t('coupons.minOrder') }}</label>
                   <input v-model.number="form.min_order_amount" type="number" step="0.01" :class="['input-premium', form.errors.min_order_amount ? 'border-accent-rose/50 focus:border-accent-rose' : '']" />

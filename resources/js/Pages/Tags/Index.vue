@@ -123,7 +123,7 @@
                   <option value="platform">Platform</option>
                 </select>
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">Operator</label>
                   <select v-model="ruleForm.operator" class="input-premium cursor-pointer">

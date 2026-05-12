@@ -6,7 +6,7 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="glass-glow rounded-2xl p-5 text-center">
           <div class="text-3xl font-bold text-gradient">{{ avgRating || '—' }}</div>
           <div class="text-xs text-nexus-500 mt-1">{{ $t('csat.avgRating') }}</div>

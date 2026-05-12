@@ -72,7 +72,7 @@
           </div>
 
           <!-- Submit -->
-          <div class="pt-4 flex items-center justify-between border-t border-white/[0.06]">
+          <div class="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-white/[0.06]">
             <p class="text-xs text-nexus-500">{{ $t('broadcasts.queueNotice') }}</p>
             <button type="submit" :disabled="form.processing || !form.message.trim()" 
               class="px-8 py-3 bg-gradient-to-r from-accent-violet to-accent-cyan text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-accent-cyan/20 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2">

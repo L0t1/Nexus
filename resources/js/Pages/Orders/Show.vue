@@ -88,7 +88,7 @@
                 {{ copied ? $t('orderDetail.copied') : $t('orderDetail.copyForCourier') }}
               </button>
             </div>
-            <div class="p-6 grid grid-cols-2 gap-5">
+            <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div><div class="text-[10px] font-semibold text-nexus-600 uppercase tracking-wider mb-1">{{ $t('orderDetail.city') }}</div><div class="text-sm text-nexus-200">{{ order.shipping_city || '—' }}</div></div>
               <div><div class="text-[10px] font-semibold text-nexus-600 uppercase tracking-wider mb-1">{{ $t('orderDetail.neighborhood') }}</div><div class="text-sm text-nexus-200">{{ order.shipping_neighborhood || '—' }}</div></div>
               <div><div class="text-[10px] font-semibold text-nexus-600 uppercase tracking-wider mb-1">{{ $t('orderDetail.street') }}</div><div class="text-sm text-nexus-200">{{ order.shipping_street || '—' }}</div></div>

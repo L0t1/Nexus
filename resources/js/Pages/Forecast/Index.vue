@@ -50,12 +50,13 @@
             {{ $t('forecast.' + (productForecasts[0]?.trend || 'stable')) }}
           </span>
         </div>
-        <div class="grid grid-cols-7 gap-1.5">
+        <div class="overflow-x-auto -mx-2 px-2"><div class="grid grid-cols-7 gap-1.5 min-w-[500px]">
           <div v-for="f in productForecasts.slice(0, 14)" :key="f.forecast_date" class="text-center p-2 rounded-lg bg-nexus-900/30">
             <div class="text-[9px] text-nexus-600">{{ formatDay(f.forecast_date) }}</div>
             <div class="text-sm font-bold text-nexus-200 mt-0.5">{{ f.predicted_demand }}</div>
             <div class="text-[8px] text-nexus-700 mt-0.5">{{ f.confidence }}%</div>
           </div>
+        </div>
         </div>
       </div>
 

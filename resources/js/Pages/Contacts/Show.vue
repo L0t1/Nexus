@@ -48,14 +48,14 @@
         <div class="lg:col-span-2">
           <form @submit.prevent="save" class="glass rounded-xl p-6 space-y-4">
             <h3 class="text-sm font-semibold text-nexus-200 pb-3 border-b border-border-subtle">Contact Information</h3>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">Name</label><input v-model="form.name" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">Phone</label><input v-model="form.phone" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">Email</label><input v-model="form.email" type="email" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">City</label><input v-model="form.city" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">Neighborhood</label><input v-model="form.neighborhood" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
               <div><label class="block text-xs font-medium text-nexus-400 mb-1">Street</label><input v-model="form.street_address" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all" /></div>
-              <div class="col-span-2"><label class="block text-xs font-medium text-nexus-400 mb-1">Notes</label><textarea v-model="form.notes" rows="3" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all resize-none"></textarea></div>
+              <div class="sm:col-span-2"><label class="block text-xs font-medium text-nexus-400 mb-1">Notes</label><textarea v-model="form.notes" rows="3" class="w-full px-4 py-2.5 rounded-lg bg-nexus-950/60 border border-border-subtle text-sm text-nexus-200 focus:outline-none focus:border-nexus-500 transition-all resize-none"></textarea></div>
             </div>
             <button type="submit" :disabled="form.processing" class="px-5 py-2 rounded-lg bg-nexus-600 hover:bg-nexus-500 text-white text-sm font-medium transition-all disabled:opacity-50">Save Changes</button>
           </form>

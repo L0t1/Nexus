@@ -6,7 +6,7 @@
       </div>
 
       <!-- Status tabs -->
-      <div class="flex gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/[0.04] w-fit overflow-x-auto hide-scrollbar">
+      <div class="flex gap-1.5 p-1 rounded-xl bg-white/[0.02] border border-white/[0.04] w-full sm:w-fit overflow-x-auto hide-scrollbar">
         <button v-for="f in statusFilters" :key="f.value" @click="setFilter(f.value)" :class="['px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap', activeFilter === f.value ? 'bg-nexus-500/15 text-nexus-300' : 'text-nexus-600 hover:text-nexus-400']">
           {{ $t('returns.' + (f.value || 'all')) }} <span v-if="statusCounts[f.value]" class="ml-1 text-nexus-600">({{ statusCounts[f.value] }})</span>
         </button>
@@ -14,7 +14,7 @@
 
       <div class="glass-glow rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full table-premium">
+          <table class="w-full table-premium min-w-[700px]">
             <thead><tr><th>{{ $t('returns.returnNo') }}</th><th>{{ $t('returns.order') }}</th><th>{{ $t('returns.customer') }}</th><th>{{ $t('returns.reason') }}</th><th>{{ $t('returns.status') }}</th><th class="text-right">{{ $t('returns.refund') }}</th><th class="text-right">{{ $t('returns.actions') }}</th></tr></thead>
             <tbody>
               <tr v-for="r in returns?.data" :key="r.id" class="group">

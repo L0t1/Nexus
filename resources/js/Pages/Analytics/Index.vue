@@ -9,7 +9,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 stagger-children">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 stagger-children">
         <div class="glass stat-card stat-card-emerald rounded-2xl p-5"><div class="text-[10px] font-semibold uppercase tracking-wider text-nexus-600 mb-1">{{ $t('analytics.revenue') }}</div><div class="text-2xl font-bold text-nexus-100">€{{ summary.total_revenue?.toFixed(2) }}</div></div>
         <div class="glass stat-card stat-card-indigo rounded-2xl p-5"><div class="text-[10px] font-semibold uppercase tracking-wider text-nexus-600 mb-1">{{ $t('analytics.orders') }}</div><div class="text-2xl font-bold text-nexus-100">{{ summary.total_orders }}</div></div>
         <div class="glass stat-card stat-card-amber rounded-2xl p-5"><div class="text-[10px] font-semibold uppercase tracking-wider text-nexus-600 mb-1">{{ $t('analytics.avgOrder') }}</div><div class="text-2xl font-bold text-nexus-100">€{{ summary.avg_order_value?.toFixed(2) }}</div></div>
