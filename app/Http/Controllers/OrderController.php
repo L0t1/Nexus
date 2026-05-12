@@ -50,10 +50,13 @@ class OrderController extends Controller
             'returned'   => (int) $rawCounts->get('returned', 0),
         ];
 
+        $products = $merchant->products()->select('id', 'name', 'price', 'stock')->get();
+
         return Inertia::render('Orders/Index', [
             'orders' => $orders,
             'statusCounts' => $statusCounts,
             'filters' => $request->only(['status', 'payment', 'search']),
+            'products' => $products,
         ]);
     }
 

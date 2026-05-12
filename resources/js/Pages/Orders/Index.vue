@@ -8,7 +8,7 @@
         </div>
         <div class="flex items-center gap-2">
           <a href="/export/orders" class="btn-secondary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg> {{ $t('common.export') }}</a>
-          <button @click="$inertia.visit('/inbox')" class="btn-primary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> {{ $t('orders.newOrder') }}</button>
+          <button @click="openManualOrder" class="btn-primary flex items-center gap-2 text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> {{ $t('orders.newOrder') }}</button>
         </div>
       </div>
 
@@ -65,19 +65,111 @@
           <p class="text-nexus-600 text-sm">{{ $t('orders.noOrders') }}</p>
         </div>
       </div>
+      
+      <!-- Order Panel Overlay -->
+      <div v-if="showOrderPanel" @click="showOrderPanel = false" class="fixed inset-0 bg-black/60 z-40"></div>
+
+      <!-- Order Panel -->
+      <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-x-full" enter-to-class="opacity-100 translate-x-0" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-full">
+        <div v-if="showOrderPanel" class="fixed inset-y-0 right-0 w-full sm:w-96 z-50 glass-strong border-l border-white/[0.04] flex flex-col shadow-2xl">
+          <div class="px-5 py-3.5 border-b border-white/[0.04] flex items-center justify-between bg-nexus-900/80 backdrop-blur-xl">
+            <h3 class="text-sm font-semibold text-nexus-200 flex items-center gap-2"><span>✍️</span> {{ $t('chat.manualOrder') || 'Manual Order' }}</h3>
+            <button @click="showOrderPanel = false" class="text-nexus-600 hover:text-nexus-300 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+          </div>
+          <form @submit.prevent="submitOrder" novalidate class="flex-1 overflow-y-auto p-5 space-y-4 bg-nexus-900/40">
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.customerName') }} *</label>
+              <input v-model="orderForm.customer_name" type="text" :class="['input-premium', orderForm.errors.customer_name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.customer_name" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_name }}</div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.phone') }} *</label>
+              <input v-model="orderForm.customer_phone" type="tel" oninput="this.value = this.value.replace(/[^0-9\s\+\-\(\)]/g, '')" :class="['input-premium', orderForm.errors.customer_phone ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.customer_phone" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.customer_phone }}</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.city') }} *</label>
+                <CitySelect v-model="orderForm.shipping_city" :input-class="['input-premium', orderForm.errors.shipping_city ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="orderForm.errors.shipping_city" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_city }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.neighborhood') }}</label>
+                <input v-model="orderForm.shipping_neighborhood" type="text" :class="['input-premium', orderForm.errors.shipping_neighborhood ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="orderForm.errors.shipping_neighborhood" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_neighborhood }}</div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.address') }} *</label>
+              <input v-model="orderForm.shipping_street" type="text" :class="['input-premium', orderForm.errors.shipping_street ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+              <div v-if="orderForm.errors.shipping_street" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_street }}</div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.shippingNotes') }}</label>
+              <textarea v-model="orderForm.shipping_notes" rows="2" :class="['input-premium py-2 text-sm resize-none', orderForm.errors.shipping_notes ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']"></textarea>
+              <div v-if="orderForm.errors.shipping_notes" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.shipping_notes }}</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.payment') }} *</label>
+                <select v-model="orderForm.payment_method" :class="['input-premium cursor-pointer', orderForm.errors.payment_method ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']">
+                  <option value="cod">{{ $t('chat.cashOnDelivery') || 'Cash on Delivery' }}</option>
+                  <option value="bank_transfer">{{ $t('chat.bankTransfer') || 'Bank Transfer' }}</option>
+                  <option value="online">{{ $t('chat.onlinePayment') || 'Online Payment' }}</option>
+                </select>
+                <div v-if="orderForm.errors.payment_method" class="text-accent-rose text-[10px] mt-1">{{ orderForm.errors.payment_method }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.product') }} *</label>
+                <select v-if="products.length" v-model="selectedProductId" @change="onProductSelect" :class="['input-premium cursor-pointer', itemErrors.name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']">
+                  <option value="">{{ $t('chat.customProduct') || 'Custom Product' }}</option>
+                  <option v-for="p in products" :key="p.id" :value="p.id">{{ p.name }} (€{{ Number(p.price).toFixed(2) }}) — {{ p.stock }} in stock</option>
+                </select>
+                <input v-if="!products.length || selectedProductId === ''" v-model="itemName" type="text" :placeholder="$t('chat.productName') || 'Product name'" :class="['input-premium', itemErrors.name ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '', products.length ? 'mt-2' : '']" />
+                <div v-if="itemErrors.name" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.name }}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.qty') }} *</label>
+                <input v-model.number="itemQty" type="number" min="1" :class="['input-premium', itemErrors.qty ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="itemErrors.qty" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.qty }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.price') }} *</label>
+                <input v-model.number="itemPrice" type="number" min="0.01" step="0.01" :class="['input-premium', itemErrors.price ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="itemErrors.price" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ itemErrors.price }}</div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-nexus-400 mb-1.5 uppercase tracking-wider">{{ $t('chat.shipping') }}</label>
+                <input v-model.number="orderForm.shipping_cost" type="number" min="0" step="0.01" :class="['input-premium', orderForm.errors.shipping_cost ? 'border-accent-rose/50 focus:border-accent-rose animate-shake' : '']" />
+                <div v-if="orderForm.errors.shipping_cost" class="text-accent-rose text-[10px] mt-1 leading-tight">{{ orderForm.errors.shipping_cost }}</div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-white/[0.04]">
+              <div class="flex justify-between text-sm mb-4"><span class="text-nexus-500">{{ $t('chat.total') || 'Total' }}</span><span class="font-bold text-xl text-gradient">€{{ ((itemQty * itemPrice) + (orderForm.shipping_cost || 0)).toFixed(2) }}</span></div>
+              <button type="submit" :disabled="orderForm.processing" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-accent-emerald to-accent-cyan text-white text-sm font-semibold transition-all hover:shadow-lg hover:shadow-accent-emerald/20 disabled:opacity-50">
+                {{ orderForm.processing ? $t('common.processing') || '...' : ($t('chat.confirmOrder') || 'Confirm Order') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </Transition>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
+import CitySelect from '@/Components/CitySelect.vue';
 
 const props = defineProps({
   orders: { type: Object, default: () => ({ data: [] }) },
   filters: { type: Object, default: () => ({}) },
+  products: { type: Array, default: () => [] },
 });
 
 const activeFilter = ref(props.filters.status || '');
@@ -92,4 +184,62 @@ const statusFilters = [
 
 function setFilter(v) { activeFilter.value = v; router.get('/orders', { status: v }, { preserveState: true }); }
 function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''; }
+
+// Order Creation Logic
+const showOrderPanel = ref(false);
+const selectedProductId = ref('');
+const itemName = ref('');
+const itemQty = ref(1);
+const itemPrice = ref(0);
+
+const orderForm = useForm({
+  customer_name: '',
+  customer_phone: '',
+  shipping_city: '',
+  shipping_neighborhood: '',
+  shipping_street: '',
+  shipping_notes: '',
+  shipping_cost: 3.00,
+  payment_method: 'cod',
+  items: [],
+});
+
+const itemErrors = computed(() => {
+  return {
+    name: orderForm.errors['items.0.name'] || orderForm.errors?.items?.[0]?.name,
+    qty: orderForm.errors['items.0.qty'] || orderForm.errors?.items?.[0]?.qty,
+    price: orderForm.errors['items.0.price'] || orderForm.errors?.items?.[0]?.price,
+  };
+});
+
+function openManualOrder() {
+  orderForm.reset();
+  orderForm.shipping_cost = 3.00;
+  orderForm.payment_method = 'cod';
+  selectedProductId.value = '';
+  itemName.value = '';
+  itemQty.value = 1;
+  itemPrice.value = '';
+  showOrderPanel.value = true;
+}
+
+function onProductSelect() {
+  if (selectedProductId.value) {
+    const product = props.products.find(p => p.id === selectedProductId.value);
+    if (product) {
+      itemName.value = product.name;
+      itemPrice.value = product.price;
+    }
+  } else {
+    itemName.value = '';
+    itemPrice.value = '';
+  }
+}
+
+function submitOrder() {
+  const item = { name: itemName.value || 'Product', qty: itemQty.value, price: itemPrice.value };
+  if (selectedProductId.value) item.product_id = selectedProductId.value;
+  orderForm.items = [item];
+  orderForm.post('/orders', { onSuccess: () => { showOrderPanel.value = false; } });
+}
 </script>
